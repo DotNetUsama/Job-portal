@@ -1,0 +1,108 @@
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using Job_Portal_System.Client;
+using Job_Portal_System.Enums;
+using Job_Portal_System.Models;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using VDS.RDF.Query;
+
+namespace Job_Portal_System.Data
+{
+    public static class DatabaseSeeder
+    {
+
+        public static void SeedData (IHostingEnvironment env,
+            ApplicationDbContext context, 
+            UserManager<User> userManager, 
+            RoleManager<IdentityRole> roleManager)
+        {
+            SeedRoles(roleManager);
+            SeedUsers(userManager);
+            SeedJobTitles(env, context);
+            SeedFieldsOfStudy(env, context);
+        }
+
+        private static void SeedUsers (UserManager<User> userManager)
+        {
+            if (userManager.FindByNameAsync("Usama").Result != null) return;
+            var user = new User
+            {
+                UserName = "usamaghannam@gmail.com",
+                Email = "usamaghannam@gmail.com",
+                FirstName = "Usama",
+                LastName = "Ghannam",
+                Gender = (int)GenderType.Male,
+                BirthDate = new DateTime(1995, 2, 19),
+            };
+
+            var result = userManager.CreateAsync(user, "Tom&Jerry123");
+
+            if (result.Result.Succeeded)
+            {
+                userManager.AddToRoleAsync(user, "Administrator").Wait();
+            }
+        }
+
+        private static void SeedRoles(RoleManager<IdentityRole> roleManager)
+        {
+            var roles = new []
+            {
+                "Administrator",
+                "JobSeeker",
+                "Recruiter",
+                "PendingRecruiter",
+                "RejectedRecruiter",
+            };
+            foreach (var role in roles)
+            {
+                SeedRole(roleManager, role);
+            }
+        }
+
+        private static void SeedRole(RoleManager<IdentityRole> roleManager, string roleName)
+        {
+            if (roleManager.RoleExistsAsync(roleName).Result) return;
+            var role = new IdentityRole
+            {
+                Name = roleName
+            };
+            var roleResult = roleManager.CreateAsync(role).Result;
+        }
+
+        private static void SeedJobTitles(IHostingEnvironment env,
+            ApplicationDbContext context)
+        {
+            var path = Path.Combine(env.ContentRootPath, "Queries", "JobTitlesQuery.txt");
+            var jobTitles = NamedEntity.GetNamedEntities(path)
+                .Select(entity => new JobTitle
+                {
+                    Id = entity.Id,
+                    Title = entity.Label,
+                })
+                .Where(entity => !context.JobTitles.Any(jobTitle => jobTitle.Title == entity.Title))
+                .ToList();
+            context.JobTitles.AddRange(jobTitles);
+            context.SaveChanges();
+        }
+
+        private static void SeedFieldsOfStudy(IHostingEnvironment env, 
+            ApplicationDbContext context)
+        {
+            var path = Path.Combine(env.ContentRootPath, "Queries", "FieldsOfStudyQuery.txt");
+            var fieldsOfStudy = NamedEntity.GetNamedEntities(path)
+                .Select(entity => new FieldOfStudy
+                {
+                    Id = entity.Id,
+                    Title = entity.Label,
+                })
+                .Where(entity => !context.FieldOfStudies.Any(fieldOfStudy => fieldOfStudy.Title == entity.Title))
+                .ToList();
+            context.FieldOfStudies.AddRange(fieldsOfStudy);
+            context.SaveChanges();
+        }
+    }
+}

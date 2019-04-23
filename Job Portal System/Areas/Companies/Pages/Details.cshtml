@@ -1,0 +1,47 @@
+﻿@page
+@model Job_Portal_System.Areas.Companies.Pages.DetailsModel
+
+<div>
+    <h4>Company</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Company.Name)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Company.Name)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Company.EmployeesNum)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Company.EmployeesNum)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Company.Email)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Company.Email)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Company.Website)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Company.Website)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Company.Description)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Company.Description)
+        </dd>
+    </dl>
+</div>
+<div>
+    @{
+        if (Model.CanEdit)
+        {
+            <a asp-page="./Edit" asp-route-id="@Model.Company.Id">Edit</a>
+        }
+    }
+</div>

@@ -1,0 +1,52 @@
+SELECT DISTINCT ?title ?id ?distance WHERE {
+	{
+		SELECT ?term WHERE {
+			{ ?term rdfs:label @queryString . }
+			UNION
+			{
+				?t rdfs:label @queryString .
+				{
+					{ ?t dbo:wikiPageRedirects ?term . }
+					UNION
+					{ ?t dbo:wikiPageDisambiguates|^dbo:wikiPageDisambiguates ?term . }
+				}
+			}
+		}
+	}
+	{
+		{
+			[] dbo:academicDiscipline ?term .
+			BIND (?term AS ?education) .
+			BIND ("0" AS ?distance) .
+		}
+		UNION
+		{
+			?education 
+				dct:subject|^dct:subject|skos:broader|^skos:broader ?term .
+			[] dbo:academicDiscipline ?education .
+			BIND ("1" AS ?distance) .
+		}
+		UNION
+		{
+			?education 
+				dct:subject|^dct:subject|skos:broader|^skos:broader
+				[dct:subject|^dct:subject|skos:broader|^skos:broader ?term] .
+			[] dbo:academicDiscipline ?education .
+			BIND ("2" AS ?distance) .
+		}
+		UNION
+		{
+			?education 
+				dct:subject|^dct:subject|skos:broader|^skos:broader
+				[dct:subject|^dct:subject|skos:broader|^skos:broader
+				[dct:subject|^dct:subject|skos:broader|^skos:broader ?term]] .
+			[] dbo:academicDiscipline ?education .
+			BIND ("3" AS ?distance) .
+		}
+	}
+	?education rdfs:label ?label .
+	FILTER (langmatches(lang(?label),"en")) .
+	BIND (str(?label) AS ?title)
+	?education dbo:wikiPageID ?wikiId .
+	BIND (str(?wikiId) AS ?id) .
+} LIMIT 10

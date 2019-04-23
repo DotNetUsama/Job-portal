@@ -1,6 +1,15 @@
 ﻿/* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
 for details on configuring this project to bundle and minify static web assets. */
 
+:root {
+    --general-main: #e9f0f7;
+    --general-secondary: #fcfdfd;
+    --general-focus: #dbe8f5;
+    --form-main: #76bad5;
+    --form-main-transparent: rgba(114, 177, 203, 0.29019607);
+    --form-background: #f5f7fa;
+}
+
 a.navbar-brand {
   white-space: normal;
   text-align: center;
@@ -18,9 +27,27 @@ html {
   }
 }
 
+::-webkit-scrollbar {
+    width: 7px;
+}
+
+::-webkit-scrollbar-track {
+    background: #ccc;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #aaa;
+    border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #777; 
+}
+
 .border-top {
   border-top: 1px solid #e5e5e5;
 }
+
 .border-bottom {
   border-bottom: 1px solid #e5e5e5;
 }
@@ -42,8 +69,321 @@ html {
 }
 
 body {
-  /* Margin bottom by footer height */
-  margin-bottom: 60px;
+    margin-bottom: 60px;
+    background-color: var(--general-secondary);
+}
+
+.bg-main {
+    background-color: var(--general-main);
+}
+
+.body-content {
+    margin: 50px auto 50px auto;
+}
+
+.btn-icon {
+    cursor: pointer;
+    border: none;
+    background-color: initial;
+    color: cornflowerblue;
+    padding: 0;
+    line-height: 1;
+}
+
+.btn-icon:hover {
+    color: royalblue;
+}
+
+.item-details {
+    display: none;
+}
+
+.hover-border {
+    border-radius: 5px;
+    padding: 3px 0;
+}
+
+.hover-border:hover {
+    background-color: ghostwhite;
+}
+
+.dl-horizontal dt {
+    white-space: normal;
+}
+
+.scrollable-div {
+    padding: 15px;
+    min-height: 550px;
+    overflow-y: auto;
+}
+
+.field-validation-error, label.error {
+    color: #ff0000;
+}
+
+.input-validation-error, input.error {
+    border: 1px solid Red;
+}
+
+.fa-bell {
+    position: relative;
+    font-size: 1.5em;
+    color: grey;
+    cursor: pointer;
+    padding: 9px 15px;
+}
+
+.num {
+    background-color: #fa3e3e;
+    font-size: 0.5em;
+    border-radius: 2px;
+    color: #fff;
+    padding: 1px 3px;
+    position: absolute;
+    left: 10px;
+    top: 2px;
+}
+
+.notification-dialog {
+    font-family: Arial,"Helvetica Neue",Helvetica,sans-serif !important;
+    color: #2f3337;
+    font-size: 12px;
+    background-color: #FFF;
+    box-shadow: 0 2px 2px rgba(12,13,14,0.2);
+    z-index: 999;
+    position: absolute;
+    text-align: left;
+    border-left: 1px solid #e4e6e8;
+    border-right: 1px solid #e4e6e8;
+    border-bottom: 1px solid #e4e6e8;
+    box-sizing: border-box;
+    width: 375px;
+    min-height: 200px;
+    max-height: 500px;
+    display: none;
+    overflow-y: auto;
+}
+
+.notification-dialog a:hover {
+    text-decoration: none;
+}
+
+.notification-dialog .dialog-title {
+    font-weight: bold;
+    margin-bottom: 3px;
+    padding: 10px 15px;
+    background-color: var(--general-focus);
+}
+
+.notification-dialog .dialog-content {
+    list-style: none;
+    padding: 0 5px;
+}
+
+.notification-dialog .dialog-content .notification-area {
+    padding: 10px 15px;
+    color: #444;
+    border-bottom: 1px solid #ddd;
+}
+
+.notification-dialog .dialog-content .notification-area.not-read {
+    background-color: #f5f5ff;
+}
+
+.notification-dialog .dialog-content .notification-area:hover {
+    background-color: #fafafa;
+}
+
+.notification-dialog .dialog-content .notification-area.not-read:hover {
+    background-color: #efefff;
+}
+
+.notification-dialog .dialog-content .notification-area .notification-header{
+    padding: 3px 0;
+    color: #aaa;
+    display: flex;
+}
+
+.notification-dialog .dialog-content .notification-area .notification-header .notification-time{
+    margin-left: auto;
+}
+
+.notification-dialog .dialog-content .notification-area .notification-content {
+    padding: 7px 3px;
+}
+
+
+.notification-dialog .dialog-content .notification-area.dialog-footer {
+    border: none;
+    text-align: center;
+    cursor: pointer;
+}
+
+.ui-autocomplete {
+    max-height: 200px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+/*.multi-step-form {
+}*/
+
+.multi-step-form .form-container {
+    padding: 0 25px;
+    background-color: var(--form-background);
+    padding-top: 15px;
+    padding-bottom: 20px;
+}
+
+.multi-step-form .form-container .form-head {
+    display: flex;
+    margin-bottom: 25px
+}
+
+.multi-step-form .form-container .form-head .form-head-title {
+    font-size: 1.7em;
+    display: inline;
+    text-align: left;
+    margin: 0;
+}
+
+.multi-step-form .form-container .form-head .form-head-details {
+    font-size: 0.9em;
+    color: gray;
+    margin-left: auto;
+    vertical-align: center;
+    align-self: flex-end;
+}
+
+/*.multi-step-form .form-container .form-body {
+}*/
+
+.multi-step-form .form-container .form-body .tab {
+    display: none;
+    background-color: white;
+    padding: 25px;
+    margin-bottom: 25px;
+    border-radius: 7px;
+}
+
+.multi-step-form .form-container .form-body .form-body-title {
+    font-size: 1.4em;
+    border-bottom: lightgray solid 1px;
+    padding-bottom: 20px;
+}
+.form-control:focus {
+    border-color: var(--form-main);
+    box-shadow: 0 0 0.2rem 0.1rem var(--form-main-transparent);
+}
+
+.btn:focus {
+    box-shadow: none;
+}
+
+.btn-submit {
+    background-color: var(--form-main);
+    color: white;
+    border-radius: 15px;
+}
+
+.btn-submit:hover {
+    font-weight: 600;
+}
+
+.btn-sub-submit {
+    border-radius: 7px;
+}
+
+.btn-step {
+    background-color: initial;
+    color: var(--form-main);
+    font-weight: 400;
+    border: var(--form-main) solid;
+    border-width: 1px;
+    border-radius: 15px;
+}
+
+.btn-step:hover {
+    font-weight: 600;
+    border-width: 2px;
+}
+
+.item-details {
+    padding: 10px;
+}
+
+.checkbox-container {
+    display: block;
+    position: relative;
+    padding-left: 35px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+/* Hide the browser's default checkbox */
+.checkbox-container input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+/* Create a custom checkbox */
+.checkmark {
+    position: absolute;
+    top: 4px;
+    left: 0;
+    height: 18px;
+    width: 18px;
+    border: var(--form-main) solid;
+    border-width: 1px;
+    border-radius: 8px;
+}
+
+/* When the checkbox is checked, add a blue background */
+.checkbox-container input:checked ~ .checkmark {
+    background-color: var(--form-main);
+    border: none;
+}
+
+/* Create the checkmark/indicator (hidden when not checked) */
+.checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+}
+
+/* Show the checkmark when checked */
+.checkbox-container input:checked ~ .checkmark:after {
+    display: block;
+}
+
+/* Style the checkmark/indicator */
+.checkbox-container .checkmark:after {
+    left: 7px;
+    top: 4px;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    -webkit-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    transform: rotate(45deg);
+}
+
+.font-weight-bold {
+    font-weight: bold;
+}
+
+select option {
+    padding: 15px 5px;
+    color: #444;
+    font-size: 1.2em;
 }
 .footer {
   position: absolute;

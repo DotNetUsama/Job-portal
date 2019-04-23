@@ -1,0 +1,39 @@
+﻿@page
+@model Job_Portal_System.Areas.Dashboard.Pages.Recruiters.ApproveRecruitersModel
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Recruiters[0].User.FirstName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Recruiters[0].User.LastName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Recruiters[0].Company.Name)
+        </th>
+        <th>
+            Approve
+        </th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model.Recruiters) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.User.FirstName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.User.LastName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Company.Name)
+            </td>
+            <td>
+                <a asp-page="./Approve" asp-route-recruiterId="@item.Id">Approve</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

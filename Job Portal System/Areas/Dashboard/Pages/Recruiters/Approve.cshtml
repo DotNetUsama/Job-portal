@@ -1,0 +1,86 @@
+﻿@page
+@using Enums
+@model Job_Portal_System.Areas.Dashboard.Pages.Recruiters.ApproveModel
+
+@{
+    var gender = ((GenderType)Model.Recruiter.User.Gender).GetDescription();
+}
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="card-title mb-4">
+                        <div class="d-flex justify-content-start">
+                            <div class="ml-3">
+                                <h2 class="d-block" style="font-size: 1.5rem; font-weight: bold">
+                                    @Model.Recruiter.User.FirstName @Model.Recruiter.User.LastName
+                                </h2>
+                            </div>
+                            <div class="ml-auto">
+                                <form method="post">
+                                    <button class="btn btn-sm btn-primary" type="submit" 
+                                            asp-page-handler="approve"
+                                            asp-route-recruiterId="@Model.Recruiter.Id">Approve</button>
+                                    <button class="btn btn-sm btn-danger" type="submit" 
+                                            asp-page-handler="reject"
+                                            asp-route-recruiterId="@Model.Recruiter.Id">Reject</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="ml-1">
+                                <div class="row">
+                                    <div class="col-sm-3 col-md-2 col-5">
+                                        <label class="font-weight-bold">Full Name</label>
+                                    </div>
+                                    <div class="col-md-8 col-6">
+                                        @Model.Recruiter.User.FirstName @Model.Recruiter.User.LastName
+                                    </div>
+                                </div>
+                                <hr />
+                                <div class="row">
+                                    <div class="col-sm-3 col-md-2 col-5">
+                                        <label class="font-weight-bold">Birth Date</label>
+                                    </div>
+                                    <div class="col-md-8 col-6">
+                                        @Model.Recruiter.User.BirthDate.ToShortDateString()
+                                    </div>
+                                </div>
+                                <hr />
+                                <div class="row">
+                                    <div class="col-sm-3 col-md-2 col-5">
+                                        <label class="font-weight-bold">Gender</label>
+                                    </div>
+                                    <div class="col-md-8 col-6">
+                                        @gender
+                                    </div>
+                                </div>
+                                <hr />
+                                <div class="row">
+                                    <div class="col-sm-3 col-md-2 col-5">
+                                        <label class="font-weight-bold">Email</label>
+                                    </div>
+                                    <div class="col-md-8 col-6">
+                                        @Model.Recruiter.User.Email
+                                    </div>
+                                </div>
+                                @*<hr />
+                                <div class="row">
+                                    <div class="col-sm-3 col-md-2 col-5">
+                                        <label class="font-weight-bold">Company</label>
+                                    </div>
+                                    <div class="col-md-8 col-6">
+                                        @Model.Recruiter.Company.Name
+                                    </div>
+                                </div>*@
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
