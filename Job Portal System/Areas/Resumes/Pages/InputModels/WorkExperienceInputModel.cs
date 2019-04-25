@@ -24,7 +24,6 @@ namespace Job_Portal_System.Areas.Resumes.Pages.InputModels
         public string JobTitle { get; set; }
 
         [Display(Name = "Description")]
-        [DataType(DataType.MultilineText)]
         public string Description { get; set; }
 
         [Required]

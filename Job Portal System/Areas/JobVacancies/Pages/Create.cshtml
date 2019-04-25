@@ -6,247 +6,248 @@
 }
 
 <div class="row">
-<div class="col-md-6 offset-md-3 col-sm-8 offset-sm-2 multi-step-form">
-<div class="progress" style="height: 4px;">
-    <div class="progress-bar" role="progressbar" 
-         aria-valuemin="0" aria-valuemax="100"></div>
-</div>
-<div class="form-container">
-<div class="form-head">
-    <h1 class="form-head-title">@ViewData["Title"]</h1>
-    <span class="form-head-details">Step <span id="step-num"></span> of <span id="steps-count"></span></span>
-</div>
-<div class="form-body">
-    <form method="post">
-        <fieldset id="general-info-partial" class="tab">
-            <h2 class="form-body-title"><i class="fa fa-question-circle"></i> General information</h2>
-            <div class="form-group">
-                <label asp-for="JobVacancyInfo.JobTitle"></label>
-                <input type="text" id="job-title-input" class="form-control" />
-                <input asp-for="JobVacancyInfo.JobTitle" id="job-title-name" />
-                <span asp-validation-for="JobVacancyInfo.JobTitle" class="validation-label text-danger"></span>
-            </div>
-            <input asp-for="JobVacancyInfo.JobTitleId" id="job-title-id" />
-            <div class="form-group">
-                <label asp-for="JobVacancyInfo.Title"></label>
-                <input asp-for="JobVacancyInfo.Title" class="form-control" />
-                <span asp-validation-for="JobVacancyInfo.Title" class="validation-label text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="JobVacancyInfo.Description"></label>
-                <textarea asp-for="JobVacancyInfo.Description" class="form-control"></textarea>
-                <span asp-validation-for="JobVacancyInfo.Description" class="validation-label text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="JobVacancyInfo.City"></label>
-                <input asp-for="JobVacancyInfo.City" id="city-input" class="form-control" />
-                <span asp-validation-for="JobVacancyInfo.City" class="validation-label text-danger"></span>
-            </div>
-            <input asp-for="JobVacancyInfo.CityId" id="city-id" />
-            <div class="form-row">
-                <div class="form-group col-md-6">
-                    <label asp-for="JobVacancyInfo.MinSalary"></label>
-                    <input asp-for="JobVacancyInfo.MinSalary" class="form-control" />
-                    <span asp-validation-for="JobVacancyInfo.MinSalary" class="validation-label text-danger"></span>
-                </div>
-                <div class="form-group col-md-6">
-                    <label asp-for="JobVacancyInfo.MaxSalary"></label>
-                    <input asp-for="JobVacancyInfo.MaxSalary" class="form-control" />
-                    <span asp-validation-for="JobVacancyInfo.MaxSalary" class="validation-label text-danger"></span>
-                </div>
-            </div>
-            <div class="form-row">
-                @foreach (var entity in Model.JobVacancyInfo.JobTypes)
-                {
-                    <div class="col-md-4">
-                        <label class="checkbox-container">
-                            @entity.Key.GetDescription()
-                            <input asp-for="JobVacancyInfo.JobTypes[entity.Key]" />
-                            <span class="checkmark"></span>
-                        </label>
-                    </div>
-                }
-            </div>
-            <div class="form-row">
-                <div class="form-group col-md-6">
-                    <label asp-for="JobVacancyInfo.Method"></label>
-                    <select asp-for="JobVacancyInfo.Method"
-                            asp-items="Html.GetEnumSelectList<JobVacancyMethod>()"
-                            class="form-control">
-                        <option value="">Please select</option>
-                    </select>
-                    <span asp-validation-for="JobVacancyInfo.Method" class="validation-label text-danger"></span>
-                </div>
-                <div class="form-group col-md-6">
-                    <label asp-for="JobVacancyInfo.RequiredHires"></label>
-                    <input asp-for="JobVacancyInfo.RequiredHires" class="form-control" />
-                    <span asp-validation-for="JobVacancyInfo.RequiredHires" class="validation-label text-danger"></span>
-                </div>
-            </div>
-        </fieldset>
-        <fieldset id="educations-partial" class="sub-form tab" data-count="0" data-for="Educations">
-            <h2 class="form-body-title"><i class="fa fa-graduation-cap"></i> Education qualifications</h2>
-            <ul class="displayed-objects-list list-unstyled"></ul>
-
-            <div class="hidden-objects-container d-none"></div>
-
-            <div class="form-inputs">
-                <div class="form-group">
-                    <label asp-for="Educations[0].FieldOfStudyName"></label>
-                    <input type="text" id="field-of-study-input" class="form-control" />
-                    <input asp-for="Educations[0].FieldOfStudyName" id="field-of-study-name" />
-                    <span asp-validation-for="Educations[0].FieldOfStudyName" class="validation-label text-danger"></span>
-                </div>
-                <input asp-for="Educations[0].FieldOfStudyId" id="field-of-study-id" />
-                <div class="form-group">
-                    <label asp-for="Educations[0].Degree"></label>
-                    <select asp-for="Educations[0].Degree"
-                            asp-items="Html.GetEnumSelectList<EducationDegree>()"
-                            class="form-control">
-                        <option value="">Please select</option>
-                    </select>
-                    <span asp-validation-for="Educations[0].Degree" class="validation-label text-danger"></span>
-                </div>
-                <div class="form-row">
-                    <div class="form-group col-md-5">
-                        <label asp-for="Educations[0].Type"></label>
-                        <select asp-for="Educations[0].Type"
-                                asp-items="Html.GetEnumSelectList<QualificationType>()"
-                                class="form-control">
-                            <option value="">Please select</option>
-                        </select>
-                    </div>
-                    <div class="form-group col-md-5">
-                        <label asp-for="Educations[0].MinimumYears"></label>
-                        <input asp-for="Educations[0].MinimumYears" class="form-control" />
-                    </div>
-                    <div class="form-group col-md-2 d-flex">
-                        <button type="button"
-                                class="btn btn-submit btn-sub-submit mt-auto ml-auto">
-                            <i class="fa fa-plus-circle"></i> Add
-                        </button>
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="col-md-5">
-                        <span asp-validation-for="Educations[0].Type" class="validation-label text-danger"></span>
-                    </div>
-                    <div class="col-md-5">
-                        <span asp-validation-for="Educations[0].MinimumYears" class="validation-label text-danger"></span>
-                    </div>
-                </div>
-            </div>
-        </fieldset>
-
-        <fieldset id="work-experiences-partial" class="sub-form tab" data-count="0" data-for="WorkExperiences">
-            <h2 class="form-body-title"><i class="fa fa-briefcase"></i> Work experience qualifications</h2>
-            <ul class="displayed-objects-list list-unstyled"></ul>
-
-            <div class="hidden-objects-container d-none"></div>
-
-            <div class="form-inputs">
-                <div class="form-group">
-                    <label asp-for="WorkExperiences[0].JobTitle"></label>
-                    <input type="text" id="work-experience-job-title-input" class="form-control" />
-                    <input asp-for="WorkExperiences[0].JobTitle" id="work-experience-job-title-name" />
-                    <span asp-validation-for="WorkExperiences[0].JobTitle" class="validation-label text-danger"></span>
-                </div>
-                <input asp-for="WorkExperiences[0].JobTitleId" id="work-experience-job-title-id" />
-                <div class="form-row">
-                    <div class="form-group col-md-5">
-                        <label asp-for="WorkExperiences[0].Type"></label>
-                        <select asp-for="WorkExperiences[0].Type"
-                                asp-items="Html.GetEnumSelectList<QualificationType>()"
-                                class="form-control">
-                            <option value="">Please select</option>
-                        </select>
-                    </div>
-                    <div class="form-group col-md-5">
-                        <label asp-for="WorkExperiences[0].MinimumYears"></label>
-                        <input asp-for="WorkExperiences[0].MinimumYears" class="form-control" />
-                    </div>
-                    <div class="form-group col-md-2 d-flex">
-                        <button type="button"
-                                class="btn btn-submit btn-sub-submit mt-auto ml-auto">
-                            <i class="fa fa-plus-circle"></i> Add
-                        </button>
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="col-md-5">
-                        <span asp-validation-for="WorkExperiences[0].Type" class="validation-label text-danger"></span>
-                    </div>
-                    <div class="col-md-5">
-                        <span asp-validation-for="WorkExperiences[0].MinimumYears" class="validation-label text-danger"></span>
-                    </div>
-                </div>
-            </div>
-        </fieldset>
-
-        <fieldset class="sub-form tab" data-count="0" data-for="DesiredSkills" id="desired-skills-sub-form">
-            <h2 class="form-body-title"><i class="fa fa-star"></i> Desired Skills</h2>
-
-            <ul class="displayed-objects-list list-unstyled"></ul>
-
-            <div class="hidden-objects-container d-none"></div>
-            
-            <div class="form-inputs">
-                <div class="form-group">
-                    <label asp-for="DesiredSkills[0].Skill"></label>
-                    <input asp-for="DesiredSkills[0].Skill" id="skill-input" class="form-control" />
-                    <span asp-validation-for="DesiredSkills[0].Skill" class="validation-label text-danger"></span>
-                </div>
-                <input asp-for="DesiredSkills[0].SkillId" id="skill-id" />
-
-                <div class="form-row">
-                    <div class="form-group col-md-5">
-                        <label asp-for="DesiredSkills[0].Type"></label>
-                        <select asp-for="DesiredSkills[0].Type"
-                                asp-items="Html.GetEnumSelectList<QualificationType>()"
-                                class="form-control">
-                            <option value="">Please select</option>
-                        </select>
-                    </div>
-                    <div class="form-group col-md-5">
-                        <label asp-for="DesiredSkills[0].MinimumYears"></label>
-                        <input asp-for="DesiredSkills[0].MinimumYears" id="skill-years" class="form-control" />
-                    </div>
-                    <div class="form-group col-md-2 d-flex">
-                        <button type="button"
-                                class="btn btn-submit btn-sub-submit mt-auto ml-auto">
-                            <i class="fa fa-plus-circle"></i> Add
-                        </button>
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="col-md-5">
-                        <span asp-validation-for="DesiredSkills[0].Type" class="validation-label text-danger"></span>
-                    </div>
-                    <div class="col-md-5">
-                        <span asp-validation-for="DesiredSkills[0].MinimumYears" class="validation-label text-danger"></span>
-                    </div>
-                </div>
-            </div>
-        </fieldset>
-
-        <div class="d-flex">
-            <button type="button" id="prevBtn"
-                    class="btn btn-step ml-2 mr-2" onclick="nextPrev(-1)">
-                <i class="fa fa-chevron-left"></i> Previous
-            </button>
-            <button type="button" id="nextBtn"
-                    class="btn btn-step ml-2 mr-2" onclick="nextPrev(1)">
-                Next <i class="fa fa-chevron-right"></i>
-            </button>
-            <button asp-page-handler="createJobVacancy"
-                    class="btn btn-submit ml-auto cancel">
-                Create
-            </button>
+    <div class="col-md-6 offset-md-3 col-sm-8 offset-sm-2 multi-step-form">
+        <div class="progress" style="height: 4px;">
+            <div class="progress-bar" role="progressbar"
+                 aria-valuemin="0" aria-valuemax="100"></div>
         </div>
-    </form>
-</div>
-</div>
-</div>
+        <div class="form-container">
+            <div class="form-head">
+                <h1 class="form-head-title">@ViewData["Title"]</h1>
+                <span class="form-head-details">Step <span id="step-num"></span> of <span id="steps-count"></span></span>
+            </div>
+            <div class="form-body">
+                <input type="hidden" value="@Model.CompanyId" id="company-id" />
+                <form method="post">
+                    <fieldset id="general-info-partial" class="tab">
+                        <h2 class="form-body-title"><i class="fa fa-question-circle"></i> General information</h2>
+                        <div class="form-group">
+                            <label asp-for="JobVacancyInfo.JobTitle"></label>
+                            <input type="text" id="job-title-input" class="form-control" />
+                            <input asp-for="JobVacancyInfo.JobTitle" id="job-title-name" />
+                            <span asp-validation-for="JobVacancyInfo.JobTitle" class="validation-label text-danger"></span>
+                        </div>
+                        <input asp-for="JobVacancyInfo.JobTitleId" id="job-title-id" />
+                        <div class="form-group">
+                            <label asp-for="JobVacancyInfo.Title"></label>
+                            <input asp-for="JobVacancyInfo.Title" class="form-control" />
+                            <span asp-validation-for="JobVacancyInfo.Title" class="validation-label text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="JobVacancyInfo.Description"></label>
+                            <textarea asp-for="JobVacancyInfo.Description" class="form-control"></textarea>
+                            <span asp-validation-for="JobVacancyInfo.Description" class="validation-label text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label>Company department</label>
+                            <input id="company-department-input" class="form-control" />
+                            <span asp-validation-for="JobVacancyInfo.CompanyDepartmentId" class="validation-label text-danger"></span>
+                        </div>
+                        <input asp-for="JobVacancyInfo.CompanyDepartmentId" id="company-department-id" />
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label asp-for="JobVacancyInfo.MinSalary"></label>
+                                <input asp-for="JobVacancyInfo.MinSalary" class="form-control" />
+                                <span asp-validation-for="JobVacancyInfo.MinSalary" class="validation-label text-danger"></span>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label asp-for="JobVacancyInfo.MaxSalary"></label>
+                                <input asp-for="JobVacancyInfo.MaxSalary" class="form-control" />
+                                <span asp-validation-for="JobVacancyInfo.MaxSalary" class="validation-label text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            @foreach (var entity in Model.JobVacancyInfo.JobTypes)
+                            {
+                                <div class="col-md-4">
+                                    <label class="checkbox-container">
+                                        @entity.Key.GetDescription()
+                                        <input asp-for="JobVacancyInfo.JobTypes[entity.Key]" />
+                                        <span class="checkmark"></span>
+                                    </label>
+                                </div>
+                            }
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label asp-for="JobVacancyInfo.Method"></label>
+                                <select asp-for="JobVacancyInfo.Method"
+                                        asp-items="Html.GetEnumSelectList<JobVacancyMethod>()"
+                                        class="form-control">
+                                    <option value="">Please select</option>
+                                </select>
+                                <span asp-validation-for="JobVacancyInfo.Method" class="validation-label text-danger"></span>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label asp-for="JobVacancyInfo.RequiredHires"></label>
+                                <input asp-for="JobVacancyInfo.RequiredHires" class="form-control" />
+                                <span asp-validation-for="JobVacancyInfo.RequiredHires" class="validation-label text-danger"></span>
+                            </div>
+                        </div>
+                    </fieldset>
+                    <fieldset id="educations-partial" class="sub-form tab" data-count="0" data-for="Educations">
+                        <h2 class="form-body-title"><i class="fa fa-graduation-cap"></i> Education qualifications</h2>
+                        <ul class="displayed-objects-list list-unstyled"></ul>
+
+                        <div class="hidden-objects-container d-none"></div>
+
+                        <div class="form-inputs">
+                            <div class="form-group">
+                                <label asp-for="Educations[0].FieldOfStudyName"></label>
+                                <input type="text" id="field-of-study-input" class="form-control" />
+                                <input asp-for="Educations[0].FieldOfStudyName" id="field-of-study-name" />
+                                <span asp-validation-for="Educations[0].FieldOfStudyName" class="validation-label text-danger"></span>
+                            </div>
+                            <input asp-for="Educations[0].FieldOfStudyId" id="field-of-study-id" />
+                            <div class="form-group">
+                                <label asp-for="Educations[0].Degree"></label>
+                                <select asp-for="Educations[0].Degree"
+                                        asp-items="Html.GetEnumSelectList<EducationDegree>()"
+                                        class="form-control">
+                                    <option value="">Please select</option>
+                                </select>
+                                <span asp-validation-for="Educations[0].Degree" class="validation-label text-danger"></span>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col-md-5">
+                                    <label asp-for="Educations[0].Type"></label>
+                                    <select asp-for="Educations[0].Type"
+                                            asp-items="Html.GetEnumSelectList<QualificationType>()"
+                                            class="form-control">
+                                        <option value="">Please select</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-5">
+                                    <label asp-for="Educations[0].MinimumYears"></label>
+                                    <input asp-for="Educations[0].MinimumYears" class="form-control" />
+                                </div>
+                                <div class="form-group col-md-2 d-flex">
+                                    <button type="button"
+                                            class="btn btn-submit btn-sub-submit mt-auto ml-auto">
+                                        <i class="fa fa-plus-circle"></i> Add
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="col-md-5">
+                                    <span asp-validation-for="Educations[0].Type" class="validation-label text-danger"></span>
+                                </div>
+                                <div class="col-md-5">
+                                    <span asp-validation-for="Educations[0].MinimumYears" class="validation-label text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset id="work-experiences-partial" class="sub-form tab" data-count="0" data-for="WorkExperiences">
+                        <h2 class="form-body-title"><i class="fa fa-briefcase"></i> Work experience qualifications</h2>
+                        <ul class="displayed-objects-list list-unstyled"></ul>
+
+                        <div class="hidden-objects-container d-none"></div>
+
+                        <div class="form-inputs">
+                            <div class="form-group">
+                                <label asp-for="WorkExperiences[0].JobTitle"></label>
+                                <input type="text" id="work-experience-job-title-input" class="form-control" />
+                                <input asp-for="WorkExperiences[0].JobTitle" id="work-experience-job-title-name" />
+                                <span asp-validation-for="WorkExperiences[0].JobTitle" class="validation-label text-danger"></span>
+                            </div>
+                            <input asp-for="WorkExperiences[0].JobTitleId" id="work-experience-job-title-id" />
+                            <div class="form-row">
+                                <div class="form-group col-md-5">
+                                    <label asp-for="WorkExperiences[0].Type"></label>
+                                    <select asp-for="WorkExperiences[0].Type"
+                                            asp-items="Html.GetEnumSelectList<QualificationType>()"
+                                            class="form-control">
+                                        <option value="">Please select</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-5">
+                                    <label asp-for="WorkExperiences[0].MinimumYears"></label>
+                                    <input asp-for="WorkExperiences[0].MinimumYears" class="form-control" />
+                                </div>
+                                <div class="form-group col-md-2 d-flex">
+                                    <button type="button"
+                                            class="btn btn-submit btn-sub-submit mt-auto ml-auto">
+                                        <i class="fa fa-plus-circle"></i> Add
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="col-md-5">
+                                    <span asp-validation-for="WorkExperiences[0].Type" class="validation-label text-danger"></span>
+                                </div>
+                                <div class="col-md-5">
+                                    <span asp-validation-for="WorkExperiences[0].MinimumYears" class="validation-label text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset class="sub-form tab" data-count="0" data-for="DesiredSkills" id="desired-skills-sub-form">
+                        <h2 class="form-body-title"><i class="fa fa-star"></i> Desired Skills</h2>
+
+                        <ul class="displayed-objects-list list-unstyled"></ul>
+
+                        <div class="hidden-objects-container d-none"></div>
+
+                        <div class="form-inputs">
+                            <div class="form-group">
+                                <label asp-for="DesiredSkills[0].Skill"></label>
+                                <input asp-for="DesiredSkills[0].Skill" id="skill-input" class="form-control" />
+                                <span asp-validation-for="DesiredSkills[0].Skill" class="validation-label text-danger"></span>
+                            </div>
+                            <input asp-for="DesiredSkills[0].SkillId" id="skill-id" />
+
+                            <div class="form-row">
+                                <div class="form-group col-md-5">
+                                    <label asp-for="DesiredSkills[0].Type"></label>
+                                    <select asp-for="DesiredSkills[0].Type"
+                                            asp-items="Html.GetEnumSelectList<QualificationType>()"
+                                            class="form-control">
+                                        <option value="">Please select</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-5">
+                                    <label asp-for="DesiredSkills[0].MinimumYears"></label>
+                                    <input asp-for="DesiredSkills[0].MinimumYears" id="skill-years" class="form-control" />
+                                </div>
+                                <div class="form-group col-md-2 d-flex">
+                                    <button type="button"
+                                            class="btn btn-submit btn-sub-submit mt-auto ml-auto">
+                                        <i class="fa fa-plus-circle"></i> Add
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="col-md-5">
+                                    <span asp-validation-for="DesiredSkills[0].Type" class="validation-label text-danger"></span>
+                                </div>
+                                <div class="col-md-5">
+                                    <span asp-validation-for="DesiredSkills[0].MinimumYears" class="validation-label text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <div class="d-flex">
+                        <button type="button" id="prevBtn"
+                                class="btn btn-step ml-2 mr-2" onclick="nextPrev(-1)">
+                            <i class="fa fa-chevron-left"></i> Previous
+                        </button>
+                        <button type="button" id="nextBtn"
+                                class="btn btn-step ml-2 mr-2" onclick="nextPrev(1)">
+                            Next <i class="fa fa-chevron-right"></i>
+                        </button>
+                        <button asp-page-handler="createJobVacancy"
+                                class="btn btn-submit ml-auto cancel">
+                            Create
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
 
 

@@ -32,9 +32,9 @@ $(document).ready(() => {
     });
 
     autoComplete({
-        inputFieldSelector: "#city-input",
-        idSelector: "#city-id",
-        dataUrl: "/AutoComplete/Cities",
+        inputFieldSelector: "#company-department-input",
+        idSelector: "#company-department-id",
+        dataUrl: `/AutoComplete/CompanyDepartments?companyId=${$("#company-id").val()}`,
         allowNewEntry: true,
         delay: 300
     });

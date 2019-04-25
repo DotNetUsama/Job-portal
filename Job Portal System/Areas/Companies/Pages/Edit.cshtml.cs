@@ -1,7 +1,6 @@
-using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 using Job_Portal_System.Data;
 using Job_Portal_System.Models;
@@ -23,6 +22,45 @@ namespace Job_Portal_System.Areas.Companies.Pages
             _context = context;
         }
 
+        public class DepartmentInputModel
+        {
+            [Required]
+            [DataType(DataType.Text)]
+            [StringLength(255)]
+            [Display(Name = "Detailed address")]
+            public string DetailedAddress { get; set; }
+            
+            [Required]
+            [DataType(DataType.Text)]
+            [Display(Name = "City")]
+            public string City { get; set; }
+
+            [HiddenInput]
+            public string CityId { get; set; }
+        }
+
+        public class DepartmentEditModel
+        {
+            [Required]
+            [HiddenInput]
+            public string Id { get; set; }
+
+            [Required]
+            [DataType(DataType.Text)]
+            [StringLength(255)]
+            [Display(Name = "Address")]
+            public string DetailedAddress { get; set; }
+        }
+
+        [BindProperty]
+        public List<DepartmentInputModel> Departments { get; set; } = new List<DepartmentInputModel>
+        {
+            new DepartmentInputModel()
+        };
+
+        [BindProperty]
+        public List<DepartmentEditModel> DepartmentsEdits { get; set; }
+
         [BindProperty]
         public Company Company { get; set; }
 
@@ -33,7 +71,9 @@ namespace Job_Portal_System.Areas.Companies.Pages
                 return NotFound();
             }
 
-            Company = await _context.Companies.FirstOrDefaultAsync(company => company.Id == id);
+            Company = await _context.Companies
+                .Include(c => c.Departments).ThenInclude(d => d.City)
+                .FirstOrDefaultAsync(company => company.Id == id);
 
             if (Company == null)
             {
@@ -52,29 +92,47 @@ namespace Job_Portal_System.Areas.Companies.Pages
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync()
+        public async Task<IActionResult> OnPostAsync(string id)
         {
-            if (!ModelState.IsValid)
-            {
-                return Page();
-            }
+            var company = _context.Companies
+                .Include(c => c.Departments)
+                .SingleOrDefault(c => c.Id == id);
 
-            _context.Attach(Company).State = EntityState.Modified;
+            if (company == null) return BadRequest();
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!CompanyExists(Company.Id))
-                {
-                    return NotFound();
-                }
-                throw;
-            }
+            DepartmentsEdits.ForEach(EditDepartment);
+            Departments.RemoveAt(Departments.Count - 1);
+            Departments.ForEach(education => AddDepartment(company, education));
+            company.EmployeesNum = Company.EmployeesNum;
+            company.Email = Company.Email;
+            company.Website = Company.Website;
+            company.Description = Company.Description;
+
+            await _context.SaveChangesAsync();
 
             return RedirectToPage("./Index");
+        }
+
+        private void AddDepartment(Company company, DepartmentInputModel department)
+        {
+            var city = department.CityId == null
+                ? new City { Name = department.City }
+                : _context.Cities.SingleOrDefault(cityInDb => cityInDb.Id == department.CityId);
+
+            company.Departments.Add(new CompanyDepartment
+            {
+                City = city,
+                DetailedAddress = department.DetailedAddress,
+            });
+        }
+
+        private void EditDepartment(DepartmentEditModel departmentEdit)
+        {
+            var department = _context.CompanyDepartments.SingleOrDefault(s => s.Id == departmentEdit.Id);
+            if (department != null)
+            {
+                department.DetailedAddress = departmentEdit.DetailedAddress;
+            }
         }
 
         private bool CompanyExists(string id)

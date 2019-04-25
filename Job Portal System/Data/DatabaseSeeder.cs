@@ -26,6 +26,79 @@ namespace Job_Portal_System.Data
             SeedFieldsOfStudy(env, context);
         }
 
+        public static void ClearDatabase(ApplicationDbContext context)
+        {
+            foreach (var id in context.Educations.Select(e => e.Id))
+            {
+                var entity = new Education { Id = id };
+                context.Educations.Attach(entity);
+                context.Educations.Remove(entity);
+            }
+            foreach (var id in context.WorkExperiences.Select(e => e.Id))
+            {
+                var entity = new WorkExperience { Id = id };
+                context.WorkExperiences.Attach(entity);
+                context.WorkExperiences.Remove(entity);
+            }
+            foreach (var id in context.OwnedSkills.Select(e => e.Id))
+            {
+                var entity = new OwnedSkill { Id = id };
+                context.OwnedSkills.Attach(entity);
+                context.OwnedSkills.Remove(entity);
+            }
+            foreach (var id in context.ResumeJobTypes.Select(e => e.Id))
+            {
+                var entity = new ResumeJobType { Id = id };
+                context.ResumeJobTypes.Attach(entity);
+                context.ResumeJobTypes.Remove(entity);
+            }
+            foreach (var id in context.SeekedJobTitles.Select(e => e.Id))
+            {
+                var entity = new SeekedJobTitle { Id = id };
+                context.SeekedJobTitles.Attach(entity);
+                context.SeekedJobTitles.Remove(entity);
+            }
+
+            foreach (var id in context.EducationQualifications.Select(e => e.Id))
+            {
+                var entity = new EducationQualification { Id = id };
+                context.EducationQualifications.Attach(entity);
+                context.EducationQualifications.Remove(entity);
+            }
+            foreach (var id in context.WorkExperienceQualifications.Select(e => e.Id))
+            {
+                var entity = new WorkExperienceQualification { Id = id };
+                context.WorkExperienceQualifications.Attach(entity);
+                context.WorkExperienceQualifications.Remove(entity);
+            }
+            foreach (var id in context.DesiredSkills.Select(e => e.Id))
+            {
+                var entity = new DesiredSkill { Id = id };
+                context.DesiredSkills.Attach(entity);
+                context.DesiredSkills.Remove(entity);
+            }
+            foreach (var id in context.JobVacancyJobTypes.Select(e => e.Id))
+            {
+                var entity = new JobVacancyJobType { Id = id };
+                context.JobVacancyJobTypes.Attach(entity);
+                context.JobVacancyJobTypes.Remove(entity);
+            }
+            context.SaveChanges();
+            foreach (var id in context.JobVacancies.Select(e => e.Id))
+            {
+                var entity = new JobVacancy { Id = id };
+                context.JobVacancies.Attach(entity);
+                context.JobVacancies.Remove(entity);
+            }
+            foreach (var id in context.Resumes.Select(e => e.Id))
+            {
+                var entity = new Resume { Id = id };
+                context.Resumes.Attach(entity);
+                context.Resumes.Remove(entity);
+            }
+            context.SaveChanges();
+        }
+
         private static void SeedUsers (UserManager<User> userManager)
         {
             if (userManager.FindByNameAsync("Usama").Result != null) return;

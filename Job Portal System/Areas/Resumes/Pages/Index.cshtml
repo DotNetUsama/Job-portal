@@ -1,7 +1,5 @@
 ﻿@page
 @using Enums
-@using InputModels
-@using Models
 @model IndexModel
 @{
     ViewData["Title"] = "Your Resume";
@@ -12,6 +10,10 @@
 
 <div class="row">
     <div class="col-md-6 offset-md-3 col-sm-8 offset-sm-2">
+        <div class="progress" style="height: 4px;">
+            <div class="progress-bar bg-info" role="progressbar" style="width: 100%"
+                 aria-valuemin="0" aria-valuemax="100"></div>
+        </div>
         <div class="form-container">
             <div class="form-head">
                 <h1 class="form-head-title">@ViewData["Title"]</h1>
@@ -19,7 +21,7 @@
             <div class="form-body">
                 <form method="post">
                     <fieldset id="general-info-partial">
-                        <legend>Resume general information</legend>
+                        <legend><i class="fa fa-question-circle"></i> Resume general information</legend>
                         <div class="form-group">
                             <label asp-for="ResumeInfo.MinSalary"></label>
                             <input asp-for="ResumeInfo.MinSalary" class="form-control" />
@@ -45,17 +47,16 @@
                             }
                         </div>
                     </fieldset>
-
+                    <hr />
                     <fieldset class="sub-form" id="educations-partial" data-count="0" data-for="Educations">
-                        <h2 class="form-body-title"><i class="fa fa-graduation-cap"></i> Educations</h2>
+                        <legend><i class="fa fa-graduation-cap"></i> Educations</legend>
 
                         <ul class="list-unstyled">
-                            @for (var i = 0; i < Model.Resume.Educations.Count; i++)
+                            @foreach (var education in Model.Resume.Educations)
                             {
-                                var education = Model.Resume.Educations[i];
                                 var cantEdit = education.EndDate.HasValue;
                                 <li class="show-item collapse-container">
-                                    <div class="row hover-border">
+                                    <div class="row info-item bg-form-light-main-hover">
                                         <div class="col-md-10">
                                             <span>
                                                 <span class="font-weight-bold">@education.FieldOfStudy.Title</span>
@@ -70,136 +71,123 @@
                                         </div>
                                     </div>
                                     <div class="item-details collapse-content">
-                                        <dl class="row">
-                                            <dt class="col-sm-2">
-                                                @Html.DisplayNameFor(model => model.Resume.Educations[i].FieldOfStudy.Title)
-                                            </dt>
-                                            <dd class="col-sm-10">
-                                                @Html.DisplayFor(model => model.Resume.Educations[i].FieldOfStudy.Title)
-                                            </dd>
-                                            <dt class="col-sm-2">
-                                                @Html.DisplayNameFor(model => model.Resume.Educations[i].Degree)
-                                            </dt>
-                                            <dd class="col-sm-10">
-                                                @Html.DisplayFor(model => model.Resume.Educations[i].Degree)
-                                            </dd>
-                                            <dt class="col-sm-2">
-                                                @Html.DisplayNameFor(model => model.Resume.Educations[i].StartDate)
-                                            </dt>
-                                            <dd class="col-sm-10">
-                                                @Html.DisplayFor(model => model.Resume.Educations[i].StartDate)
-                                            </dd>
-                                            <dt class="col-sm-2">
-                                                @Html.DisplayNameFor(model => model.Resume.Educations[i].EndDate)
-                                            </dt>
-                                            <dd class="col-sm-10">
-                                                @if (cantEdit)
-                                                {
-                                                    @Html.DisplayFor(model => model.Resume.Educations[i].EndDate)
-                                                }
-                                                else
-                                                {
-                                                    <input asp-for="EducationsEdits[educationsEditsIndexer].EndDate"
-                                                           class="form-control" />
-                                                    <input asp-for="EducationsEdits[educationsEditsIndexer].Id"
-                                                           value="@education.Id" />
-                                                    <span asp-validation-for="EducationsEdits[educationsEditsIndexer].EndDate"
-                                                          class="validation-label text-danger"></span>
-                                                    educationsEditsIndexer++;
-                                                }
-                                            </dd>
-                                            <dt class="col-sm-2">
-                                                @Html.DisplayNameFor(model => model.Resume.Educations[i].School.City.Name)
-                                            </dt>
-                                            <dd class="col-sm-10">
-                                                @Html.DisplayFor(model => model.Resume.Educations[i].School.City.Name)
-                                            </dd>
-                                            <dt class="col-sm-2">
-                                                @Html.DisplayNameFor(model => model.Resume.Educations[i].School.Name)
-                                            </dt>
-                                            <dd class="col-sm-10">
-                                                @Html.DisplayFor(model => model.Resume.Educations[i].School.Name)
-                                            </dd>
-                                        </dl>
+                                        @if (cantEdit)
+                                        {
+                                            <div class="details-container">
+                                                Graduated from <span class="font-weight-little-bold">@education.School.Name</span> (@education.School.City.Name) with <span class="font-weight-little-bold">@((EducationDegree)education.Degree)</span> degree in <span class="font-weight-little-bold">@education.FieldOfStudy.Title</span> (from @education.StartDate.Value.Year to @education.EndDate.Value.Year)
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="details-container">
+                                                Is studying <span class="font-weight-little-bold">@education.FieldOfStudy.Title</span> in <span class="font-weight-little-bold">@education.School.Name</span> (@education.School.City.Name) to get <span class="font-weight-little-bold">@((EducationDegree)education.Degree)</span> (started from @education.StartDate.Value.Year)
+                                            </div>
+                                            <div class="d-flex mt-4 pl-2 pr-2">
+                                                <label class="font-weight-bold"
+                                                       asp-for="EducationsEdits[educationsEditsIndexer].EndDate"
+                                                       style="flex: 1; align-self: center"></label>
+                                                <input class="form-control"
+                                                       asp-for="EducationsEdits[educationsEditsIndexer].EndDate"
+                                                       style="flex: 3;" />
+                                                <input asp-for="EducationsEdits[educationsEditsIndexer].Id"
+                                                       value="@education.Id" />
+                                            </div>
+                                            <span asp-validation-for="EducationsEdits[educationsEditsIndexer].EndDate"
+                                                  class="validation-label text-danger"></span>
+                                            educationsEditsIndexer++;
+                                        }
                                     </div>
                                 </li>
                             }
                         </ul>
 
-                        <hr />
-                        <ul class="displayed-objects-list list-unstyled"></ul>
+                        <div class="collapse-container">
 
-                        <div class="hidden-objects-container d-none"></div>
-
-                        <div class="form-inputs">
-                            <div class="form-group">
-                                <label asp-for="Educations[0].FieldOfStudyName"></label>
-                                <input type="text" id="field-of-study-input" class="form-control" />
-                                <input asp-for="Educations[0].FieldOfStudyName" id="field-of-study-name" />
-                                <span asp-validation-for="Educations[0].FieldOfStudyName" class="validation-label text-danger"></span>
-                            </div>
-                            <input asp-for="Educations[0].FieldOfStudyId" id="field-of-study-id" />
-                            <div class="form-group">
-                                <label asp-for="Educations[0].Degree"></label>
-                                <select asp-for="Educations[0].Degree"
-                                        asp-items="Html.GetEnumSelectList<EducationDegree>()"
-                                        class="form-control">
-                                    <option value="">Please select</option>
-                                </select>
-                                <span asp-validation-for="Educations[0].Degree" class="validation-label text-danger"></span>
-                            </div>
-                            <div class="form-group">
-                                <label>Education period</label>
-                                <div class="d-flex">
-                                    <div style="flex: 1">
-                                        <input asp-for="Educations[0].StartDate" class="form-control" />
-                                    </div>
-                                    <div style="flex: 0 0 25px; align-self: center">
-                                        <span class="ml-2 mr-2">to</span>
-                                    </div>
-                                    <div style="flex: 1">
-                                        <input asp-for="Educations[0].EndDate" class="form-control" />
-                                    </div>
+                            <div class="row info-item bg-form-light-main-hover">
+                                <div class="col-md-10">
+                                    <span class="font-weight-bold"> Add new </span>
                                 </div>
-                                <div class="d-flex">
-                                    <div style="flex: 1">
-                                        <span asp-validation-for="Educations[0].StartDate" class="validation-label text-danger"></span>
-                                    </div>
-                                    <div class="flex: 0 0 25px"></div>
-                                    <div style="flex: 1">
-                                        <span asp-validation-for="Educations[0].EndDate" class="validation-label text-danger"></span>
-                                    </div>
+                                <div class="col-md-2 d-flex">
+                                    <button type="button" class="ml-auto btn btn-icon extend">
+                                        <i class="fa fa-angle-down"></i>
+                                    </button>
                                 </div>
                             </div>
-                            <div class="form-group">
-                                <label asp-for="Educations[0].SchoolCity"></label>
-                                <input asp-for="Educations[0].SchoolCity" id="city-input" class="form-control" />
-                                <span asp-validation-for="Educations[0].SchoolCity" class="validation-label text-danger"></span>
+                            <div class="item-details collapse-content">
+                                <ul class="displayed-objects-list list-unstyled"></ul>
+
+                                <div class="hidden-objects-container d-none"></div>
+
+                                <div class="form-inputs">
+                                    <div class="form-group">
+                                        <label asp-for="Educations[0].FieldOfStudyName"></label>
+                                        <input type="text" id="field-of-study-input" class="form-control" />
+                                        <input asp-for="Educations[0].FieldOfStudyName" id="field-of-study-name" />
+                                        <span asp-validation-for="Educations[0].FieldOfStudyName" class="validation-label text-danger"></span>
+                                    </div>
+                                    <input asp-for="Educations[0].FieldOfStudyId" id="field-of-study-id" />
+                                    <div class="form-group">
+                                        <label asp-for="Educations[0].Degree"></label>
+                                        <select asp-for="Educations[0].Degree"
+                                                asp-items="Html.GetEnumSelectList<EducationDegree>()"
+                                                class="form-control">
+                                            <option value="">Please select</option>
+                                        </select>
+                                        <span asp-validation-for="Educations[0].Degree" class="validation-label text-danger"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Education period</label>
+                                        <div class="d-flex">
+                                            <div style="flex: 1">
+                                                <input asp-for="Educations[0].StartDate" class="form-control" />
+                                            </div>
+                                            <div style="flex: 0 0 25px; align-self: center">
+                                                <span class="ml-2 mr-2">to</span>
+                                            </div>
+                                            <div style="flex: 1">
+                                                <input asp-for="Educations[0].EndDate" class="form-control" />
+                                            </div>
+                                        </div>
+                                        <div class="d-flex">
+                                            <div style="flex: 1">
+                                                <span asp-validation-for="Educations[0].StartDate" class="validation-label text-danger"></span>
+                                            </div>
+                                            <div class="flex: 0 0 25px"></div>
+                                            <div style="flex: 1">
+                                                <span asp-validation-for="Educations[0].EndDate" class="validation-label text-danger"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label asp-for="Educations[0].SchoolCity"></label>
+                                        <input asp-for="Educations[0].SchoolCity" id="city-input" class="form-control" />
+                                        <span asp-validation-for="Educations[0].SchoolCity" class="validation-label text-danger"></span>
+                                    </div>
+                                    <input asp-for="Educations[0].SchoolCityId" id="city-id" />
+                                    <div class="form-group">
+                                        <label asp-for="Educations[0].School"></label>
+                                        <input asp-for="Educations[0].School" id="school-input" class="form-control" />
+                                        <span asp-validation-for="Educations[0].School" class="validation-label text-danger"></span>
+                                    </div>
+                                    <input asp-for="Educations[0].SchoolId" id="school-id" />
+                                </div>
+                                <button type="button"
+                                        class="btn btn-submit btn-sub-submit">
+                                    <i class="fa fa-plus-circle"></i> Add
+                                </button>
                             </div>
-                            <input asp-for="Educations[0].SchoolCityId" id="city-id" />
-                            <div class="form-group">
-                                <label asp-for="Educations[0].School"></label>
-                                <input asp-for="Educations[0].School" id="school-input" class="form-control" />
-                                <span asp-validation-for="Educations[0].School" class="validation-label text-danger"></span>
-                            </div>
-                            <input asp-for="Educations[0].SchoolId" id="school-id" />
                         </div>
-                        <button type="button"
-                                class="btn btn-submit btn-sub-submit">
-                            <i class="fa fa-plus-circle"></i> Add
-                        </button>
                     </fieldset>
-
+                    <hr />
                     <fieldset class="sub-form" id="work-experiences-partial" data-count="0" data-for="WorkExperiences">
-                        <h2 class="form-body-title"><i class="fa fa-briefcase"></i> Work experiences</h2>
+                        <legend><i class="fa fa-briefcase"></i> Work experiences</legend>
 
                         <ul class="list-unstyled">
-                            @for (var i = 0; i < Model.Resume.WorkExperiences.Count; i++)
+                            @foreach (var workExperience in Model.Resume.WorkExperiences)
                             {
-                                var workExperience = Model.Resume.WorkExperiences[i];
                                 var cantEdit = workExperience.EndDate.HasValue;
                                 <li class="show-item collapse-container">
-                                    <div class="row hover-border">
+                                    <div class="row info-item bg-form-light-main-hover">
                                         <div class="col-md-10">
                                             <span>
                                                 <span class="font-weight-bold">@workExperience.JobTitle.Title</span>
@@ -208,125 +196,133 @@
                                             </span>
                                         </div>
                                         <div class="col-md-2 d-flex">
-                                            <button type="button" class="ml-auto btn-icon extend">
+                                            <button type="button" class="ml-auto btn btn-icon extend">
                                                 <i class="fa fa-angle-down"></i>
                                             </button>
                                         </div>
                                     </div>
                                     <div class="item-details collapse-content">
-                                        <dl class="row">
-                                            <dt class="col-sm-2">
-                                                @Html.DisplayNameFor(model => model.Resume.WorkExperiences[i].JobTitle.Title)
-                                            </dt>
-                                            <dd class="col-sm-10">
-                                                @Html.DisplayFor(model => model.Resume.WorkExperiences[i].JobTitle.Title)
-                                            </dd>
-                                            <dt class="col-sm-2">
-                                                @Html.DisplayNameFor(model => model.Resume.WorkExperiences[i].StartDate)
-                                            </dt>
-                                            <dd class="col-sm-10">
-                                                @Html.DisplayFor(model => model.Resume.WorkExperiences[i].StartDate)
-                                            </dd>
-                                            <dt class="col-sm-2">
-                                                @Html.DisplayNameFor(model => model.Resume.WorkExperiences[i].EndDate)
-                                            </dt>
-                                            <dd class="col-sm-10">
-                                                @if (cantEdit)
-                                                {
-                                                    @Html.DisplayFor(model => model.Resume.WorkExperiences[i].EndDate)
-                                                }
-                                                else
-                                                {
-                                                    <input asp-for="WorkExpereincesEdits[workExperiencesEditsIndexer].EndDate"
-                                                           class="form-control" />
-                                                    <input asp-for="WorkExpereincesEdits[workExperiencesEditsIndexer].Id"
-                                                           value="@workExperience.Id" />
-                                                    <span asp-validation-for="WorkExpereincesEdits[workExperiencesEditsIndexer].EndDate"
-                                                          class="validation-label text-danger"></span>
-                                                    workExperiencesEditsIndexer++;
-                                                }
-                                            </dd>
-                                            <dt class="col-sm-2">
-                                                @Html.DisplayNameFor(model => model.Resume.WorkExperiences[i].Company.Name)
-                                            </dt>
-                                            <dd class="col-sm-10">
-                                                @Html.DisplayFor(model => model.Resume.WorkExperiences[i].Company.Name)
-                                            </dd>
-                                            <dt class="col-sm-2">
-                                                @Html.DisplayNameFor(model => model.Resume.WorkExperiences[i].Description)
-                                            </dt>
-                                            <dd class="col-sm-10">
-                                                @Html.DisplayFor(model => model.Resume.WorkExperiences[i].Description)
-                                            </dd>
-                                        </dl>
+                                        @if (cantEdit)
+                                        {
+                                            <div class="details-container">
+                                                Worked as <span class="font-weight-little-bold">@workExperience.JobTitle.Title</span> in <span class="font-weight-little-bold">@workExperience.Company.Name</span> (from @workExperience.StartDate.Value.Year to @workExperience.EndDate.Value.Year)
+                                            </div>
+                                            if (!string.IsNullOrEmpty(workExperience.Description))
+                                            {
+                                                <div class="mt-3">
+                                                    <span class="d-block font-weight-little-bold">Description:</span>
+                                                    @Html.Raw(workExperience.Description)
+                                                </div>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <div class="details-container">
+                                                Is working as <span class="font-weight-little-bold">@workExperience.JobTitle.Title</span> in <span class="font-weight-little-bold">@workExperience.Company.Name</span> (started from @workExperience.StartDate.Value.Year)
+                                            </div>
+                                            if (!string.IsNullOrEmpty(workExperience.Description))
+                                            {
+                                                <div class="mt-3">
+                                                    <span class="d-block font-weight-little-bold">Description:</span>
+                                                    @Html.Raw(workExperience.Description)
+                                                </div>
+                                            }
+                                            <div class="d-flex mt-4 pl-2 pr-2">
+                                                <label class="font-weight-bold"
+                                                       asp-for="WorkExpereincesEdits[workExperiencesEditsIndexer].EndDate"
+                                                       style="flex: 1; align-self: center"></label>
+                                                <input class="form-control"
+                                                       asp-for="WorkExpereincesEdits[workExperiencesEditsIndexer].EndDate"
+                                                       style="flex: 3;" />
+                                                <input asp-for="WorkExpereincesEdits[workExperiencesEditsIndexer].Id"
+                                                       value="@workExperience.Id" />
+                                            </div>
+                                            <span asp-validation-for="WorkExpereincesEdits[workExperiencesEditsIndexer].EndDate"
+                                                  class="validation-label text-danger"></span>
+                                            workExperiencesEditsIndexer++;
+                                        }
                                     </div>
                                 </li>
                             }
                         </ul>
 
-                        <hr />
-                        <ul class="displayed-objects-list list-unstyled"></ul>
+                        <div class="collapse-container">
 
-                        <div class="hidden-objects-container d-none"></div>
-
-                        <div class="form-inputs">
-                            <div class="form-group">
-                                <label asp-for="WorkExperiences[0].JobTitle"></label>
-                                <input type="text" id="work-experience-job-title-input" class="form-control" />
-                                <input asp-for="WorkExperiences[0].JobTitle" id="work-experience-job-title-name" />
-                                <span asp-validation-for="WorkExperiences[0].JobTitle" class="validation-label text-danger"></span>
-                            </div>
-                            <input asp-for="WorkExperiences[0].JobTitleId" id="work-experience-job-title-id" />
-                            <div class="form-group">
-                                <label>Work period</label>
-                                <div class="d-flex">
-                                    <div style="flex: 1">
-                                        <input asp-for="WorkExperiences[0].StartDate" class="form-control" />
-                                    </div>
-                                    <div style="flex: 0 0 25px; align-self: center">
-                                        <span class="ml-2 mr-2">to</span>
-                                    </div>
-                                    <div style="flex: 1">
-                                        <input asp-for="WorkExperiences[0].EndDate" class="form-control" />
-                                    </div>
+                            <div class="row info-item bg-form-light-main-hover">
+                                <div class="col-md-10">
+                                    <span class="font-weight-bold"> Add new </span>
                                 </div>
-                                <div class="d-flex">
-                                    <div style="flex: 1">
-                                        <span asp-validation-for="WorkExperiences[0].StartDate" class="validation-label text-danger"></span>
-                                    </div>
-                                    <div class="flex: 0 0 25px"></div>
-                                    <div style="flex: 1">
-                                        <span asp-validation-for="WorkExperiences[0].EndDate" class="validation-label text-danger"></span>
-                                    </div>
+                                <div class="col-md-2 d-flex">
+                                    <button type="button" class="ml-auto btn btn-icon extend">
+                                        <i class="fa fa-angle-down"></i>
+                                    </button>
                                 </div>
                             </div>
-                            <div class="form-group">
-                                <label asp-for="WorkExperiences[0].Company"></label>
-                                <input asp-for="WorkExperiences[0].Company" id="company-input" class="form-control" />
-                                <span asp-validation-for="WorkExperiences[0].Company" class="validation-label text-danger"></span>
-                            </div>
-                            <input asp-for="WorkExperiences[0].CompanyId" id="company-id" />
-                            <div class="form-group">
-                                <label asp-for="WorkExperiences[0].Description"></label>
-                                <textarea asp-for="WorkExperiences[0].Description" class="form-control"></textarea>
-                                <span asp-validation-for="WorkExperiences[0].Description" class="validation-label text-danger"></span>
+                            <div class="item-details collapse-content">
+                                <ul class="displayed-objects-list list-unstyled"></ul>
+
+                                <div class="hidden-objects-container d-none"></div>
+
+                                <div class="form-inputs">
+                                    <div class="form-group">
+                                        <label asp-for="WorkExperiences[0].JobTitle"></label>
+                                        <input type="text" id="work-experience-job-title-input" class="form-control" />
+                                        <input asp-for="WorkExperiences[0].JobTitle" id="work-experience-job-title-name" />
+                                        <span asp-validation-for="WorkExperiences[0].JobTitle" class="validation-label text-danger"></span>
+                                    </div>
+                                    <input asp-for="WorkExperiences[0].JobTitleId" id="work-experience-job-title-id" />
+                                    <div class="form-group">
+                                        <label>Work period</label>
+                                        <div class="d-flex">
+                                            <div style="flex: 1">
+                                                <input asp-for="WorkExperiences[0].StartDate" class="form-control" />
+                                            </div>
+                                            <div style="flex: 0 0 25px; align-self: center">
+                                                <span class="ml-2 mr-2">to</span>
+                                            </div>
+                                            <div style="flex: 1">
+                                                <input asp-for="WorkExperiences[0].EndDate" class="form-control" />
+                                            </div>
+                                        </div>
+                                        <div class="d-flex">
+                                            <div style="flex: 1">
+                                                <span asp-validation-for="WorkExperiences[0].StartDate" class="validation-label text-danger"></span>
+                                            </div>
+                                            <div class="flex: 0 0 25px"></div>
+                                            <div style="flex: 1">
+                                                <span asp-validation-for="WorkExperiences[0].EndDate" class="validation-label text-danger"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label asp-for="WorkExperiences[0].Company"></label>
+                                        <input asp-for="WorkExperiences[0].Company" id="company-input" class="form-control" />
+                                        <span asp-validation-for="WorkExperiences[0].Company" class="validation-label text-danger"></span>
+                                    </div>
+                                    <input asp-for="WorkExperiences[0].CompanyId" id="company-id" />
+                                    <div class="form-group">
+                                        <label asp-for="WorkExperiences[0].Description"></label>
+                                        <textarea asp-for="WorkExperiences[0].Description" id="description"></textarea>
+                                        <span asp-validation-for="WorkExperiences[0].Description" class="validation-label text-danger"></span>
+                                    </div>
+                                </div>
+                                <button type="button"
+                                        class="btn btn-submit btn-sub-submit">
+                                    <i class="fa fa-plus-circle"></i> Add
+                                </button>
                             </div>
                         </div>
-                        <button type="button"
-                                class="btn btn-submit btn-sub-submit">
-                            <i class="fa fa-plus-circle"></i> Add
-                        </button>
                     </fieldset>
-
+                    <hr />
                     <fieldset class="sub-form" data-count="0" data-for="OwnedSkills" id="owned-skills-sub-form">
-                        <legend>Owned Skills</legend>
+                        <legend><i class="fa fa-star"></i> Owned Skills</legend>
 
                         <ul class="list-unstyled">
                             @for (var i = 0; i < Model.Resume.OwnedSkills.Count; i++)
                             {
                                 var skill = Model.Resume.OwnedSkills[i];
                                 <li class="show-item collapse-container">
-                                    <div class="row hover-border">
+                                    <div class="row info-item bg-form-light-main-hover">
                                         <div class="col-md-10">
                                             <span>
                                                 <span class="font-weight-bold">@skill.Years</span>
@@ -335,70 +331,77 @@
                                             </span>
                                         </div>
                                         <div class="col-md-2 d-flex">
-                                            <button type="button" class="ml-auto btn-icon extend">
+                                            <button type="button" class="ml-auto btn btn-icon extend">
                                                 <i class="fa fa-angle-down"></i>
                                             </button>
                                         </div>
                                     </div>
                                     <div class="item-details collapse-content">
-                                        <dl class="row">
-                                            <dt class="col-sm-2">
-                                                @Html.DisplayNameFor(model => model.Resume.OwnedSkills[i].Skill.Title)
-                                            </dt>
-                                            <dd class="col-sm-10">
-                                                @Html.DisplayFor(model => model.Resume.OwnedSkills[i].Skill.Title)
-                                            </dd>
-                                            <dt class="col-sm-2">
-                                                @Html.DisplayNameFor(model => model.Resume.OwnedSkills[i].Years)
-                                            </dt>
-                                            <dd class="col-sm-10">
-                                                <input asp-for="SkillsEdits[skillsEditsIndexer].Years"
-                                                       class="form-control"
-                                                       value="@skill.Years" />
-                                                <input asp-for="SkillsEdits[skillsEditsIndexer].Id"
-                                                       value="@skill.Id" />
-                                                <span asp-validation-for="SkillsEdits[skillsEditsIndexer].Years"
-                                                      class="validation-label text-danger"></span>
-                                                @{ skillsEditsIndexer++; }
-                                            </dd>
-                                        </dl>
+
+                                        <div class="d-flex pl-2 pr-2">
+                                            <label class="font-weight-bold"
+                                                   asp-for="SkillsEdits[skillsEditsIndexer].Years"
+                                                   style="flex: 1; align-self: center"></label>
+                                            <input class="form-control"
+                                                   asp-for="SkillsEdits[skillsEditsIndexer].Years"
+                                                   style="flex: 3;" />
+                                            <input asp-for="SkillsEdits[skillsEditsIndexer].Id"
+                                                   value="@skill.Id" />
+                                        </div>
+                                        <span asp-validation-for="SkillsEdits[skillsEditsIndexer].Years"
+                                              class="validation-label text-danger"></span>
+                                        @{ skillsEditsIndexer++; }
                                     </div>
                                 </li>
                             }
                         </ul>
 
-                        <hr />
-                        <ul class="displayed-objects-list list-unstyled"></ul>
+                        <div class="collapse-container">
 
-                        <div class="hidden-objects-container d-none"></div>
+                            <div class="row info-item bg-form-light-main-hover">
+                                <div class="col-md-10">
+                                    <span class="font-weight-bold"> Add new </span>
+                                </div>
+                                <div class="col-md-2 d-flex">
+                                    <button type="button" class="ml-auto btn btn-icon extend">
+                                        <i class="fa fa-angle-down"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="item-details collapse-content">
+                                <ul class="displayed-objects-list list-unstyled"></ul>
 
-                        <div class="form-inputs form-row">
-                            <div class="form-group col-md-6">
-                                <label asp-for="OwnedSkills[0].Skill"></label>
-                                <input asp-for="OwnedSkills[0].Skill" id="skill-input" class="form-control" />
-                            </div>
-                            <input asp-for="OwnedSkills[0].SkillId" id="skill-id" />
-                            <div class="form-group col-md-4">
-                                <label asp-for="OwnedSkills[0].Years"></label>
-                                <input asp-for="OwnedSkills[0].Years" id="skill-years" class="form-control" />
-                            </div>
-                            <div class="form-group col-md-2 d-flex">
-                                <button type="button"
-                                        class="btn btn-submit btn-sub-submit mt-auto ml-auto">
-                                    <i class="fa fa-plus-circle"></i> Add
-                                </button>
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="col-md-6">
-                                <span asp-validation-for="OwnedSkills[0].Skill" class="validation-label text-danger"></span>
-                            </div>
-                            <div class="col-md-4">
-                                <span asp-validation-for="OwnedSkills[0].Years" class="validation-label text-danger"></span>
+                                <div class="hidden-objects-container d-none"></div>
+
+                                <div class="form-inputs form-row">
+                                    <div class="form-group col-md-6">
+                                        <label asp-for="OwnedSkills[0].Skill"></label>
+                                        <input asp-for="OwnedSkills[0].Skill" id="skill-input" class="form-control" />
+                                    </div>
+                                    <input asp-for="OwnedSkills[0].SkillId" id="skill-id" />
+                                    <div class="form-group col-md-4">
+                                        <label asp-for="OwnedSkills[0].Years"></label>
+                                        <input asp-for="OwnedSkills[0].Years" id="skill-years" class="form-control" />
+                                    </div>
+                                    <div class="form-group col-md-2 d-flex">
+                                        <button type="button"
+                                                class="btn btn-submit btn-sub-submit mt-auto ml-auto">
+                                            <i class="fa fa-plus-circle"></i> Add
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="col-md-6">
+                                        <span asp-validation-for="OwnedSkills[0].Skill" class="validation-label text-danger"></span>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <span asp-validation-for="OwnedSkills[0].Years" class="validation-label text-danger"></span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </fieldset>
-
+                    <hr />
                     <fieldset class="sub-form" data-count="0" data-for="SeekedJobTitles" id="seeked-job-titles-sub-form">
                         <legend>Seeked job titles <span class="font-weight-light">(Optional)</span></legend>
 
@@ -406,7 +409,7 @@
                             @for (var i = 0; i < Model.SeekedJobTitles.Count - 1; i++)
                             {
                                 <li class="removable-object" data-index="0">
-                                    <div class="row hover-border">
+                                    <div class="row info-item bg-form-light-main-hover">
                                         <div class="col-md-10">
                                             <span class="font-weight-bold">@Model.SeekedJobTitles[i].JobTitle</span>
                                         </div>
@@ -450,8 +453,13 @@
                             </div>
                         </div>
                     </fieldset>
-
+                    <hr />
                     <div class="d-flex">
+                        <a asp-page="Details"
+                           asp-route-id="@Model.Resume.Id"
+                           class="btn btn-submit">
+                            Show resume
+                        </a>
                         <button asp-page-handler="saveChanges"
                                 class="btn btn-submit ml-auto cancel">
                             Save changes
@@ -466,6 +474,7 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
-    <partial name="_ResumesScriptsPartial" />
+    <partial name="_EditorScriptPartial" />
     <partial name="_CollapseScriptsPartial" />
+    <partial name="_ResumesScriptsPartial" />
 }

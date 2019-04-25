@@ -1,0 +1,177 @@
+﻿@page
+@using Enums
+@model DetailsModel
+@{
+    ViewData["Title"] = $"Resume of {Model.Resume.User.FirstName} {Model.Resume.User.FirstName}";
+}
+
+<div class="row">
+    <div class="col-md-6 offset-md-3 col-sm-8 offset-sm-2">
+        <div class="progress" style="height: 4px;">
+            <div class="progress-bar bg-info" role="progressbar" style="width: 100%"
+                 aria-valuemin="0" aria-valuemax="100"></div>
+        </div>
+        <div class="form-container">
+            <div class="form-head">
+                <h1 class="form-head-title">@ViewData["Title"]</h1>
+            </div>
+            <div class="form-body">
+                <fieldset id="educations-partial">
+                    <legend><i class="fa fa-graduation-cap"></i> Educations</legend>
+                    @if (Model.Resume.Educations.Count == 0)
+                    {
+                        <p style="font-family: 'Nanum Gothic', sans-serif;">No educations added to this resume</p>
+                    }
+                    else
+                    {
+                        <ul class="list-unstyled">
+                            @foreach (var education in Model.Resume.Educations)
+                            {
+                                var graduated = education.EndDate.HasValue;
+                                <li class="show-item collapse-container">
+                                    <div class="row info-item bg-form-light-main-hover">
+                                        <div class="col-md-10">
+                                            <span>
+                                                <span class="font-weight-bold">@education.FieldOfStudy.Title</span>
+                                                in
+                                                <span class="font-weight-bold">@education.School.Name</span>
+                                            </span>
+                                        </div>
+                                        <div class="col-md-2 d-flex">
+                                            <button type="button" class="ml-auto btn btn-icon extend">
+                                                <i class="fa fa-angle-down"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="item-details collapse-content">
+                                        @if (graduated)
+                                        {
+                                            <div class="details-container">
+                                                Graduated from <span class="font-weight-little-bold">@education.School.Name</span> (@education.School.City.Name) with <span class="font-weight-little-bold">@((EducationDegree)education.Degree)</span> degree in <span class="font-weight-little-bold">@education.FieldOfStudy.Title</span> (from @education.StartDate.Value.Year to @education.EndDate.Value.Year)
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="details-container">
+                                                Is studying <span class="font-weight-little-bold">@education.FieldOfStudy.Title</span> in <span class="font-weight-little-bold">@education.School.Name</span> (@education.School.City.Name) to get <span class="font-weight-little-bold">@((EducationDegree)education.Degree)</span> (started from @education.StartDate.Value.Year)
+                                            </div>
+                                        }
+                                    </div>
+                                </li>
+                            }
+                        </ul>
+
+                    }
+                </fieldset>
+                <hr />
+                <fieldset id="work-experiences-partial">
+                    <legend><i class="fa fa-briefcase"></i> Work experiences</legend>
+
+                    @if (Model.Resume.WorkExperiences.Count == 0)
+                    {
+                        <p style="font-family: 'Nanum Gothic', sans-serif;">No work experiences added to this resume</p>
+                    }
+                    else
+                    {
+                        <ul class="list-unstyled">
+                            @foreach (var workExperience in Model.Resume.WorkExperiences)
+                            {
+                                var finishedWorking = workExperience.EndDate.HasValue;
+                                <li class="show-item collapse-container">
+                                    <div class="row info-item bg-form-light-main-hover">
+                                        <div class="col-md-10">
+                                            <span>
+                                                <span class="font-weight-bold">@workExperience.JobTitle.Title</span>
+                                                in
+                                                <span class="font-weight-bold">@workExperience.Company.Name</span>
+                                            </span>
+                                        </div>
+                                        <div class="col-md-2 d-flex">
+                                            <button type="button" class="ml-auto btn btn-icon extend">
+                                                <i class="fa fa-angle-down"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="item-details collapse-content">
+                                        @if (finishedWorking)
+                                        {
+                                            <div class="details-container">
+                                                Worked as <span class="font-weight-little-bold">@workExperience.JobTitle.Title</span> in <span class="font-weight-little-bold">@workExperience.Company.Name</span> (from @workExperience.StartDate.Value.Year to @workExperience.EndDate.Value.Year)
+                                            </div>
+                                            if (!string.IsNullOrEmpty(workExperience.Description))
+                                            {
+                                                <div class="mt-3">
+                                                    <span class="d-block font-weight-little-bold">Description:</span>
+                                                    <div class="mt-2">
+                                                        @Html.Raw(workExperience.Description)
+                                                    </div>
+                                                </div>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <div class="details-container">
+                                                Is working as <span class="font-weight-little-bold">@workExperience.JobTitle.Title</span> in <span class="font-weight-little-bold">@workExperience.Company.Name</span> (started from @workExperience.StartDate.Value.Year)
+                                            </div>
+                                            if (!string.IsNullOrEmpty(workExperience.Description))
+                                            {
+                                                <div class="mt-3">
+                                                    <span class="d-block font-weight-little-bold">Description:</span>
+                                                    <div class="mt-2">
+                                                        @Html.Raw(workExperience.Description)
+                                                    </div>
+                                                </div>
+                                            }
+                                        }
+                                    </div>
+                                </li>
+                            }
+                        </ul>
+                    }
+                </fieldset>
+                <hr />
+                <fieldset id="owned-skills-sub-form">
+                    <legend><i class="fa fa-star"></i> Owned Skills</legend>
+
+                    @if (Model.Resume.OwnedSkills.Count == 0)
+                    {
+                        <p style="font-family: 'Nanum Gothic', sans-serif;">No skills added to this resume</p>
+                    }
+                    else
+                    {
+                        <ul class="list-unstyled">
+                            @foreach (var skill in Model.Resume.OwnedSkills)
+                            {
+                                <li>
+                                    <div class="row info-item bg-form-light-main-hover">
+                                        <div class="col-md-10">
+                                            <span>
+                                                <span class="font-weight-bold">@skill.Years</span>
+                                                years in
+                                                <span class="font-weight-bold">@skill.Skill.Title</span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </li>
+                            }
+                        </ul>
+                    }
+                </fieldset>
+                @if (Model.CanEdit)
+                {
+                    <hr />
+                    <div class="d-flex">
+                        <a asp-page="Index"
+                           class="btn btn-submit ml-auto">
+                            Edit
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_CollapseScriptsPartial" />
+}

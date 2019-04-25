@@ -83,7 +83,7 @@ namespace Job_Portal_System
             });
 
             //DatabaseSeeder.SeedData(env, context, userManager, roleManager);
-
+            //DatabaseSeeder.ClearDatabase(context);
             app.UseMvc();
         }
     }

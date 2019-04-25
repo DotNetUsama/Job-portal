@@ -45,7 +45,7 @@ namespace Job_Portal_System.Models
         [StringLength(64)]
         public string DecisionTreeFile { get; set; }
 
-        public City City { get; set; }
+        public CompanyDepartment CompanyDepartment { get; set; }
         public JobTitle JobTitle { get; set; }
         public User User { get; set; }
         public string UserId { get; set; }

@@ -38,6 +38,18 @@ namespace Job_Portal_System.Controllers
         }
 
         [HttpPost]
+        [Route("CompanyDepartments")]
+        public IActionResult CompanyDepartments()
+        {
+            return Json(_context.CompanyDepartments
+                .Select(department => new
+                {
+                    department.Id,
+                    Label = $"{department.City.Name} ({department.DetailedAddress})",
+                }));
+        }
+
+        [HttpPost]
         [Route("Skills")]
         public IActionResult Skills()
         {

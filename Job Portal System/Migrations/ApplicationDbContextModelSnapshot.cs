@@ -183,7 +183,8 @@ namespace Job_Portal_System.Migrations
 
                     b.Property<string>("SchoolId");
 
-                    b.Property<DateTime>("StartDate");
+                    b.Property<DateTime?>("StartDate")
+                        .IsRequired();
 
                     b.HasKey("Id");
 
@@ -581,7 +582,8 @@ namespace Job_Portal_System.Migrations
 
                     b.Property<string>("ResumeId");
 
-                    b.Property<DateTime>("StartDate");
+                    b.Property<DateTime?>("StartDate")
+                        .IsRequired();
 
                     b.HasKey("Id");
 

@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Job_Portal_System.Areas.JobVacancies.Pages
 {
-    [Authorize(Roles = "Recruiter")]
+    //[Authorize(Roles = "Recruiter")]
     public class CreateModel : PageModel
     {
         private readonly ApplicationDbContext _context;
@@ -31,7 +31,7 @@ namespace Job_Portal_System.Areas.JobVacancies.Pages
             [EnumDataType(typeof(EducationDegree))]
             [Display(Name = "Degree")]
             public int Degree { get; set; }
-            
+
             [Required]
             [EnumDataType(typeof(QualificationType))]
             [Display(Name = "Type")]
@@ -46,7 +46,7 @@ namespace Job_Portal_System.Areas.JobVacancies.Pages
             [HiddenInput]
             [Display(Name = "Field of study")]
             public string FieldOfStudyName { get; set; }
-            
+
             [Required]
             [HiddenInput]
             public long FieldOfStudyId { get; set; }
@@ -117,7 +117,7 @@ namespace Job_Portal_System.Areas.JobVacancies.Pages
             [Display(Name = "Minimum salary")]
             [Range(100, 999999.99)]
             public double MinSalary { get; set; }
-            
+
             [Required]
             [Display(Name = "Maximum salary")]
             [Range(100, 999999.99)]
@@ -135,24 +135,21 @@ namespace Job_Portal_System.Areas.JobVacancies.Pages
 
             public Dictionary<JobType, bool> JobTypes { get; set; }
 
-            [Required]
-            [DataType(DataType.Text)]
-            [Display(Name = "City")]
-            public string City { get; set; }
-
             [HiddenInput]
-            public string CityId { get; set; }
+            public string CompanyDepartmentId { get; set; }
         }
 
+        public string CompanyId { get; set; }
+
         [BindProperty]
-        public List<EducationInputModel> Educations { get; set; } = 
+        public List<EducationInputModel> Educations { get; set; } =
             new List<EducationInputModel>
         {
             new EducationInputModel()
         };
 
         [BindProperty]
-        public List<WorkExperienceInputModel> WorkExperiences { get; set; } = 
+        public List<WorkExperienceInputModel> WorkExperiences { get; set; } =
             new List<WorkExperienceInputModel>
         {
             new WorkExperienceInputModel()
@@ -172,9 +169,18 @@ namespace Job_Portal_System.Areas.JobVacancies.Pages
 
         public IActionResult OnGet()
         {
+            //var recruiter = _context.Recruiters
+            //    .SingleOrDefault(r => r.User.UserName == User.Identity.Name);
+
+            //if (recruiter == null)
+            //{
+            //    return BadRequest();
+            //}
+            CompanyId = "DD";
+            //CompanyId = recruiter.CompanyId;
             return Page();
         }
-        
+
         public async Task<IActionResult> OnPostCreateJobVacancyAsync()
         {
             var user = await _userManager.FindByNameAsync(User.Identity.Name);
@@ -199,7 +205,7 @@ namespace Job_Portal_System.Areas.JobVacancies.Pages
             WorkExperiences.ForEach(workExperience => AddWorkExperience(jobVacancy, workExperience));
             DesiredSkills.ForEach(skill => AddSkill(jobVacancy, skill));
             AddJobTitle(jobVacancy);
-            AddCity(jobVacancy);
+            AddCompanyDepartment(jobVacancy);
             AddJobTypes(jobVacancy);
             _context.JobVacancies.Add(jobVacancy);
             await _context.SaveChangesAsync();
@@ -220,7 +226,7 @@ namespace Job_Portal_System.Areas.JobVacancies.Pages
                 if (jobVacancyInfoJobType.Value)
                     jobVacancy.JobTypes.Add(new JobVacancyJobType
                     {
-                        JobType = (int) jobVacancyInfoJobType.Key,
+                        JobType = (int)jobVacancyInfoJobType.Key,
                     });
             }
         }
@@ -246,11 +252,10 @@ namespace Job_Portal_System.Areas.JobVacancies.Pages
             jobVacancy.JobTitle = jobTitle;
         }
 
-        private void AddCity(JobVacancy jobVacancy)
+        private void AddCompanyDepartment(JobVacancy jobVacancy)
         {
-            jobVacancy.City = JobVacancyInfo.CityId == null
-                ? new City { Name = JobVacancyInfo.City }
-                : _context.Cities.SingleOrDefault(cityInDb => cityInDb.Id == JobVacancyInfo.CityId);
+            jobVacancy.CompanyDepartment = _context.CompanyDepartments
+                .SingleOrDefault(d => d.Id == JobVacancyInfo.CompanyDepartmentId);
         }
 
         private void AddEducation(JobVacancy jobVacancy, EducationInputModel education)

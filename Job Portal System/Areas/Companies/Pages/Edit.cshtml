@@ -1,39 +1,141 @@
 ﻿@page
 @model Job_Portal_System.Areas.Companies.Pages.EditModel
-<h4>@Html.DisplayFor(model => model.Company.Name)</h4>
-<hr />
+@{
+    ViewData["Title"] = Model.Company.Name;
+    var companyDepartmentsEditsIndexer = 0;
+}
+
 <div class="row">
-    <div class="col-md-4">
-        <form method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Company.Id" />
-            <div class="form-group">
-                <label asp-for="Company.EmployeesNum" class="control-label"></label>
-                <input asp-for="Company.EmployeesNum" class="form-control" />
-                <span asp-validation-for="Company.EmployeesNum" class="text-danger"></span>
+    <div class="col-md-6 offset-md-3 col-sm-8 offset-sm-2">
+        <div class="progress" style="height: 4px;">
+            <div class="progress-bar bg-info" role="progressbar" style="width: 100%"
+                 aria-valuemin="0" aria-valuemax="100"></div>
+        </div>
+        <div class="form-container">
+            <div class="form-head">
+                <h1 class="form-head-title">@ViewData["Title"]</h1>
             </div>
-            <div class="form-group">
-                <label asp-for="Company.Email" class="control-label"></label>
-                <input asp-for="Company.Email" class="form-control" />
-                <span asp-validation-for="Company.Email" class="text-danger"></span>
+            <div class="form-body">
+                <form method="post">
+                    <fieldset id="general-info-partial">
+                        <legend><i class="fa fa-question-circle"></i> Company general information</legend>
+                        <input type="hidden" asp-for="Company.Id" />
+                        <div class="form-group">
+                            <label asp-for="Company.EmployeesNum"></label>
+                            <input asp-for="Company.EmployeesNum" class="form-control" />
+                            <span asp-validation-for="Company.EmployeesNum" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Company.Email"></label>
+                            <input asp-for="Company.Email" class="form-control" />
+                            <span asp-validation-for="Company.Email" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Company.Website"></label>
+                            <input asp-for="Company.Website" class="form-control" />
+                            <span asp-validation-for="Company.Website" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Company.Description"></label>
+                            <textarea asp-for="Company.Description" class="form-control" id="description"></textarea>
+                            <span asp-validation-for="Company.Description" class="text-danger"></span>
+                        </div>
+                    </fieldset>
+                    <hr />
+                    <fieldset class="sub-form" id="departments-partial" data-count="0" data-for="Departments">
+                        <legend><i class="fa fa-building"></i> Departments</legend>
+
+                        <ul class="list-unstyled">
+                            @foreach (var department in Model.Company.Departments)
+                            {
+                                <li class="collapse-container">
+                                    <div class="row info-item bg-form-light-main-hover">
+                                        <div class="col-md-10">
+                                            <span>
+                                                <span class="font-weight-bold">@department.City.Name - @department.DetailedAddress</span>
+                                            </span>
+                                        </div>
+                                        <div class="col-md-2 d-flex">
+                                            <button type="button" class="ml-auto btn btn-icon extend">
+                                                <i class="fa fa-angle-down"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="item-details collapse-content">
+                                        <div class="d-flex pl-2 pr-2">
+                                            <label class="font-weight-bold"
+                                                   asp-for="DepartmentsEdits[companyDepartmentsEditsIndexer].DetailedAddress"
+                                                   style="flex: 1; align-self: center"></label>
+                                            <input class="form-control"
+                                                   asp-for="DepartmentsEdits[companyDepartmentsEditsIndexer].DetailedAddress"
+                                                   value="@department.DetailedAddress"
+                                                   style="flex: 3;" />
+                                            <input asp-for="DepartmentsEdits[companyDepartmentsEditsIndexer].Id"
+                                                   value="@department.Id" />
+                                        </div>
+                                        <span asp-validation-for="DepartmentsEdits[companyDepartmentsEditsIndexer].DetailedAddress"
+                                              class="text-danger"></span>
+                                        @{ companyDepartmentsEditsIndexer++; }
+                                    </div>
+                                </li>
+                            }
+                        </ul>
+
+                        <div class="collapse-container">
+
+                            <div class="row info-item bg-form-light-main-hover">
+                                <div class="col-md-10">
+                                    <span class="font-weight-bold"> Add new </span>
+                                </div>
+                                <div class="col-md-2 d-flex">
+                                    <button type="button" class="ml-auto btn btn-icon extend">
+                                        <i class="fa fa-angle-down"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="item-details collapse-content">
+                                <ul class="displayed-objects-list list-unstyled"></ul>
+
+                                <div class="hidden-objects-container d-none"></div>
+
+                                <div class="form-inputs">
+                                    <div class="form-group">
+                                        <label asp-for="Departments[0].City"></label>
+                                        <input asp-for="Departments[0].City" id="city-input" class="form-control" />
+                                        <span asp-validation-for="Departments[0].City" class="validation-label text-danger"></span>
+                                    </div>
+                                    <input asp-for="Departments[0].CityId" id="city-id" />
+                                    <div class="form-group">
+                                        <label asp-for="Departments[0].DetailedAddress"></label>
+                                        <input asp-for="Departments[0].DetailedAddress" id="detailed-address-input" class="form-control" />
+                                        <span asp-validation-for="Departments[0].DetailedAddress" class="validation-label text-danger"></span>
+                                    </div>
+                                </div>
+                                <button type="button"
+                                        class="btn btn-submit btn-sub-submit">
+                                    <i class="fa fa-plus-circle"></i> Add
+                                </button>
+                            </div>
+                        </div>
+                    </fieldset>
+                    <hr />
+                    <div class="d-flex">
+                        <button asp-page-handler="saveChanges"
+                                asp-route-id="@Model.Company.Id"
+                                class="btn btn-submit ml-auto cancel">
+                            Save changes
+                        </button>
+                    </div>
+                </form>
             </div>
-            <div class="form-group">
-                <label asp-for="Company.Website" class="control-label"></label>
-                <input asp-for="Company.Website" class="form-control" />
-                <span asp-validation-for="Company.Website" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Company.Description" class="control-label"></label>
-                <textarea asp-for="Company.Description" class="form-control"></textarea>
-                <span asp-validation-for="Company.Description" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
     </div>
 </div>
 
+
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <partial name="_ValidationScriptsPartial" />
+    <partial name="_EditorScriptPartial" />
+    <partial name="_CollapseScriptsPartial" />
+    <partial name="_CompaniesScriptsPartial" />
 }

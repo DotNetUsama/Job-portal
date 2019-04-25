@@ -1,7 +1,7 @@
 ﻿(function ($) {
 
-    const changeValidationRules = (prefix, oldIndex, newIndex) => {
-        const rules = $("form").data("validator").settings.rules;
+    const changeValidationRules = (form, prefix, oldIndex, newIndex) => {
+        const rules = $(form).data("validator").settings.rules;
         for (let inputName in rules) {
             if (rules.hasOwnProperty(inputName) && inputName.startsWith(`${prefix}[${oldIndex}]`)) {
                 const newInputName = inputName.replace(new RegExp(`[${oldIndex}]`, "g"), `${newIndex}`);
@@ -68,7 +68,8 @@
         setInputsIndex(inputs, newCount);
         setValidationSpansIndex(validationLabels, newCount);
         const rulePrefix = subForm.attr("data-for");
-        changeValidationRules(rulePrefix, count, newCount);
+        const form = subForm.closest("form");
+        changeValidationRules(form, rulePrefix, count, newCount);
         subForm.attr("data-count", newCount);
     };
 
@@ -80,7 +81,7 @@
         const removeBtn = $("<button type=\"button\" class=\"ml-auto btn-icon btn-sub-remove cancel\"></button>");
         removeBtn.click(removeBtnHandler);
         const removeSympol = $("<i class=\"fa fa-times\"></i>");
-        const containerDiv = $("<div class=\"row hover-border\"></div>");
+        const containerDiv = $("<div class=\"row info-item bg-ghostwhite-hover\"></div>");
         removeBtn.append(removeSympol);
         removeBtnDiv.append(removeBtn);
         containerDiv.append(displayStringDiv);
@@ -95,8 +96,9 @@
         for (let i = 0; i < inputs.length; i++) {
             const input = $(inputs[i]);
             if (input.attr("name")) {
-                const hiddenInput = input.prop("tagName") === "TEXTAREA" ?
-                    $("<textarea>").attr("name", input.attr("name")).html(input.html()) :
+                const editor = typeof tinyMCE !== "undefined" && tinyMCE.get(input.attr("id"));
+                const hiddenInput = input.prop("tagName") === "TEXTAREA" && editor ?
+                    $("<input>").attr("name", input.attr("name")).attr("value", editor.getContent()) :
                     $("<input>").attr("name", input.attr("name")).attr("value", input.val());
                 formObjectDiv.append(hiddenInput);
                 const modifiedName = input.attr("name").replace(/\[\d+\]/, `[${nextIndex}]`);
@@ -134,7 +136,8 @@
                 setValidationSpansIndex(validationLabels, newCount);
 
                 const rulePrefix = this.attr("data-for");
-                changeValidationRules(rulePrefix, count, newCount);
+                const form = this.closest("form");
+                changeValidationRules(form, rulePrefix, count, newCount);
                 this.attr("data-count", newCount);
             }
         });

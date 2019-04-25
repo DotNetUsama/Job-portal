@@ -1,7 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Job_Portal_System.Data;
 using Job_Portal_System.Models;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
@@ -27,7 +26,9 @@ namespace Job_Portal_System.Areas.Companies.Pages
                 return NotFound();
             }
 
-            Company = await _context.Companies.FirstOrDefaultAsync(company => company.Id == id);
+            Company = await _context.Companies
+                .Include(c => c.Departments).ThenInclude(d => d.City)
+                .FirstOrDefaultAsync(company => company.Id == id);
 
             if (Company == null)
             {

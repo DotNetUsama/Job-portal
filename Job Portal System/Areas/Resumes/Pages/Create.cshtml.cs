@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Job_Portal_System.Areas.Resumes.Pages
 {
-    //[Authorize(Roles = "JobSeeker")]
+    [Authorize(Roles = "JobSeeker")]
     public class CreateModel : PageModel
     {
         private readonly ApplicationDbContext _context;
@@ -57,12 +57,12 @@ namespace Job_Portal_System.Areas.Resumes.Pages
 
         public IActionResult OnGet()
         {
-            //var resumeInDb = _context.Resumes
-            //    .SingleOrDefault(resume => resume.User.UserName == User.Identity.Name);
-            //if (resumeInDb != null)
-            //{
-            //    return Redirect("./Index");
-            //}
+            var resumeInDb = _context.Resumes
+                .SingleOrDefault(resume => resume.User.UserName == User.Identity.Name);
+            if (resumeInDb != null)
+            {
+                return Redirect("./Index");
+            }
 
             return Page();
         }
@@ -182,6 +182,7 @@ namespace Job_Portal_System.Areas.Resumes.Pages
                 EndDate = workExperience.EndDate,
                 Company = company,
                 JobTitle = jobTitle,
+                Description = workExperience.Description,
             });
         }
 

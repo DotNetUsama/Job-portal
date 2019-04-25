@@ -6,6 +6,7 @@ for details on configuring this project to bundle and minify static web assets. 
     --general-secondary: #fcfdfd;
     --general-focus: #dbe8f5;
     --form-main: #76bad5;
+    --form-light-main: #dee9ed;
     --form-main-transparent: rgba(114, 177, 203, 0.29019607);
     --form-background: #f5f7fa;
 }
@@ -98,13 +99,9 @@ body {
     display: none;
 }
 
-.hover-border {
+.info-item {
     border-radius: 5px;
     padding: 3px 0;
-}
-
-.hover-border:hover {
-    background-color: ghostwhite;
 }
 
 .dl-horizontal dt {
@@ -225,29 +222,26 @@ body {
     overflow-x: hidden;
 }
 
-/*.multi-step-form {
-}*/
-
-.multi-step-form .form-container {
+.form-container {
     padding: 0 25px;
     background-color: var(--form-background);
     padding-top: 15px;
     padding-bottom: 20px;
 }
 
-.multi-step-form .form-container .form-head {
+.form-container .form-head {
     display: flex;
     margin-bottom: 25px
 }
 
-.multi-step-form .form-container .form-head .form-head-title {
+.form-container .form-head .form-head-title {
     font-size: 1.7em;
     display: inline;
     text-align: left;
     margin: 0;
 }
 
-.multi-step-form .form-container .form-head .form-head-details {
+.form-container .form-head .form-head-details {
     font-size: 0.9em;
     color: gray;
     margin-left: auto;
@@ -255,10 +249,7 @@ body {
     align-self: flex-end;
 }
 
-/*.multi-step-form .form-container .form-body {
-}*/
-
-.multi-step-form .form-container .form-body .tab {
+.form-container .form-body .tab {
     display: none;
     background-color: white;
     padding: 25px;
@@ -266,7 +257,7 @@ body {
     border-radius: 7px;
 }
 
-.multi-step-form .form-container .form-body .form-body-title {
+.form-container .form-body .form-body-title {
     font-size: 1.4em;
     border-bottom: lightgray solid 1px;
     padding-bottom: 20px;
@@ -274,6 +265,14 @@ body {
 .form-control:focus {
     border-color: var(--form-main);
     box-shadow: 0 0 0.2rem 0.1rem var(--form-main-transparent);
+}
+
+.details-container {
+    padding: 0 12px;
+    border-left: lightgray solid 4px;
+    text-align: justify;
+    font-size: 0.9rem;
+    font-family: 'Nanum Gothic', sans-serif;
 }
 
 .btn:focus {
@@ -288,6 +287,7 @@ body {
 
 .btn-submit:hover {
     font-weight: 600;
+    color: white;
 }
 
 .btn-sub-submit {
@@ -306,6 +306,10 @@ body {
 .btn-step:hover {
     font-weight: 600;
     border-width: 2px;
+}
+
+a.no-hover-anchor:hover {
+    color: inherit;
 }
 
 .item-details {
@@ -376,8 +380,16 @@ body {
     transform: rotate(45deg);
 }
 
-.font-weight-bold {
-    font-weight: bold;
+.font-weight-little-bold {
+    font-weight: 600;
+}
+
+.bg-ghostwhite-hover:hover {
+    background-color: ghostwhite;
+}
+
+.bg-form-light-main-hover:hover {
+    background-color: var(--form-light-main);
 }
 
 select option {

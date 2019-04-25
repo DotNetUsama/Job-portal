@@ -1,47 +1,85 @@
 ﻿@page
 @model Job_Portal_System.Areas.Companies.Pages.DetailsModel
+@{
+    ViewData["Title"] = Model.Company.Name;
+}
 
-<div>
-    <h4>Company</h4>
-    <hr />
-    <dl class="row">
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Company.Name)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Company.Name)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Company.EmployeesNum)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Company.EmployeesNum)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Company.Email)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Company.Email)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Company.Website)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Company.Website)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Company.Description)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Company.Description)
-        </dd>
-    </dl>
+<div class="row">
+    <div class="col-md-6 offset-md-3 col-sm-8 offset-sm-2">
+        <div class="progress" style="height: 4px;">
+            <div class="progress-bar bg-info" role="progressbar" style="width: 100%"
+                 aria-valuemin="0" aria-valuemax="100"></div>
+        </div>
+        <div class="form-container">
+            <div class="form-head">
+                <h1 class="form-head-title">@ViewData["Title"]</h1>
+            </div>
+            <div class="form-body">
+                <fieldset id="general-info-partial">
+                    <legend><i class="fa fa-question-circle"></i> General information</legend>
+                    <dl class="row">
+                        <dt class="col-sm-4">
+                            Capacity:
+                        </dt>
+                        <dd class="col-sm-8">
+                            @Model.Company.EmployeesNum
+                        </dd>
+                        <dt class="col-sm-4">
+                            Email:
+                        </dt>
+                        <dd class="col-sm-8">
+                            @Model.Company.Email
+                        </dd>
+                        <dt class="col-sm-4">
+                            Website:
+                        </dt>
+                        <dd class="col-sm-8">
+                            <a href="@Model.Company.Website">@Model.Company.Website</a>
+                        </dd>
+                    </dl>
+
+                    <div class="mt-3">
+                        <span class="d-block font-weight-little-bold">Description:</span>
+                        <div class="mt-2">
+                            @Html.Raw(Model.Company.Description)
+                        </div>
+                    </div>
+                </fieldset>
+                @if (Model.Company.Departments.Count != 0)
+                {
+                    <hr />
+                    <fieldset id="departments-partial">
+                        <legend><i class="fa fa-building"></i> Departments</legend>
+                        <ul class="list-unstyled">
+                            @foreach (var department in Model.Company.Departments)
+                            {
+                                <li>
+                                    <div class="info-item bg-form-light-main-hover">
+                                        <span>
+                                            <span class="font-weight-bold">@department.City.Name - @department.DetailedAddress</span>
+                                        </span>
+                                    </div>
+                                </li>
+                            }
+                        </ul>
+                    </fieldset>
+                }
+                @if (Model.CanEdit)
+                {
+                    <hr />
+                    <div class="d-flex">
+                        <a asp-page="./Edit"
+                           asp-route-id="@Model.Company.Id"
+                           class="btn btn-submit ml-auto">
+                            Edit
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
 </div>
-<div>
-    @{
-        if (Model.CanEdit)
-        {
-            <a asp-page="./Edit" asp-route-id="@Model.Company.Id">Edit</a>
-        }
-    }
-</div>
+
+@section Scripts {
+    <partial name="_CollapseScriptsPartial" />
+}
