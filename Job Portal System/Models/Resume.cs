@@ -20,6 +20,7 @@ namespace Job_Portal_System.Models
         public User User { get; set; }
         public string UserId { get; set; }
         public JobSeeker JobSeeker { get; set; }
+        public string JobSeekerId { get; set; }
 
         public List<Education> Educations { get; set; }
         public List<WorkExperience> WorkExperiences { get; set; }

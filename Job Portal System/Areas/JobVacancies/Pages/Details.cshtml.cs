@@ -1,9 +1,13 @@
+using System.Linq;
 using System.Threading.Tasks;
 using Job_Portal_System.Data;
 using Job_Portal_System.Enums;
+using Job_Portal_System.Handlers;
 using Job_Portal_System.Models;
+using Job_Portal_System.SignalR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Job_Portal_System.Areas.JobVacancies.Pages
@@ -11,10 +15,13 @@ namespace Job_Portal_System.Areas.JobVacancies.Pages
     public class DetailsModel : PageModel
     {
         private readonly ApplicationDbContext _context;
+        private readonly IHubContext<SignalRHub> _hubContext;
 
-        public DetailsModel(ApplicationDbContext context)
+        public DetailsModel(ApplicationDbContext context,
+            IHubContext<SignalRHub> hubContext)
         {
             _context = context;
+            _hubContext = hubContext;
         }
 
         public JobVacancy JobVacancy { get; set; }
@@ -45,9 +52,23 @@ namespace Job_Portal_System.Areas.JobVacancies.Pages
             }
 
             IsOwner = JobVacancy.User.UserName == User.Identity.Name;
-            CanSubmit = (JobVacancyMethod) JobVacancy.Method == JobVacancyMethod.Submission &&
-                        (JobVacancyStatus) JobVacancy.Status == JobVacancyStatus.Open &&
-                        User.IsInRole("JobSeeker");
+            if ((JobVacancyMethod) JobVacancy.Method == JobVacancyMethod.Submission &&
+                (JobVacancyStatus) JobVacancy.Status == JobVacancyStatus.Open &&
+                User.IsInRole("JobSeeker"))
+            {
+                var jobSeeker = _context.JobSeekers
+                    .Include(j => j.User)
+                    .SingleOrDefault(j => j.User.UserName == User.Identity.Name);
+                CanSubmit = jobSeeker != null && jobSeeker.IsSeeking &&
+                            _context.Resumes.Any(r => r.JobSeekerId == jobSeeker.Id) &&
+                            !_context.Applicants.Any(a => a.JobVacancyId == JobVacancy.Id 
+                                                         && a.JobSeekerId == jobSeeker.User.Id);
+            }
+            else
+            {
+                CanSubmit = false;
+            }
+
             return Page();
         }
 
@@ -87,22 +108,41 @@ namespace Job_Portal_System.Areas.JobVacancies.Pages
                 return NotFound();
             }
 
-            JobVacancy = await _context.JobVacancies.SingleOrDefaultAsync(m => m.Id == id);
+            JobVacancy = await _context.JobVacancies
+                .Include(j => j.User)
+                .SingleOrDefaultAsync(j => j.Id == id);
 
             if (JobVacancy == null)
             {
                 return NotFound();
             }
 
-            if (!User.IsInRole("JobSeeker") ||
-                (JobVacancyStatus)JobVacancy.Status != JobVacancyStatus.Open ||
-                (JobVacancyMethod)JobVacancy.Method != JobVacancyMethod.Submission)
+            if ((JobVacancyStatus)JobVacancy.Status != JobVacancyStatus.Open ||
+                (JobVacancyMethod)JobVacancy.Method != JobVacancyMethod.Submission ||
+                !User.IsInRole("JobSeeker"))
             {
                 return BadRequest();
             }
-            
-            //TODO: SUBMISSION USE CASE
-            return Page();
+
+            var jobSeeker = _context.JobSeekers
+                .Include(j => j.User)
+                .SingleOrDefault(j => j.User.UserName == User.Identity.Name);
+
+            if (jobSeeker == null || !jobSeeker.IsSeeking ||
+                _context.Applicants.Any(a => a.JobVacancyId == JobVacancy.Id
+                                             && a.JobSeekerId == jobSeeker.User.Id))
+            {
+                return BadRequest();
+            }
+
+            var resume = _context.Resumes
+                .SingleOrDefault(r => r.JobSeekerId == jobSeeker.Id);
+
+            if (resume == null) return BadRequest();
+
+            await AsyncHandler.SubmitToJobVacancy(_context, _hubContext, JobVacancy, resume);
+
+            return RedirectToPage("./Details", new {id});
         }
     }
 }

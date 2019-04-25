@@ -19,8 +19,10 @@ namespace Job_Portal_System.Models
 
         public User Recruiter { get; set; }
         public User JobSeeker { get; set; }
+        public string JobSeekerId { get; set; }
 
         public JobVacancy JobVacancy { get; set; }
+        public string JobVacancyId { get; set; }
         public Resume Resume { get; set; }
     }
 }

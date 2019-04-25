@@ -22,7 +22,8 @@ namespace Job_Portal_System.Handlers
             await context.SendNotificationAsync(hubContext, new Notification
             {
                 Type = (int)NotificationType.RecruiterApproval,
-                Peer1 = recruiter.Id,
+                EntityId = recruiter.Id,
+                Peer1 = recruiter.User.FirstName
             }, administrators);
         }
 
@@ -38,15 +39,15 @@ namespace Job_Portal_System.Handlers
                 await context.SendNotificationAsync(hubContext, new Notification
                 {
                     Type = (int) NotificationType.AccountApproved,
-                }, new List<User> { user });
+                }, user);
             }
             else
             {
                 await context.SendNotificationAsync(hubContext, new Notification
                 {
                     Type = (int)NotificationType.AccountApprovedEditCompanyInfo,
-                    Peer1 = company.Id,
-                }, new List<User> { user });
+                    EntityId = company.Id,
+                }, user);
             }
             await context.SaveChangesAsync();
         }
@@ -61,7 +62,29 @@ namespace Job_Portal_System.Handlers
             await context.SendNotificationAsync(hubContext, new Notification
             {
                 Type = (int)NotificationType.AccountRejected,
-            }, new List<User> { user });
+            }, user);
+
+            await context.SaveChangesAsync();
+        }
+
+        public static async Task SubmitToJobVacancy(ApplicationDbContext context,
+            IHubContext<SignalRHub> hubContext, JobVacancy jobVacancy, Resume resume)
+        {
+            var applicant = context.Applicants.Add(new Applicant
+            {
+                Recruiter = jobVacancy.User,
+                JobVacancy = jobVacancy,
+                JobSeeker = resume.User,
+                Resume = resume,
+            });
+
+            await context.SendNotificationAsync(hubContext, new Notification
+            {
+                Type = (int)NotificationType.ReceivedSubmission,
+                Peer1 = resume.User.FirstName,
+                Peer2 = jobVacancy.Title,
+                EntityId = applicant.Entity.Id,
+            }, applicant.Entity.Recruiter);
 
             await context.SaveChangesAsync();
         }

@@ -14,49 +14,56 @@
         <div class="form-container">
             <div class="form-head">
                 <h1 class="form-head-title">@ViewData["Title"]</h1>
-                <span class="form-head-details">[@((JobVacancyStatus)Model.JobVacancy.Status)]</span>
+                <span class="form-head-details @(((JobVacancyStatus) Model.JobVacancy.Status).GetCssClass())">
+                    @((JobVacancyStatus) Model.JobVacancy.Status)
+                </span>
             </div>
             <div class="form-body">
                 <fieldset id="general-info-partial">
                     <legend><i class="fa fa-question-circle"></i> General information</legend>
                     <dl class="row">
-                        <dt class="col-sm-2">
+                        <dt class="col-sm-3">
                             Job title:
                         </dt>
-                        <dd class="col-sm-10">
+                        <dd class="col-sm-9">
                             @Model.JobVacancy.JobTitle.Title
                         </dd>
-                        <dt class="col-sm-2">
+                        <dt class="col-sm-3">
                             Company:
                         </dt>
-                        <dd class="col-sm-10">
-                            @Model.JobVacancy.CompanyDepartment.Company
+                        <dd class="col-sm-9">
+                            @Model.JobVacancy.CompanyDepartment.Company.Name
                         </dd>
-                        <dt class="col-sm-2">
+                        <dt class="col-sm-3">
                             Address:
                         </dt>
-                        <dd class="col-sm-10">
-                            @Model.JobVacancy.CompanyDepartment.City.Name : @Model.JobVacancy.CompanyDepartment.DetailedAddress
+                        <dd class="col-sm-9">
+                            @Model.JobVacancy.CompanyDepartment.City.Name (@Model.JobVacancy.CompanyDepartment.DetailedAddress)
                         </dd>
-                        <dt class="col-sm-2">
+                        <dt class="col-sm-3">
                             Published at:
                         </dt>
-                        <dd class="col-sm-10">
+                        <dd class="col-sm-9">
                             @Model.JobVacancy.PublishedAt
                         </dd>
-                        <dt class="col-sm-2">
+                        <dt class="col-sm-3">
                             Job types:
                         </dt>
-                        <dd class="col-sm-10">
-                            @foreach (var jobType in Model.JobVacancy.JobTypes)
-                            {
-                                <span>@((JobType)jobType.JobType) </span>
-                            }
+                        <dd class="col-sm-9">
+                            @string.Join(" | ", Model.JobVacancy.JobTypes
+                                    .Select(jobType => ((JobType) jobType.JobType).GetDescription())
+                                    .ToArray())
                         </dd>
                     </dl>
-                    <div class="description-container">
-                        @Html.Raw(Model.JobVacancy.Description)
+                    @if (!string.IsNullOrEmpty(Model.JobVacancy.Description))
+                    {
+                    <div class="mt-3">
+                        <span class="d-block font-weight-little-bold">Description:</span>
+                        <div class="mt-2">
+                            @Html.Raw(Model.JobVacancy.Description)
+                        </div>
                     </div>
+                    }
                 </fieldset>
                 <hr />
                 <fieldset id="educations-partial">
@@ -85,7 +92,7 @@
                                     </div>
                                     <div class="item-details collapse-content">
                                         <div class="details-container">
-                                            <span class="font-weight-little-bold text-info">[@((QualificationType)education.Type)]</span> Minimum <span class="font-weight-bold">@education.MinimumYears</span> in <span class="font-weight-bold">@education.FieldOfStudy.Title</span> with <span class="font-weight-little-bold">@((EducationDegree)education.Degree)</span> degree
+                                            <span class="font-weight-little-bold text-info @(((QualificationType)education.Type).GetCssClass())">[@((QualificationType)education.Type)]</span> Minimum <span class="font-weight-bold">@education.MinimumYears</span> in <span class="font-weight-bold">@education.FieldOfStudy.Title</span> with <span class="font-weight-little-bold">@((EducationDegree)education.Degree)</span> degree
                                         </div>
                                     </div>
                                 </li>
@@ -122,7 +129,7 @@
                                     </div>
                                     <div class="item-details collapse-content">
                                         <div class="details-container">
-                                            <span class="font-weight-little-bold text-info">[@((QualificationType)workExperience.Type)]</span> Minimum <span class="font-weight-bold">@workExperience.MinimumYears</span> in <span class="font-weight-bold">@workExperience.JobTitle.Title</span>
+                                            <span class="font-weight-little-bold text-info @(((QualificationType)workExperience.Type).GetCssClass())">[@((QualificationType)workExperience.Type)]</span> Minimum <span class="font-weight-bold">@workExperience.MinimumYears</span> in <span class="font-weight-bold">@workExperience.JobTitle.Title</span>
                                         </div>
                                     </div>
                                 </li>
@@ -130,9 +137,9 @@
                         </ul>
                     }
                 </fieldset>
-                <hr />
                 @if (Model.JobVacancy.DesiredSkills.Count != 0)
                 {
+                    <hr />
                     <fieldset id="desired-skills-sub-form">
                         <legend><i class="fa fa-star"></i> Desired Skills</legend>
                         <ul class="list-unstyled">
@@ -142,7 +149,7 @@
                                     <div class="row info-item bg-form-light-main-hover">
                                         <div class="col-md-10">
                                             <span>
-                                                <span class="font-weight-little-bold text-info">[@((QualificationType)skill.Type)]</span> Minimum <span class="font-weight-bold">@skill.MinimumYears</span> years in <span class="font-weight-bold">@skill.Skill.Title</span>
+                                                <span class="font-weight-little-bold text-info @(((QualificationType)skill.Type).GetCssClass())">[@((QualificationType)skill.Type)]</span> Minimum <span class="font-weight-bold">@skill.MinimumYears</span> years in <span class="font-weight-bold">@skill.Skill.Title</span>
                                             </span>
                                         </div>
                                     </div>
@@ -157,9 +164,10 @@
                     if (Model.CanSubmit)
                     {
                         <div class="d-flex">
-                            <form>
+                            <form method="post" class="ml-auto">
                                 <button asp-page-handler="submit"
-                                        class="btn btn-submit ml-auto">
+                                        asp-route-id="@Model.JobVacancy.Id"
+                                        class="btn btn-submit">
                                     Submit
                                 </button>
                             </form>
@@ -177,9 +185,10 @@
                             @if ((JobVacancyMethod)Model.JobVacancy.Method == JobVacancyMethod.Submission &&
                                (JobVacancyStatus)Model.JobVacancy.Status != JobVacancyStatus.Finished)
                             {
-                                <form>
+                                <form method="post" class="ml-auto">
                                     <button asp-page-handler="close"
-                                            class="btn btn-submit ml-auto">
+                                            asp-route-id="@Model.JobVacancy.Id"
+                                            class="btn btn-submit">
                                         Close
                                     </button>
                                 </form>

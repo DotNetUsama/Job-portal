@@ -4,14 +4,16 @@ using Job_Portal_System.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Job_Portal_System.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190425130120_AddCompanyDepartmentColumnToJobVacanciesTable")]
+    partial class AddCompanyDepartmentColumnToJobVacanciesTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -125,7 +127,9 @@ namespace Job_Portal_System.Migrations
 
                     b.Property<string>("CityId");
 
-                    b.Property<string>("CompanyId");
+                    b.Property<long>("CompanyId");
+
+                    b.Property<string>("CompanyId1");
 
                     b.Property<string>("DetailedAddress")
                         .IsRequired()
@@ -135,7 +139,7 @@ namespace Job_Portal_System.Migrations
 
                     b.HasIndex("CityId");
 
-                    b.HasIndex("CompanyId");
+                    b.HasIndex("CompanyId1");
 
                     b.ToTable("CompanyDepartments");
                 });
@@ -379,8 +383,6 @@ namespace Job_Portal_System.Migrations
                         .ValueGeneratedOnAdd();
 
                     b.Property<DateTime>("CreatedAt");
-
-                    b.Property<string>("EntityId");
 
                     b.Property<string>("Peer1");
 
@@ -847,7 +849,7 @@ namespace Job_Portal_System.Migrations
 
                     b.HasOne("Job_Portal_System.Models.Company", "Company")
                         .WithMany("Departments")
-                        .HasForeignKey("CompanyId");
+                        .HasForeignKey("CompanyId1");
                 });
 
             modelBuilder.Entity("Job_Portal_System.Models.DesiredSkill", b =>

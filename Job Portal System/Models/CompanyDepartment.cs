@@ -19,6 +19,6 @@ namespace Job_Portal_System.Models
 
         public City City { get; set; }
         public Company Company { get; set; }
-        public long CompanyId { get; set; }
+        public string CompanyId { get; set; }
     }
 }

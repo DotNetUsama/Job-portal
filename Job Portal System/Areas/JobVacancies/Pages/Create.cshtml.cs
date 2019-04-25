@@ -109,6 +109,7 @@ namespace Job_Portal_System.Areas.JobVacancies.Pages
             [Display(Name = "Title")]
             public string Title { get; set; }
 
+            [Required]
             [Display(Name = "Description")]
             [DataType(DataType.MultilineText)]
             public string Description { get; set; }
@@ -319,6 +320,7 @@ namespace Job_Portal_System.Areas.JobVacancies.Pages
 
             jobVacancy.DesiredSkills.Add(new DesiredSkill
             {
+                Type = skillModel.Type,
                 Skill = skill,
                 MinimumYears = skillModel.MinimumYears,
             });

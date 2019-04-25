@@ -67,6 +67,18 @@ namespace Job_Portal_System.Data
             }
         }
 
+        public async Task SendNotificationAsync(IHubContext<SignalRHub> hubContext, Notification notification,
+            User user)
+        {
+            var insertedNotification = Notifications.Add(notification);
+            UserNotifications.Add(new UserNotification
+            {
+                Notification = insertedNotification.Entity,
+                User = user,
+            });
+            await hubContext.Clients.User(user.Id).SendAsync("receiveNotification");
+        }
+
         public List<ClientNotification> GetNotifications(User user)
         {
             return UserNotifications

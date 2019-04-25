@@ -4,12 +4,8 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Job_Portal_System.Data;
 using Job_Portal_System.Models;
-using Job_Portal_System.SignalR;
-using Microsoft.AspNetCore.Hosting.Internal;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR;
-using Microsoft.EntityFrameworkCore;
 
 namespace Job_Portal_System.Controllers
 {

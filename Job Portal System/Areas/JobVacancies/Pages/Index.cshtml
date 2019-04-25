@@ -1,0 +1,47 @@
+﻿@page
+@model IndexModel
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.JobVacancies[0].Title)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.JobVacancies[0].JobTitle)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.JobVacancies[0].CompanyDepartment)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.JobVacancies[0].RequiredHires)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model.JobVacancies) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Title)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.JobTitle.Title)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CompanyDepartment.DetailedAddress)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.RequiredHires)
+            </td>
+            <td>
+                <a asp-page="./Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-area="Applicants" asp-page="Index" asp-route-id="@item.Id">View applicants</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

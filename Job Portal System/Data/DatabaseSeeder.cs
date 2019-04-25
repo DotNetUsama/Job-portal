@@ -83,6 +83,18 @@ namespace Job_Portal_System.Data
                 context.JobVacancyJobTypes.Attach(entity);
                 context.JobVacancyJobTypes.Remove(entity);
             }
+            foreach (var id in context.Applicants.Select(a => a.Id))
+            {
+                var entity = new Applicant { Id = id };
+                context.Applicants.Attach(entity);
+                context.Applicants.Remove(entity);
+            }
+            foreach (var id in context.UserNotifications.Select(a => a.Id))
+            {
+                var entity = new UserNotification { Id = id };
+                context.UserNotifications.Attach(entity);
+                context.UserNotifications.Remove(entity);
+            }
             context.SaveChanges();
             foreach (var id in context.JobVacancies.Select(e => e.Id))
             {
@@ -95,6 +107,12 @@ namespace Job_Portal_System.Data
                 var entity = new Resume { Id = id };
                 context.Resumes.Attach(entity);
                 context.Resumes.Remove(entity);
+            }
+            foreach (var id in context.Notifications.Select(a => a.Id))
+            {
+                var entity = new Notification { Id = id };
+                context.Notifications.Attach(entity);
+                context.Notifications.Remove(entity);
             }
             context.SaveChanges();
         }

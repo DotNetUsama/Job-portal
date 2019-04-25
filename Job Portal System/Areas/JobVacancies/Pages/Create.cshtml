@@ -35,7 +35,7 @@
                         </div>
                         <div class="form-group">
                             <label asp-for="JobVacancyInfo.Description"></label>
-                            <textarea asp-for="JobVacancyInfo.Description" class="form-control"></textarea>
+                            <textarea asp-for="JobVacancyInfo.Description" class="form-control" id="description"></textarea>
                             <span asp-validation-for="JobVacancyInfo.Description" class="validation-label text-danger"></span>
                         </div>
                         <div class="form-group">
@@ -253,5 +253,6 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <partial name="_EditorScriptPartial" />
     <partial name="_JobVacanciesScriptsPartial" />
 }
