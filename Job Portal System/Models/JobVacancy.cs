@@ -62,11 +62,11 @@ namespace Job_Portal_System.Models
         public string UserId { get; set; }
         public Recruiter Recruiter { get; set; }
 
-        public ICollection<EducationQualification> EducationQualifications { get; set; }
-        public ICollection<WorkExperienceQualification> WorkExperienceQualifications { get; set; }
-        public ICollection<DesiredSkill> DesiredSkills { get; set; }
-        public ICollection<JobVacancyJobType> JobTypes { get; set; }
-        public ICollection<Applicant> Applicants { get; set; }
+        public List<EducationQualification> EducationQualifications { get; set; }
+        public List<WorkExperienceQualification> WorkExperienceQualifications { get; set; }
+        public List<DesiredSkill> DesiredSkills { get; set; }
+        public List<JobVacancyJobType> JobTypes { get; set; }
+        public List<Applicant> Applicants { get; set; }
 
     }
 }

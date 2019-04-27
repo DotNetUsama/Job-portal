@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using System.Reflection;
-using Job_Portal_System.Data;
 using Job_Portal_System.Models;
-using Microsoft.EntityFrameworkCore;
 
 namespace Job_Portal_System.Enums
 {
@@ -17,6 +13,7 @@ namespace Job_Portal_System.Enums
         FinishedRecommendation,
         ApprovedRecommendation,
         CancelledApplicant,
+        CancelledJobVacancy,
         ApplicantDecide,
         ResumeRecommendation,
         // Sent to: Recruiter | When: An administrator approve recruiter account and his company info doesn't need to be edited

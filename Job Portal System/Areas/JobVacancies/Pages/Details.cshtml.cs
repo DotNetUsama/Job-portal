@@ -52,8 +52,8 @@ namespace Job_Portal_System.Areas.JobVacancies.Pages
             }
 
             IsOwner = JobVacancy.User.UserName == User.Identity.Name;
-            if ((JobVacancyMethod) JobVacancy.Method == JobVacancyMethod.Submission &&
-                (JobVacancyStatus) JobVacancy.Status == JobVacancyStatus.Open &&
+            if (JobVacancy.Method == (int)JobVacancyMethod.Submission &&
+                JobVacancy.Status == (int)JobVacancyStatus.Open &&
                 User.IsInRole("JobSeeker"))
             {
                 var jobSeeker = _context.JobSeekers
@@ -69,35 +69,6 @@ namespace Job_Portal_System.Areas.JobVacancies.Pages
                 CanSubmit = false;
             }
 
-            return Page();
-        }
-
-        public async Task<IActionResult> OnPostCloseAsync(string id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            JobVacancy = await _context.JobVacancies
-                .Include(j => j.User)
-                .SingleOrDefaultAsync(m => m.Id == id);
-
-            if (JobVacancy == null)
-            {
-                return NotFound();
-            }
-
-            if (JobVacancy.User.UserName != User.Identity.Name ||
-                (JobVacancyStatus) JobVacancy.Status != JobVacancyStatus.Open ||
-                (JobVacancyMethod) JobVacancy.Method != JobVacancyMethod.Submission)
-            {
-                return BadRequest();
-            }
-
-            JobVacancy.Status = (int)JobVacancyStatus.Closed;
-
-            //TODO: CLOSING JOB VACANCY USE CASE
             return Page();
         }
         

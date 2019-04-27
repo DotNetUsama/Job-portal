@@ -1,6 +1,5 @@
-﻿@page
+﻿@model Job_Portal_System.Models.Applicant
 @using Enums
-@model DetailsModel
 @{
     ViewData["Title"] = Model.JobVacancy.Title;
 }
@@ -15,7 +14,7 @@
             <div class="form-head">
                 <h1 class="form-head-title">@ViewData["Title"]</h1>
                 <span class="form-head-details @(((JobVacancyStatus) Model.JobVacancy.Status).GetCssClass())">
-                    @((JobVacancyStatus) Model.JobVacancy.Status)
+                    @((JobVacancyStatus)Model.JobVacancy.Status)
                 </span>
             </div>
             <div class="form-body">
@@ -57,12 +56,12 @@
                     </dl>
                     @if (!string.IsNullOrEmpty(Model.JobVacancy.Description))
                     {
-                    <div class="mt-3">
-                        <span class="d-block font-weight-little-bold">Description:</span>
-                        <div class="mt-2">
-                            @Html.Raw(Model.JobVacancy.Description)
+                        <div class="mt-3">
+                            <span class="d-block font-weight-little-bold">Description:</span>
+                            <div class="mt-2">
+                                @Html.Raw(Model.JobVacancy.Description)
+                            </div>
                         </div>
-                    </div>
                     }
                 </fieldset>
                 <hr />
@@ -157,44 +156,6 @@
                             }
                         </ul>
                     </fieldset>
-                }
-                @if (Model.CanSubmit || Model.IsOwner)
-                {
-                    <hr />
-                    if (Model.CanSubmit)
-                    {
-                        <div class="d-flex">
-                            <form method="post" class="ml-auto">
-                                <button asp-page-handler="submit"
-                                        asp-route-id="@Model.JobVacancy.Id"
-                                        class="btn btn-submit">
-                                    Submit
-                                </button>
-                            </form>
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="d-flex">
-                            <a asp-area="Applicants"
-                               asp-page="Index"
-                               asp-route-jobVacancyId="@Model.JobVacancy.Id"
-                               class="btn btn-submit">
-                                View applicants
-                            </a>
-                            @if (Model.JobVacancy.Method == (int)JobVacancyMethod.Submission &&
-                               Model.JobVacancy.Status == (int)JobVacancyStatus.Open)
-                            {
-                                <form asp-controller="JobVacancies" 
-                                      asp-action="Close" 
-                                      asp-route-id="@Model.JobVacancy.Id"
-                                      method="post" 
-                                      class="ml-auto">
-                                    <button class="btn btn-submit">Close</button>
-                                </form>
-                            }
-                        </div>
-                    }
                 }
             </div>
         </div>
