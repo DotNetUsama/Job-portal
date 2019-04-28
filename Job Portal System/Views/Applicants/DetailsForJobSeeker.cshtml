@@ -1,4 +1,4 @@
-﻿@model Job_Portal_System.Models.Applicant
+﻿@model Models.Applicant
 @using Enums
 @{
     ViewData["Title"] = Model.JobVacancy.Title;
@@ -11,11 +11,12 @@
                  aria-valuemin="0" aria-valuemax="100"></div>
         </div>
         <div class="form-container">
-            <div class="form-head">
+            <div class="form-head2">
                 <h1 class="form-head-title">@ViewData["Title"]</h1>
-                <span class="form-head-details @(((JobVacancyStatus) Model.JobVacancy.Status).GetCssClass())">
-                    @((JobVacancyStatus)Model.JobVacancy.Status)
+                <span class="@(((ApplicantStatus) Model.Status).GetCssClass())">
+                    @(((ApplicantStatus)Model.Status).GetDescription())
                 </span>
+                <p class="form-head-details">Submitted at: @Model.SubmittedAt.ToString("d")</p>
             </div>
             <div class="form-body">
                 <fieldset id="general-info-partial">
@@ -156,6 +157,26 @@
                             }
                         </ul>
                     </fieldset>
+                }
+                @{
+                    var nextStates = ((ApplicantStatus)Model.Status).NextStates(UserType.Recruiter);
+                    if (nextStates.Count > 0)
+                    {
+                        <hr />
+                        foreach (var state in nextStates)
+                        {
+                            <form asp-controller="Applicants"
+                                  asp-action="ChangeState"
+                                  asp-route-id="@Model.Id"
+                                  asp-route-state="@((int)state)"
+                                  class="d-inline"
+                                  method="post">
+                                <button class="btn btn-sm mr-2 @state.GetBtnCssClass()">
+                                    @state.GetActionName()
+                                </button>
+                            </form>
+                        }
+                    }
                 }
             </div>
         </div>

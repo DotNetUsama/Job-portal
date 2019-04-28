@@ -232,14 +232,13 @@ body {
 
 .form-container .form-head {
     display: flex;
-    margin-bottom: 25px
+    margin-bottom: 25px;
 }
 
 .form-container .form-head .form-head-title {
     font-size: 1.7em;
     display: inline;
     text-align: left;
-    margin: 0;
 }
 
 .form-container .form-head .form-head-details {
@@ -247,6 +246,23 @@ body {
     color: gray;
     margin-left: auto;
     align-self: flex-end;
+}
+
+
+.form-container .form-head2 {
+    display: block;
+    margin-bottom: 20px;
+}
+
+.form-container .form-head2 .form-head-title {
+    font-size: 1.7em;
+    margin: 0;
+}
+
+.form-container .form-head2 .form-head-details {
+    font-size: 0.8em;
+    color: gray;
+    margin: 0;
 }
 
 .form-container .form-body .tab {

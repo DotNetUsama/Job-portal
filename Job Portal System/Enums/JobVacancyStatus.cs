@@ -14,7 +14,7 @@ namespace Job_Portal_System.Enums
         {
             switch (status)
             {
-                case JobVacancyStatus.Open: return "badge badge-info text-white";
+                case JobVacancyStatus.Open: return "badge badge-success text-white";
                 case JobVacancyStatus.Closed: return "badge badge-danger text-white";
                 case JobVacancyStatus.Finished: return "badge badge-secondary text-white";
                 default: return null;

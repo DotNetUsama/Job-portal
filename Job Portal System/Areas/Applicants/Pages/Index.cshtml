@@ -7,22 +7,19 @@
 
 <div class="jumbotron jumbotron-fluid py-4 bg-form-background">
     <div class="container">
-        <div class="position-relative">
-            <span class="position-absolute badge badge-info" style="right: 15px; font-size: 1rem;">
-                @((JobVacancyStatus)Model.JobVacancy.Status)
-            </span>
-        </div>
         <h1 class="display-4">@ViewData["Title"]</h1>
-        <p class="lead pl-3">@Model.JobVacancy.JobTitle.Title | <i class="fa fa-building"></i> @Model.JobVacancy.CompanyDepartment.City.Name (@Model.JobVacancy.CompanyDepartment.DetailedAddress)</p>
-        <div class="pl-3">
-            @if (Model.JobVacancy.Status == (int) JobVacancyStatus.Open)
+        <span class="@(((JobVacancyStatus) Model.JobVacancy.Status).GetCssClass())">
+            @((JobVacancyStatus)Model.JobVacancy.Status)
+        </span>
+        <p class="lead">@Model.JobVacancy.JobTitle.Title | <i class="fa fa-building"></i> @Model.JobVacancy.CompanyDepartment.City.Name (@Model.JobVacancy.CompanyDepartment.DetailedAddress)</p>
+        <div class="d-flex">
+            @if (Model.JobVacancy.Status == (int)JobVacancyStatus.Open)
             {
-                
-                <form asp-controller="JobVacancies" 
-                      asp-action="Close" 
+                <form asp-controller="JobVacancies"
+                      asp-action="Close"
                       asp-route-id="@Model.JobVacancy.Id"
                       class="d-inline"
-                      method="post" >
+                      method="post">
                     <button class="btn btn-danger btn-sm mr-2">Close</button>
                 </form>
             }
@@ -30,6 +27,19 @@
                asp-page="Details"
                asp-route-id="@Model.JobVacancy.Id"
                class="btn btn-info btn-sm">Details</a>
+
+            @if (Model.JobVacancy.Status == (int)JobVacancyStatus.Closed
+               && Model.JobVacancy.AwaitingApplicants == 0
+               && Model.JobVacancy.Applicants.Count != 0)
+            {
+                <form asp-controller="JobVacancies"
+                      asp-action="FinalDecision"
+                      asp-route-id="@Model.JobVacancy.Id"
+                      class="ml-auto"
+                      method="post">
+                    <button class="btn btn-success btn-sm">Final decision</button>
+                </form>
+            }
         </div>
     </div>
 </div>
@@ -70,7 +80,7 @@ else
                         @(((ApplicantStatus)item.Status).GetDescription())
                     </td>
                     <td>
-                        <a asp-controller="Applicants" 
+                        <a asp-controller="Applicants"
                            asp-action="Details"
                            asp-route-id="@item.Id">Details</a>
                     </td>

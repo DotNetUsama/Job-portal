@@ -123,7 +123,6 @@ namespace Job_Portal_System.Areas.Identity.Pages.Account.Recruiter
             if (result.Succeeded)
             {
                 _logger.LogInformation("User created a new account with password.");
-
                 result = await _userManager.AddToRoleAsync(user, "PendingRecruiter");
                 if (result.Succeeded)
                 {

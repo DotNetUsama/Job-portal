@@ -39,8 +39,8 @@ namespace Job_Portal_System.Models
         public int Method { get; set; }
 
         public int Status { get; set; } = (int)JobVacancyStatus.Open;
-        
-        public int? AwaitingApplicants { get; set; }
+
+        public int AwaitingApplicants { get; set; } = 0;
 
         [DataType(DataType.Date)]
         [Display(Name = "Published at")]

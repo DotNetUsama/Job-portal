@@ -1,7 +1,7 @@
-﻿@model Job_Portal_System.Models.Applicant
-@using Job_Portal_System.Enums
+﻿@model Models.Applicant
+@using Enums
 @{
-    ViewData["Title"] = $"Resume of {Model.Resume.User.FirstName} {Model.Resume.User.FirstName}";
+    ViewData["Title"] = $"Resume of {Model.Resume.User.FirstName} {Model.Resume.User.LastName}";
 }
 
 <div class="row">
@@ -11,16 +11,20 @@
                  aria-valuemin="0" aria-valuemax="100"></div>
         </div>
         <div class="form-container">
-            <div class="form-head">
+            <div class="form-head2">
                 <h1 class="form-head-title">@ViewData["Title"]</h1>
-                <span class="form-head-details">@Model.SubmittedAt.ToString("d")</span>
+                <span class="@(((ApplicantStatus) Model.Status).GetCssClass())">
+                    @(((ApplicantStatus)Model.Status).GetDescription())
+                </span>
+                <p class="form-head-details">Submitted at: @Model.SubmittedAt.ToString("d")</p>
+                <p class="form-head-details">Job vacancy: <a href="/JobVacancies/Details?id=@Model.JobVacancy.Id">@Model.JobVacancy.Title</a></p>
             </div>
             <div class="form-body">
                 <fieldset id="educations-partial">
                     <legend><i class="fa fa-graduation-cap"></i> Educations</legend>
                     @if (Model.Resume.Educations.Count == 0)
                     {
-                        <p style="font-family: 'Nanum Gothic', sans-serif;">No educations added to this resume</p>
+                        <p>No educations added to this resume</p>
                     }
                     else
                     {
@@ -69,7 +73,7 @@
 
                     @if (Model.Resume.WorkExperiences.Count == 0)
                     {
-                        <p style="font-family: 'Nanum Gothic', sans-serif;">No work experiences added to this resume</p>
+                        <p>No work experiences added to this resume</p>
                     }
                     else
                     {
@@ -135,7 +139,7 @@
 
                     @if (Model.Resume.OwnedSkills.Count == 0)
                     {
-                        <p style="font-family: 'Nanum Gothic', sans-serif;">No skills added to this resume</p>
+                        <p>No skills added to this resume</p>
                     }
                     else
                     {
@@ -157,6 +161,26 @@
                         </ul>
                     }
                 </fieldset>
+                @{
+                    var nextStates = ((ApplicantStatus)Model.Status).NextStates(UserType.Recruiter);
+                    if (nextStates.Count > 0)
+                    {
+                        <hr />
+                        foreach (var status in nextStates)
+                        {
+                            <form asp-controller="Applicants"
+                                  asp-action="ChangeStatus"
+                                  asp-route-id="@Model.Id"
+                                  asp-route-status="@((int)status)"
+                                  class="d-inline"
+                                  method="post">
+                                <button class="btn btn-sm mr-2 @status.GetBtnCssClass()">
+                                    @status.GetActionName()
+                                </button>
+                            </form>
+                        }
+                    }
+                }
             </div>
         </div>
     </div>

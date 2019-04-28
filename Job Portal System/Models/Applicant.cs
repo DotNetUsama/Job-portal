@@ -19,6 +19,7 @@ namespace Job_Portal_System.Models
         public DateTime SubmittedAt { get; set; } = DateTime.Now;
 
         public User Recruiter { get; set; }
+        public string RecruiterId { get; set; }
 
         [Display(Name = "Seeker")]
         public User JobSeeker { get; set; }

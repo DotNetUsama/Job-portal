@@ -77,6 +77,7 @@ namespace Job_Portal_System.Handlers
                 JobSeeker = resume.User,
                 Resume = resume,
             });
+            jobVacancy.AwaitingApplicants++;
 
             await context.SendNotificationAsync(hubContext, new Notification
             {

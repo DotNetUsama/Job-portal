@@ -11,10 +11,13 @@ namespace Job_Portal_System.Enums
         [Description("Received submission")]
         ReceivedSubmission,
         FinishedRecommendation,
-        ApprovedRecommendation,
+        RecommendationAccepted,
+        MeetingAccepted,
+        MeetingRejected,
         CancelledApplicant,
         CancelledJobVacancy,
-        ApplicantDecide,
+        ApplicantAccepted,
+        ApplicantRejected,
         ResumeRecommendation,
         // Sent to: Recruiter | When: An administrator approve recruiter account and his company info doesn't need to be edited
         [Description("Account approved")]
@@ -28,6 +31,8 @@ namespace Job_Portal_System.Enums
         // Sent to: All administrators | When: A recruiter account is registered
         [Description("Recruiter approval")]
         RecruiterApproval,
+
+        Other,
     }
 
     public static class NotificationTypeMethods
