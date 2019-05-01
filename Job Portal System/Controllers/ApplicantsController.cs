@@ -109,7 +109,7 @@ namespace Job_Portal_System.Controllers
                     jobVacancy = await _context.JobVacancies
                         .SingleOrDefaultAsync(j => j.Id == applicant.JobVacancyId);
                     jobVacancy.AwaitingApplicants--;
-                    return;
+                    break;
                 case ApplicantStatus.WaitingRecruiterDecision:
                 case ApplicantStatus.AcceptMeeting:
                 case ApplicantStatus.RejectMeeting:
@@ -123,13 +123,14 @@ namespace Job_Portal_System.Controllers
                         Peer1 = recruiter.FirstName,
                         Peer2 = jobVacancy.Title,
                     }, recruiter);
-                    return;
+                    break;
 
                 case ApplicantStatus.RejectedRecommendation:
                 case ApplicantStatus.AcceptedByRecruiter:
                 case ApplicantStatus.RejectedByRecruiter:
                     break;
                 case ApplicantStatus.PendingRecommendation:
+                case ApplicantStatus.Other:
                     return;
                 default:
                     return;

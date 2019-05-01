@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Job_Portal_System.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20190425161605_EditNotificationsTableStructure")]
-    partial class EditNotificationsTableStructure
+    [Migration("20190430174542_AlterDecisionTreeFileToDeciderTreeFile")]
+    partial class AlterDecisionTreeFileToDeciderTreeFile
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -149,13 +149,13 @@ namespace Job_Portal_System.Migrations
 
                     b.Property<string>("JobVacancyId");
 
-                    b.Property<double?>("Min");
+                    b.Property<double>("Min");
 
                     b.Property<int>("MinimumYears");
 
-                    b.Property<double?>("Range");
+                    b.Property<double>("Range");
 
-                    b.Property<string>("SkillId");
+                    b.Property<long>("SkillId");
 
                     b.Property<int>("Type");
 
@@ -177,14 +177,13 @@ namespace Job_Portal_System.Migrations
 
                     b.Property<DateTime?>("EndDate");
 
-                    b.Property<long?>("FieldOfStudyId");
+                    b.Property<long>("FieldOfStudyId");
 
                     b.Property<string>("ResumeId");
 
                     b.Property<string>("SchoolId");
 
-                    b.Property<DateTime?>("StartDate")
-                        .IsRequired();
+                    b.Property<DateTime>("StartDate");
 
                     b.HasKey("Id");
 
@@ -204,15 +203,15 @@ namespace Job_Portal_System.Migrations
 
                     b.Property<int>("Degree");
 
-                    b.Property<long?>("FieldOfStudyId");
+                    b.Property<long>("FieldOfStudyId");
 
                     b.Property<string>("JobVacancyId");
 
-                    b.Property<double?>("Min");
+                    b.Property<double>("Min");
 
                     b.Property<int>("MinimumYears");
 
-                    b.Property<double?>("Range");
+                    b.Property<double>("Range");
 
                     b.Property<int>("Type");
 
@@ -312,11 +311,11 @@ namespace Job_Portal_System.Migrations
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<int?>("AwaitingApplicants");
+                    b.Property<int>("AwaitingApplicants");
 
                     b.Property<string>("CompanyDepartmentId");
 
-                    b.Property<string>("DecisionTreeFile")
+                    b.Property<string>("DeciderFile")
                         .HasMaxLength(64);
 
                     b.Property<string>("Description")
@@ -330,9 +329,13 @@ namespace Job_Portal_System.Migrations
 
                     b.Property<int>("Method");
 
+                    b.Property<double>("Min");
+
                     b.Property<double>("MinSalary");
 
                     b.Property<DateTime>("PublishedAt");
+
+                    b.Property<double>("Range");
 
                     b.Property<string>("RecruiterId");
 
@@ -402,7 +405,7 @@ namespace Job_Portal_System.Migrations
 
                     b.Property<string>("ResumeId");
 
-                    b.Property<string>("SkillId");
+                    b.Property<long>("SkillId");
 
                     b.Property<int>("Years");
 
@@ -537,8 +540,9 @@ namespace Job_Portal_System.Migrations
 
             modelBuilder.Entity("Job_Portal_System.Models.Skill", b =>
                 {
-                    b.Property<string>("Id")
-                        .ValueGeneratedOnAdd();
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -580,12 +584,11 @@ namespace Job_Portal_System.Migrations
 
                     b.Property<DateTime?>("EndDate");
 
-                    b.Property<long?>("JobTitleId");
+                    b.Property<long>("JobTitleId");
 
                     b.Property<string>("ResumeId");
 
-                    b.Property<DateTime?>("StartDate")
-                        .IsRequired();
+                    b.Property<DateTime>("StartDate");
 
                     b.HasKey("Id");
 
@@ -603,15 +606,15 @@ namespace Job_Portal_System.Migrations
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<long?>("JobTitleId");
+                    b.Property<long>("JobTitleId");
 
                     b.Property<string>("JobVacancyId");
 
-                    b.Property<double?>("Min");
+                    b.Property<double>("Min");
 
                     b.Property<int>("MinimumYears");
 
-                    b.Property<double?>("Range");
+                    b.Property<double>("Range");
 
                     b.Property<int>("Type");
 
@@ -860,14 +863,16 @@ namespace Job_Portal_System.Migrations
 
                     b.HasOne("Job_Portal_System.Models.Skill", "Skill")
                         .WithMany()
-                        .HasForeignKey("SkillId");
+                        .HasForeignKey("SkillId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Job_Portal_System.Models.Education", b =>
                 {
                     b.HasOne("Job_Portal_System.Models.FieldOfStudy", "FieldOfStudy")
                         .WithMany()
-                        .HasForeignKey("FieldOfStudyId");
+                        .HasForeignKey("FieldOfStudyId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Job_Portal_System.Models.Resume", "Resume")
                         .WithMany("Educations")
@@ -882,7 +887,8 @@ namespace Job_Portal_System.Migrations
                 {
                     b.HasOne("Job_Portal_System.Models.FieldOfStudy", "FieldOfStudy")
                         .WithMany()
-                        .HasForeignKey("FieldOfStudyId");
+                        .HasForeignKey("FieldOfStudyId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Job_Portal_System.Models.JobVacancy", "JobVacancy")
                         .WithMany("EducationQualifications")
@@ -952,7 +958,8 @@ namespace Job_Portal_System.Migrations
 
                     b.HasOne("Job_Portal_System.Models.Skill", "Skill")
                         .WithMany()
-                        .HasForeignKey("SkillId");
+                        .HasForeignKey("SkillId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Job_Portal_System.Models.Recruiter", b =>
@@ -1021,7 +1028,8 @@ namespace Job_Portal_System.Migrations
 
                     b.HasOne("Job_Portal_System.Models.JobTitle", "JobTitle")
                         .WithMany()
-                        .HasForeignKey("JobTitleId");
+                        .HasForeignKey("JobTitleId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Job_Portal_System.Models.Resume", "Resume")
                         .WithMany("WorkExperiences")
@@ -1032,7 +1040,8 @@ namespace Job_Portal_System.Migrations
                 {
                     b.HasOne("Job_Portal_System.Models.JobTitle", "JobTitle")
                         .WithMany()
-                        .HasForeignKey("JobTitleId");
+                        .HasForeignKey("JobTitleId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Job_Portal_System.Models.JobVacancy", "JobVacancy")
                         .WithMany("WorkExperienceQualifications")

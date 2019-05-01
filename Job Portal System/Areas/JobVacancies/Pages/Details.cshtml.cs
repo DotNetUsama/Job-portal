@@ -26,6 +26,7 @@ namespace Job_Portal_System.Areas.JobVacancies.Pages
 
         public JobVacancy JobVacancy { get; set; }
         public bool IsOwner { get; set; }
+        public bool CanClose { get; set; }
         public bool CanSubmit { get; set; }
 
         public async Task<IActionResult> OnGetAsync(string id)
@@ -52,21 +53,30 @@ namespace Job_Portal_System.Areas.JobVacancies.Pages
             }
 
             IsOwner = JobVacancy.User.UserName == User.Identity.Name;
-            if (JobVacancy.Method == (int)JobVacancyMethod.Submission &&
-                JobVacancy.Status == (int)JobVacancyStatus.Open &&
-                User.IsInRole("JobSeeker"))
+
+            if (IsOwner)
             {
-                var jobSeeker = _context.JobSeekers
-                    .Include(j => j.User)
-                    .SingleOrDefault(j => j.User.UserName == User.Identity.Name);
-                CanSubmit = jobSeeker != null && jobSeeker.IsSeeking &&
-                            _context.Resumes.Any(r => r.JobSeekerId == jobSeeker.Id) &&
-                            !_context.Applicants.Any(a => a.JobVacancyId == JobVacancy.Id 
-                                                         && a.JobSeekerId == jobSeeker.User.Id);
+                CanClose = JobVacancy.Status == (int) JobVacancyStatus.Open &&
+                           _context.Applicants.Count(a => a.JobVacancyId == JobVacancy.Id) != 0;
             }
             else
             {
-                CanSubmit = false;
+                if (JobVacancy.Method == (int)JobVacancyMethod.Submission &&
+                    JobVacancy.Status == (int)JobVacancyStatus.Open &&
+                    User.IsInRole("JobSeeker"))
+                {
+                    var jobSeeker = _context.JobSeekers
+                        .Include(j => j.User)
+                        .SingleOrDefault(j => j.User.UserName == User.Identity.Name);
+                    CanSubmit = jobSeeker != null && jobSeeker.IsSeeking &&
+                                _context.Resumes.Any(r => r.JobSeekerId == jobSeeker.Id) &&
+                                !_context.Applicants.Any(a => a.JobVacancyId == JobVacancy.Id
+                                                              && a.JobSeekerId == jobSeeker.User.Id);
+                }
+                else
+                {
+                    CanSubmit = false;
+                }
             }
 
             return Page();

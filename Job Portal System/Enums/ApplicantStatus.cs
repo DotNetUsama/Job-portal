@@ -26,6 +26,7 @@ namespace Job_Portal_System.Enums
         AcceptMeeting,
         [Description("Reject meeting")]
         RejectMeeting,
+        Other
     }
 
     public static class ApplicantStatusMethods
@@ -127,6 +128,48 @@ namespace Job_Portal_System.Enums
                     return NotificationType.Other;
                 default:
                     return NotificationType.Other;
+            }
+        }
+
+        public static ApplicantStatus GetFinal(this ApplicantStatus status)
+        {
+            switch (status)
+            {
+                case ApplicantStatus.DummyAccepted: return ApplicantStatus.AcceptedByRecruiter;
+                case ApplicantStatus.DummyRejected: return ApplicantStatus.RejectedByRecruiter;
+
+                case ApplicantStatus.PendingRecommendation:
+                case ApplicantStatus.RejectedRecommendation:
+                case ApplicantStatus.WaitingRecruiterDecision:
+                case ApplicantStatus.AcceptedByRecruiter:
+                case ApplicantStatus.RejectedByRecruiter:
+                case ApplicantStatus.AcceptMeeting:
+                case ApplicantStatus.RejectMeeting:
+                case ApplicantStatus.Other:
+                    return ApplicantStatus.Other;
+                default:
+                    return ApplicantStatus.Other;
+            }
+        }
+
+        public static bool IsAccepted(this ApplicantStatus status)
+        {
+            switch (status)
+            {
+                case ApplicantStatus.AcceptedByRecruiter:
+                    return true;
+                case ApplicantStatus.PendingRecommendation:
+                case ApplicantStatus.RejectedRecommendation:
+                case ApplicantStatus.WaitingRecruiterDecision:
+                case ApplicantStatus.DummyAccepted:
+                case ApplicantStatus.DummyRejected:
+                case ApplicantStatus.RejectedByRecruiter:
+                case ApplicantStatus.AcceptMeeting:
+                case ApplicantStatus.RejectMeeting:
+                case ApplicantStatus.Other:
+                    return false;
+                default:
+                    return false;
             }
         }
 

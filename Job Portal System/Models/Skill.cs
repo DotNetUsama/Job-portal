@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Job_Portal_System.Models
 {
     public class Skill
     {
-        public string Id { get; set; }
+        public long Id { get; set; }
 
         [Required]
         [StringLength(50)]

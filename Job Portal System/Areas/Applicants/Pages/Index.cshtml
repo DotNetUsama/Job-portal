@@ -13,7 +13,8 @@
         </span>
         <p class="lead">@Model.JobVacancy.JobTitle.Title | <i class="fa fa-building"></i> @Model.JobVacancy.CompanyDepartment.City.Name (@Model.JobVacancy.CompanyDepartment.DetailedAddress)</p>
         <div class="d-flex">
-            @if (Model.JobVacancy.Status == (int)JobVacancyStatus.Open)
+            @if (Model.JobVacancy.Status == (int)JobVacancyStatus.Open &&
+                 Model.JobVacancy.Applicants.Count != 0)
             {
                 <form asp-controller="JobVacancies"
                       asp-action="Close"

@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 using Job_Portal_System.Enums;
-using Microsoft.AspNetCore.Identity;
 
 namespace Job_Portal_System.Models
 {
@@ -42,6 +39,9 @@ namespace Job_Portal_System.Models
 
         public int AwaitingApplicants { get; set; } = 0;
 
+        public double Min { get; set; }
+        public double Range { get; set; } = 1;
+
         [DataType(DataType.Date)]
         [Display(Name = "Published at")]
         public DateTime PublishedAt { get; set; } = DateTime.Now;
@@ -51,7 +51,7 @@ namespace Job_Portal_System.Models
         public DateTime? FinishedAt { get; set; }
 
         [StringLength(64)]
-        public string DecisionTreeFile { get; set; }
+        public string DeciderFile { get; set; }
 
         [Display(Name = "Department")]
         public CompanyDepartment CompanyDepartment { get; set; }
@@ -68,5 +68,10 @@ namespace Job_Portal_System.Models
         public List<JobVacancyJobType> JobTypes { get; set; }
         public List<Applicant> Applicants { get; set; }
 
+        public void SetMinAndRange(double min, double range)
+        {
+            Min = min;
+            Range = range;
+        }
     }
 }

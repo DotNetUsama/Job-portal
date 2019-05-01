@@ -1,18 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
+using Job_Portal_System.RankingSystem.Interfaces;
 
 namespace Job_Portal_System.Models
 {
-    public class WorkExperience
+    public class WorkExperience : INumerable
     {
         public string Id { get; set; }
 
         [Required]
         [DataType(DataType.Date)]
-        public DateTime? StartDate { get; set; }
+        public DateTime StartDate { get; set; }
 
         [DataType(DataType.Date)]
         public DateTime? EndDate { get; set; }
@@ -22,6 +20,12 @@ namespace Job_Portal_System.Models
 
         public Resume Resume { get; set; }
         public JobTitle JobTitle { get; set; }
+        public long JobTitleId { get; set; }
         public Company Company { get; set; }
+
+        public long ToNumber()
+        {
+            return JobTitleId;
+        }
     }
 }

@@ -183,8 +183,7 @@
                                class="btn btn-submit">
                                 View applicants
                             </a>
-                            @if (Model.JobVacancy.Method == (int)JobVacancyMethod.Submission &&
-                               Model.JobVacancy.Status == (int)JobVacancyStatus.Open)
+                            @if (Model.CanClose)
                             {
                                 <form asp-controller="JobVacancies" 
                                       asp-action="Close" 

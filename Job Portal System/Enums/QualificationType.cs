@@ -19,5 +19,15 @@ namespace Job_Portal_System.Enums
                 default: return null;
             }
         }
+
+        public static double GetWeight(this QualificationType qualificationType)
+        {
+            switch (qualificationType)
+            {
+                case QualificationType.Preferred: return 1;
+                case QualificationType.Required: return 2;
+                default: return 0;
+            }
+        }
     }
 }

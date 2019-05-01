@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
+using Job_Portal_System.RankingSystem.Interfaces;
 
 namespace Job_Portal_System.Models
 {
-    public class Education
+    public class Education : INumerable
     {
         public string Id { get; set; }
 
@@ -15,13 +13,20 @@ namespace Job_Portal_System.Models
 
         [Required]
         [DataType(DataType.Date)]
-        public DateTime? StartDate { get; set; }
+        public DateTime StartDate { get; set; }
 
         [DataType(DataType.Date)]
         public DateTime? EndDate { get; set; }
 
         public Resume Resume { get; set; }
         public FieldOfStudy FieldOfStudy { get; set; }
+        public long FieldOfStudyId { get; set; }
+
         public School School { get; set; }
+
+        public long ToNumber()
+        {
+            return FieldOfStudyId;
+        }
     }
 }

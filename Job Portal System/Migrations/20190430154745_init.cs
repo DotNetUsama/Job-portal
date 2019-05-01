@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Job_Portal_System.Migrations
 {
-    public partial class Initialize : Migration
+    public partial class init : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -76,7 +76,8 @@ namespace Job_Portal_System.Migrations
                     EmployeesNum = table.Column<int>(nullable: true),
                     Email = table.Column<string>(nullable: true),
                     Website = table.Column<string>(nullable: true),
-                    Description = table.Column<string>(nullable: true)
+                    Description = table.Column<string>(nullable: true),
+                    Approved = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -89,7 +90,7 @@ namespace Job_Portal_System.Migrations
                 {
                     Id = table.Column<long>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    Title = table.Column<string>(maxLength: 50, nullable: false)
+                    Title = table.Column<string>(maxLength: 70, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -102,7 +103,7 @@ namespace Job_Portal_System.Migrations
                 {
                     Id = table.Column<long>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    Title = table.Column<string>(maxLength: 50, nullable: false)
+                    Title = table.Column<string>(maxLength: 70, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -115,6 +116,7 @@ namespace Job_Portal_System.Migrations
                 {
                     Id = table.Column<string>(nullable: false),
                     Type = table.Column<int>(nullable: false),
+                    EntityId = table.Column<string>(nullable: true),
                     Peer1 = table.Column<string>(nullable: true),
                     Peer2 = table.Column<string>(nullable: true),
                     CreatedAt = table.Column<DateTime>(nullable: false)
@@ -152,7 +154,8 @@ namespace Job_Portal_System.Migrations
                 name: "Skills",
                 columns: table => new
                 {
-                    Id = table.Column<string>(nullable: false),
+                    Id = table.Column<long>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     Title = table.Column<string>(maxLength: 50, nullable: false)
                 },
                 constraints: table =>
@@ -334,8 +337,7 @@ namespace Job_Portal_System.Migrations
                     Id = table.Column<string>(nullable: false),
                     DetailedAddress = table.Column<string>(maxLength: 255, nullable: false),
                     CityId = table.Column<string>(nullable: true),
-                    CompanyId1 = table.Column<string>(nullable: true),
-                    CompanyId = table.Column<long>(nullable: false)
+                    CompanyId = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -347,8 +349,8 @@ namespace Job_Portal_System.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_CompanyDepartments_Companies_CompanyId1",
-                        column: x => x.CompanyId1,
+                        name: "FK_CompanyDepartments_Companies_CompanyId",
+                        column: x => x.CompanyId,
                         principalTable: "Companies",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -494,11 +496,13 @@ namespace Job_Portal_System.Migrations
                     RequiredHires = table.Column<int>(nullable: false),
                     Method = table.Column<int>(nullable: false),
                     Status = table.Column<int>(nullable: false),
-                    AwaitingApplicants = table.Column<int>(nullable: true),
+                    AwaitingApplicants = table.Column<int>(nullable: false),
+                    Min = table.Column<double>(nullable: false),
+                    Range = table.Column<double>(nullable: false),
                     PublishedAt = table.Column<DateTime>(nullable: false),
                     FinishedAt = table.Column<DateTime>(nullable: true),
                     DecisionTreeFile = table.Column<string>(maxLength: 64, nullable: true),
-                    CityId = table.Column<string>(nullable: true),
+                    CompanyDepartmentId = table.Column<string>(nullable: true),
                     JobTitleId = table.Column<long>(nullable: true),
                     UserId = table.Column<string>(nullable: true),
                     RecruiterId = table.Column<string>(nullable: true)
@@ -507,9 +511,9 @@ namespace Job_Portal_System.Migrations
                 {
                     table.PrimaryKey("PK_JobVacancies", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_JobVacancies_Cities_CityId",
-                        column: x => x.CityId,
-                        principalTable: "Cities",
+                        name: "FK_JobVacancies_CompanyDepartments_CompanyDepartmentId",
+                        column: x => x.CompanyDepartmentId,
+                        principalTable: "CompanyDepartments",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
@@ -541,7 +545,7 @@ namespace Job_Portal_System.Migrations
                     StartDate = table.Column<DateTime>(nullable: false),
                     EndDate = table.Column<DateTime>(nullable: true),
                     ResumeId = table.Column<string>(nullable: true),
-                    FieldOfStudyId = table.Column<long>(nullable: true),
+                    FieldOfStudyId = table.Column<long>(nullable: false),
                     SchoolId = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
@@ -552,7 +556,7 @@ namespace Job_Portal_System.Migrations
                         column: x => x.FieldOfStudyId,
                         principalTable: "FieldOfStudies",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Educations_Resumes_ResumeId",
                         column: x => x.ResumeId,
@@ -574,7 +578,7 @@ namespace Job_Portal_System.Migrations
                     Id = table.Column<string>(nullable: false),
                     Years = table.Column<int>(nullable: false),
                     ResumeId = table.Column<string>(nullable: true),
-                    SkillId = table.Column<string>(nullable: true)
+                    SkillId = table.Column<long>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -590,7 +594,7 @@ namespace Job_Portal_System.Migrations
                         column: x => x.SkillId,
                         principalTable: "Skills",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -646,7 +650,7 @@ namespace Job_Portal_System.Migrations
                     EndDate = table.Column<DateTime>(nullable: true),
                     Description = table.Column<string>(nullable: true),
                     ResumeId = table.Column<string>(nullable: true),
-                    JobTitleId = table.Column<long>(nullable: true),
+                    JobTitleId = table.Column<long>(nullable: false),
                     CompanyId = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
@@ -663,7 +667,7 @@ namespace Job_Portal_System.Migrations
                         column: x => x.JobTitleId,
                         principalTable: "JobTitles",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_WorkExperiences_Resumes_ResumeId",
                         column: x => x.ResumeId,
@@ -720,10 +724,10 @@ namespace Job_Portal_System.Migrations
                     Id = table.Column<string>(nullable: false),
                     Type = table.Column<int>(nullable: false),
                     MinimumYears = table.Column<int>(nullable: false),
-                    Min = table.Column<double>(nullable: true),
-                    Range = table.Column<double>(nullable: true),
+                    Min = table.Column<double>(nullable: false),
+                    Range = table.Column<double>(nullable: false),
                     JobVacancyId = table.Column<string>(nullable: true),
-                    SkillId = table.Column<string>(nullable: true)
+                    SkillId = table.Column<long>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -739,7 +743,7 @@ namespace Job_Portal_System.Migrations
                         column: x => x.SkillId,
                         principalTable: "Skills",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -750,10 +754,10 @@ namespace Job_Portal_System.Migrations
                     Type = table.Column<int>(nullable: false),
                     MinimumYears = table.Column<int>(nullable: false),
                     Degree = table.Column<int>(nullable: false),
-                    Min = table.Column<double>(nullable: true),
-                    Range = table.Column<double>(nullable: true),
+                    Min = table.Column<double>(nullable: false),
+                    Range = table.Column<double>(nullable: false),
                     JobVacancyId = table.Column<string>(nullable: true),
-                    FieldOfStudyId = table.Column<long>(nullable: true)
+                    FieldOfStudyId = table.Column<long>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -763,7 +767,7 @@ namespace Job_Portal_System.Migrations
                         column: x => x.FieldOfStudyId,
                         principalTable: "FieldOfStudies",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_EducationQualifications_JobVacancies_JobVacancyId",
                         column: x => x.JobVacancyId,
@@ -798,10 +802,10 @@ namespace Job_Portal_System.Migrations
                     Id = table.Column<string>(nullable: false),
                     Type = table.Column<int>(nullable: false),
                     MinimumYears = table.Column<int>(nullable: false),
-                    Min = table.Column<double>(nullable: true),
-                    Range = table.Column<double>(nullable: true),
+                    Min = table.Column<double>(nullable: false),
+                    Range = table.Column<double>(nullable: false),
                     JobVacancyId = table.Column<string>(nullable: true),
-                    JobTitleId = table.Column<long>(nullable: true)
+                    JobTitleId = table.Column<long>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -811,7 +815,7 @@ namespace Job_Portal_System.Migrations
                         column: x => x.JobTitleId,
                         principalTable: "JobTitles",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_WorkExperienceQualifications_JobVacancies_JobVacancyId",
                         column: x => x.JobVacancyId,
@@ -890,9 +894,9 @@ namespace Job_Portal_System.Migrations
                 column: "CityId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_CompanyDepartments_CompanyId1",
+                name: "IX_CompanyDepartments_CompanyId",
                 table: "CompanyDepartments",
-                column: "CompanyId1");
+                column: "CompanyId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_DesiredSkills_JobVacancyId",
@@ -955,9 +959,9 @@ namespace Job_Portal_System.Migrations
                 column: "SimilarTitleId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_JobVacancies_CityId",
+                name: "IX_JobVacancies_CompanyDepartmentId",
                 table: "JobVacancies",
-                column: "CityId");
+                column: "CompanyDepartmentId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_JobVacancies_JobTitleId",
@@ -1089,9 +1093,6 @@ namespace Job_Portal_System.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "CompanyDepartments");
-
-            migrationBuilder.DropTable(
                 name: "DesiredSkills");
 
             migrationBuilder.DropTable(
@@ -1155,7 +1156,7 @@ namespace Job_Portal_System.Migrations
                 name: "Resumes");
 
             migrationBuilder.DropTable(
-                name: "Cities");
+                name: "CompanyDepartments");
 
             migrationBuilder.DropTable(
                 name: "JobTitles");
@@ -1165,6 +1166,9 @@ namespace Job_Portal_System.Migrations
 
             migrationBuilder.DropTable(
                 name: "JobSeekers");
+
+            migrationBuilder.DropTable(
+                name: "Cities");
 
             migrationBuilder.DropTable(
                 name: "Companies");

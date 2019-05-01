@@ -2,22 +2,22 @@
 
 namespace Job_Portal_System.Migrations
 {
-    public partial class EditNotificationsTableStructure : Migration
+    public partial class AlterDecisionTreeFileToDeciderTreeFile : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.RenameColumn(
-                name: "Peer3",
-                table: "Notifications",
-                newName: "EntityId");
+                name: "DecisionTreeFile",
+                table: "JobVacancies",
+                newName: "DeciderFile");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.RenameColumn(
-                name: "EntityId",
-                table: "Notifications",
-                newName: "Peer3");
+                name: "DeciderFile",
+                table: "JobVacancies",
+                newName: "DecisionTreeFile");
         }
     }
 }

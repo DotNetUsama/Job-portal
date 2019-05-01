@@ -9,6 +9,8 @@
 
 
   <ItemGroup>
+    <PackageReference Include="Accord" Version="3.8.2-alpha" />
+    <PackageReference Include="Accord.MachineLearning.GPL" Version="3.8.0" />
     <PackageReference Include="dotNetRDF" Version="2.2.0" />
     <PackageReference Include="Font.Awesome" Version="5.8.1" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
@@ -20,6 +22,7 @@
 
   <ItemGroup>
     <Folder Include="Data\Migrations\" />
+    <Folder Include="Files\Evaluations\" />
   </ItemGroup>
 
 </Project>

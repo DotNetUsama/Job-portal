@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Job_Portal_System.Data;
 using Job_Portal_System.Enums;
 using Job_Portal_System.Models;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -87,7 +86,7 @@ namespace Job_Portal_System.Areas.JobVacancies.Pages
             public string Skill { get; set; }
 
             [HiddenInput]
-            public string SkillId { get; set; }
+            public long? SkillId { get; set; }
 
             [Required]
             [Display(Name = "Minimum years")]

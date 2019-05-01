@@ -11,7 +11,7 @@ namespace Job_Portal_System.Areas.Resumes.Pages.InputModels
         public string Skill { get; set; }
 
         [HiddenInput]
-        public string SkillId { get; set; }
+        public long? SkillId { get; set; }
 
         [Required]
         [Display(Name = "Years")]

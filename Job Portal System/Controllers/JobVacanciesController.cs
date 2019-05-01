@@ -2,25 +2,34 @@
 using System.Threading.Tasks;
 using Job_Portal_System.Data;
 using Job_Portal_System.Enums;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Job_Portal_System.Handlers;
+using Job_Portal_System.Models;
 using Job_Portal_System.SignalR;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
 
-namespace Job_Portal_System.Areas.JobVacancies
+namespace Job_Portal_System.Controllers
 {
     [Route("JobVacancies")]
     public class JobVacanciesController : Controller
     {
+        private readonly IHostingEnvironment _env;
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<User> _userManager;
         private readonly IHubContext<SignalRHub> _hubContext;
 
-        public JobVacanciesController(ApplicationDbContext context,
+        public JobVacanciesController(IHostingEnvironment env,
+            ApplicationDbContext context,
+            UserManager<User> userManager,
             IHubContext<SignalRHub> hubContext)
         {
+            _env = env;
             _context = context;
+            _userManager = userManager;
             _hubContext = hubContext;
         }
 
@@ -55,7 +64,6 @@ namespace Job_Portal_System.Areas.JobVacancies
         [Route("Submit")]
         public async Task<IActionResult> Submit(string id)
         {
-
             if (id == null)
             {
                 return NotFound();
@@ -104,17 +112,30 @@ namespace Job_Portal_System.Areas.JobVacancies
         public async Task<IActionResult> FinalDecision(string id)
         {
             var jobVacancy = await _context.JobVacancies
-                .Include(j => j.User)
-                .Include(j => j.Applicants)
                 .SingleOrDefaultAsync(j => j.Id == id);
 
             if (jobVacancy == null) return NotFound();
-            if (jobVacancy.User.UserName != User.Identity.Name ||
-                jobVacancy.Status != (int) JobVacancyStatus.Closed ||
-                 jobVacancy.Applicants.Count == 0 ||
-                 jobVacancy.AwaitingApplicants != 0) return BadRequest();
+            if (jobVacancy.Status != (int) JobVacancyStatus.Closed ||
+                jobVacancy.AwaitingApplicants != 0) return BadRequest();
 
-            // TODO: Final decision use case 
+            var jobVacancyOwner = await _userManager.FindByIdAsync(jobVacancy.UserId);
+            if (jobVacancyOwner.UserName != User.Identity.Name) return BadRequest();
+
+            var applicantsCount = _context.Applicants
+                .Count(a => a.JobVacancyId == jobVacancy.Id);
+            if (applicantsCount == 0) return BadRequest();
+
+            jobVacancy.EducationQualifications = _context.EducationQualifications
+                .Where(e => e.JobVacancyId == jobVacancy.Id)
+                .ToList();
+            jobVacancy.WorkExperienceQualifications = _context.WorkExperienceQualifications
+                .Where(w => w.JobVacancyId == jobVacancy.Id)
+                .ToList();
+            jobVacancy.DesiredSkills = _context.DesiredSkills
+                .Where(s => s.JobVacancyId == jobVacancy.Id)
+                .ToList();
+
+            await AsyncHandler.FinalDecideOnApplicants(_env, _context, _hubContext, jobVacancy);
 
             return Redirect(Request.Headers["Referer"].ToString());
         }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Job_Portal_System.Data;
 using Job_Portal_System.Enums;
 
 namespace Job_Portal_System.Models

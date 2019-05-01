@@ -166,9 +166,9 @@
                         foreach (var state in nextStates)
                         {
                             <form asp-controller="Applicants"
-                                  asp-action="ChangeState"
+                                  asp-action="ChangeStatus"
                                   asp-route-id="@Model.Id"
-                                  asp-route-state="@((int)state)"
+                                  asp-route-status="@((int)state)"
                                   class="d-inline"
                                   method="post">
                                 <button class="btn btn-sm mr-2 @state.GetBtnCssClass()">

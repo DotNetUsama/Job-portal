@@ -1,19 +1,17 @@
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
+using Job_Portal_System.Client;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Job_Portal_System.Data;
+using Job_Portal_System.Managers;
 using Job_Portal_System.Models;
+using Job_Portal_System.RankingSystem;
 using Job_Portal_System.SignalR;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -82,8 +80,14 @@ namespace Job_Portal_System
                 routes.MapHub<SignalRHub>("/signalRHub");
             });
 
-            //DatabaseSeeder.SeedData(env, context, userManager, roleManager);
+            DatabaseSeeder.SeedData(env, context, userManager, roleManager);
             //DatabaseSeeder.ClearDatabase(context);
+
+            {
+                var applicant = context.Applicants.Last();
+                var evaluation = FilesManager.Read<Evaluation>(env, "Evaluations", applicant.Id);
+            }
+
             app.UseMvc();
         }
     }
