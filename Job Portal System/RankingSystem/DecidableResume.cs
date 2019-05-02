@@ -6,17 +6,12 @@ namespace Job_Portal_System.RankingSystem
     internal class DecidableResume : Decidable
     {
         private readonly double[] _row;
-        private bool _accepted;
+        private readonly bool _accepted;
 
-        public DecidableResume(double[] row)
+        public DecidableResume(double[] row, bool accepted = false)
         {
             _row = row;
-            _accepted = false;
-        }
-
-        public void Accept()
-        {
-            _accepted = true;
+            _accepted = accepted;
         }
 
         public override object[] GetRow()

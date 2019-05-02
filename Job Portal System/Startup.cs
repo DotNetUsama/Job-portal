@@ -84,8 +84,10 @@ namespace Job_Portal_System
             //DatabaseSeeder.ClearDatabase(context);
 
             {
-                var applicant = context.Applicants.Last();
-                var evaluation = FilesManager.Read<Evaluation>(env, "Evaluations", applicant.Id);
+                var evaluations = context.Applicants
+                    .Where(a => a.JobVacancyId == "a0c7d5ee-1d02-4e21-8efa-f122e10baea9")
+                    .Select(a => FilesManager.Read<Evaluation>(env, "Evaluations", a.Id))
+                    .ToList();
             }
 
             app.UseMvc();

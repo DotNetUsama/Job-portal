@@ -9,32 +9,20 @@ using Accord.Statistics.Filters;
 
 namespace Job_Portal_System.RankingSystem.Abstracts
 {
-    [Serializable]
     internal abstract class AbstractDecider
     {
-        [NonSerialized]
         private Dictionary<string, Type> _parameters;
-        [NonSerialized]
         private KeyValuePair<string, Type> _target;
-        [NonSerialized]
-        private readonly List<Decidable> _rows;
         private OurDecisionTree _tree;
-        private DecisionVariable[] _attributes;
+
+        protected readonly List<object[]> Rows;
+        protected DecisionVariable[] Attributes;
 
         protected AbstractDecider(Dictionary<string, Type> parameters, KeyValuePair<string, Type> target)
         {
             _parameters = parameters;
             _target = target;
-            _rows = new List<Decidable>();
-        }
-        
-        protected AbstractDecider(Dictionary<string, Type> parameters, 
-            KeyValuePair<string, Type> target,
-            OurDecisionTree tree)
-        {
-            _parameters = parameters;
-            _target = target;
-            _tree = tree;
+            Rows = new List<object[]>();
         }
 
         protected abstract void AddNewRow(Decidable row);
@@ -49,12 +37,12 @@ namespace Job_Portal_System.RankingSystem.Abstracts
 
         protected void AddRow(Decidable row)
         {
-            _rows.Add(row);
+            Rows.Add(row.GetRow());
         }
 
         protected void AddRows(List<Decidable> rows)
         {
-            _rows.AddRange(rows);
+            Rows.AddRange(rows.Select(r => r.GetRow()));
         }
 
         public void SetParametersAndTarget(Dictionary<string, Type> parameters,
@@ -63,28 +51,29 @@ namespace Job_Portal_System.RankingSystem.Abstracts
             _parameters = parameters;
             _target = target;
         }
+
         public OurDecisionTree BuildDecisionTree()
         {
             var data = new DataTable();
 
-            foreach (KeyValuePair<string, Type> parameter in _parameters)
+            foreach (var parameter in _parameters)
             {
                 data.Columns.Add(parameter.Key, parameter.Value);
             }
 
             data.Columns.Add(_target.Key, _target.Value);
 
-            foreach (var row in _rows)
+            foreach (var row in Rows)
             {
-                data.Rows.Add(row.GetRow());
+                data.Rows.Add(row);
             }
 
             var codebook = new Codification(data);
-            _attributes = GetDecisionVariables(codebook);
+            Attributes = GetDecisionVariables(codebook);
 
             var classCount = GetClassCount(codebook);
 
-            _tree = new OurDecisionTree(_attributes, classCount);
+            _tree = new OurDecisionTree(Attributes, classCount);
             var c45 = new C45Learning(_tree);
 
             var symbols = codebook.Apply(data);
@@ -96,7 +85,7 @@ namespace Job_Portal_System.RankingSystem.Abstracts
             return _tree;
         }
 
-        public IEnumerable<string> Infer(Decidable input)
+        public List<string> Infer(Decidable input)
         {
             var data = new DataTable();
 
@@ -114,12 +103,13 @@ namespace Job_Portal_System.RankingSystem.Abstracts
             var inputRow = symbols.ToJagged(GetParameters())[0];
 
             var output = _tree.OurDecide(inputRow);
-            return output.Select(parameter => _attributes[parameter].Name);
+
+            return output.Select(parameter => Attributes[parameter].Name).ToList();
         }
 
         private DecisionVariable[] GetDecisionVariables(Codification codebook)
         {
-            var result = new DecisionVariable[_parameters.Count]; ;
+            var result = new DecisionVariable[_parameters.Count]; 
             var i = 0;
 
             foreach (var parameter in _parameters)

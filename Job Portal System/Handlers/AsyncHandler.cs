@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Job_Portal_System.Data;
 using Job_Portal_System.Enums;
 using Job_Portal_System.Managers;
 using Job_Portal_System.Models;
 using Job_Portal_System.RankingSystem;
-using Job_Portal_System.RankingSystem.Abstracts;
 using Job_Portal_System.SignalR;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -97,40 +94,39 @@ namespace Job_Portal_System.Handlers
         public static async Task FinalDecideOnApplicants(IHostingEnvironment env, 
             ApplicationDbContext context, IHubContext<SignalRHub> hubContext, JobVacancy jobVacancy)
         {
-            var applicants = await context.Applicants
-                .Include(a => a.JobVacancy)
+            var applicants = context.Applicants
                 .Where(a => a.JobVacancyId == jobVacancy.Id)
-                .ToListAsync();
+                .ToList();
             applicants.ForEach(a => a.Status = (int)((ApplicantStatus)a.Status).GetFinal());
             
-            var resumes = applicants.ToDictionary(a => a,
-                    a => new KeyValuePair<Resume, bool>(
-                    context.Resumes
+            var evaluatedResumes = applicants
+                .Select(a => new EvaluatedResume
+                {
+                    Applicant = a,
+                    Resume = context.Resumes
                         .Include(r => r.Educations)
                         .Include(r => r.WorkExperiences)
                         .Include(r => r.OwnedSkills)
                         .Include(r => r.User)
                         .SingleOrDefault(r => r.Id == a.ResumeId),
-                    ((ApplicantStatus)a.Status).IsAccepted()));
-            var evaluations = Operator.GetEvaluations(resumes, jobVacancy);
-            foreach (var evaluation in evaluations)
-            {
-                FilesManager.Store(env, "Evaluations", evaluation.Key, evaluation.Value);
-            }
-            
+                    Accepted = ((ApplicantStatus)a.Status).IsAccepted(),
+                })
+                .ToList();
+
+            Operator.GetEvaluations(evaluatedResumes, jobVacancy);
+            evaluatedResumes.ForEach(r => FilesManager.Store(env, "Evaluations", r.Applicant.Id, r.Evaluation));
+
             jobVacancy.Status = (int) JobVacancyStatus.InAction;
 
-            foreach (var resume in resumes)
-            {
+            evaluatedResumes.ForEach(async evaluatedResume =>
                 await context.SendNotificationAsync(hubContext, new Notification
                 {
-                    Type = (int)(resume.Value.Value ? 
-                        NotificationType.ApplicantAccepted : 
+                    Type = (int)(evaluatedResume.Accepted ?
+                        NotificationType.ApplicantAccepted :
                         NotificationType.ApplicantRejected),
-                    Peer1 = resume.Key.JobVacancy.Title,
-                    EntityId = resume.Key.Id,
-                }, resume.Value.Key.User);
-            }
+                    Peer1 = jobVacancy.Title,
+                    EntityId = evaluatedResume.Applicant.Id,
+                }, evaluatedResume.Applicant.JobSeeker));
 
             await context.SaveChangesAsync();
         }

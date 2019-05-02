@@ -105,7 +105,7 @@ namespace Job_Portal_System.Controllers
             {
                 case ApplicantStatus.DummyAccepted:
                 case ApplicantStatus.DummyRejected:
-                    if (applicant.Status != (int) ApplicantStatus.WaitingRecruiterDecision) return;
+                    if (applicant.Status != (int) ApplicantStatus.WaitingRecruiterDecision) break;
                     jobVacancy = await _context.JobVacancies
                         .SingleOrDefaultAsync(j => j.Id == applicant.JobVacancyId);
                     jobVacancy.AwaitingApplicants--;

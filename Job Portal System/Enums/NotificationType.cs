@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Reflection;
 using Job_Portal_System.Models;
 
 namespace Job_Portal_System.Enums
@@ -49,8 +48,19 @@ namespace Job_Portal_System.Enums
                 case NotificationType.RecruiterApproval:
                     return $"/Dashboard/Recruiters/Approve?recruiterId={notification.EntityId}";
                 case NotificationType.ReceivedSubmission:
+                case NotificationType.ApplicantAccepted:
+                case NotificationType.ApplicantRejected:
                     return $"/Applicants/Details?id={notification.EntityId}";
-                default:
+                case NotificationType.FinishedRecommendation:
+                case NotificationType.RecommendationAccepted:
+                case NotificationType.MeetingAccepted:
+                case NotificationType.MeetingRejected:
+                case NotificationType.CancelledApplicant:
+                case NotificationType.CancelledJobVacancy:
+                case NotificationType.ResumeRecommendation:
+                case NotificationType.Other:
+                    return null;
+                default: 
                     return null;
             }
         }
@@ -68,6 +78,10 @@ namespace Job_Portal_System.Enums
                     return $"({notification.Peer1}) account needs to be approved.";
                 case NotificationType.ReceivedSubmission:
                     return $"{notification.Peer1} submitted to your job vacancy ({notification.Peer2})";
+                case NotificationType.ApplicantAccepted:
+                    return $"Your applicant on job vacancy ({notification.Peer1} has been accepted)";
+                case NotificationType.ApplicantRejected:
+                    return $"Your applicant on job vacancy ({notification.Peer1} has been rejected)";
                 default:
                     return null;
             }
@@ -75,21 +89,15 @@ namespace Job_Portal_System.Enums
 
         public static string GetDescription(this Enum value)
         {
-            Type type = value.GetType();
-            string name = Enum.GetName(type, value);
-            if (name != null)
+            var type = value.GetType();
+            var name = Enum.GetName(type, value);
+            if (name == null) return null;
+            var field = type.GetField(name);
+            if (field == null) return null;
+            if (Attribute.GetCustomAttribute(field,
+                typeof(DescriptionAttribute)) is DescriptionAttribute attr)
             {
-                FieldInfo field = type.GetField(name);
-                if (field != null)
-                {
-                    DescriptionAttribute attr =
-                        Attribute.GetCustomAttribute(field,
-                            typeof(DescriptionAttribute)) as DescriptionAttribute;
-                    if (attr != null)
-                    {
-                        return attr.Description;
-                    }
-                }
+                return attr.Description;
             }
             return null;
         }
