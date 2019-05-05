@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using Microsoft.EntityFrameworkCore.Internal;
 
 namespace Job_Portal_System.Enums
 {
@@ -168,6 +165,27 @@ namespace Job_Portal_System.Enums
                 case ApplicantStatus.RejectMeeting:
                 case ApplicantStatus.Other:
                     return false;
+                default:
+                    return false;
+            }
+        }
+
+        public static bool IsEvaluated(this ApplicantStatus status)
+        {
+            switch (status)
+            {
+                case ApplicantStatus.PendingRecommendation:
+                case ApplicantStatus.RejectedRecommendation:
+                case ApplicantStatus.WaitingRecruiterDecision:
+                case ApplicantStatus.DummyAccepted:
+                case ApplicantStatus.DummyRejected:
+                case ApplicantStatus.Other:
+                    return false;
+                case ApplicantStatus.AcceptMeeting:
+                case ApplicantStatus.RejectMeeting:
+                case ApplicantStatus.RejectedByRecruiter:
+                case ApplicantStatus.AcceptedByRecruiter:
+                    return true;
                 default:
                     return false;
             }

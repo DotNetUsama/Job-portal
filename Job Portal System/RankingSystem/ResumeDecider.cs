@@ -77,13 +77,13 @@ namespace Job_Portal_System.RankingSystem
                     var id = long.Parse(match.Value);
 
                     if (Regex.Match(weakness, @"E[0-9]+").Success)
-                        evaluation.EducationsRanks.FindLast(e => e.Key == id).Value.IsWeakness = true;
+                        evaluation.EducationsRanks.First(e => e.Key == id).Value.IsWeakness = true;
 
                     if (Regex.Match(weakness, @"W[0-9]+").Success)
-                        evaluation.WorkExperiencesRanks.FindLast(e => e.Key == id).Value.IsWeakness = true;
+                        evaluation.WorkExperiencesRanks.First(e => e.Key == id).Value.IsWeakness = true;
 
                     if (Regex.Match(weakness, @"S[0-9]+").Success)
-                        evaluation.SkillsRanks.FindLast(e => e.Key == id).Value.IsWeakness = true;
+                        evaluation.SkillsRanks.First(e => e.Key == id).Value.IsWeakness = true;
                 }
                 else if(weakness == "Salary")
                 {

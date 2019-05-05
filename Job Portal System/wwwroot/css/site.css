@@ -6,6 +6,8 @@ for details on configuring this project to bundle and minify static web assets. 
     --general-secondary: #fcfdfd;
     --general-focus: #dbe8f5;
     --form-main: #76bad5;
+    --form-light-danger: #e01428;
+    --form-light-danger-hover: #f0dbdd;
     --form-light-main: #dee9ed;
     --form-main-transparent: rgba(114, 177, 203, 0.29019607);
     --form-background: #f5f7fa;
@@ -397,6 +399,19 @@ a.no-hover-anchor:hover {
 
 .font-weight-little-bold {
     font-weight: 600;
+}
+
+.color-form-light-danger {
+    color: var(--form-light-danger);
+}
+
+.bg-form-light-danger {
+    border: 1px solid var(--form-light-danger);
+}
+
+.bg-form-light-danger:hover {
+    background-color: var(--form-light-danger-hover);
+}
 }
 
 .bg-form-background {

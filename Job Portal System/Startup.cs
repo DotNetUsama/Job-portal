@@ -1,5 +1,3 @@
-using System.Linq;
-using Job_Portal_System.Client;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI;
@@ -8,9 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Job_Portal_System.Data;
-using Job_Portal_System.Managers;
 using Job_Portal_System.Models;
-using Job_Portal_System.RankingSystem;
 using Job_Portal_System.SignalR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -80,15 +76,19 @@ namespace Job_Portal_System
                 routes.MapHub<SignalRHub>("/signalRHub");
             });
 
-            DatabaseSeeder.SeedData(env, context, userManager, roleManager);
+            //DatabaseSeeder.SeedData(env, context, userManager, roleManager);
+            //DatabaseSeeder.SeedCompanies(context);
+            //DatabaseSeeder.SeedSchools(context);
+            //DatabaseSeeder.SeedSkills(context);
+            //DatabaseSeeder.SeedJobSeekers(context, userManager, roleManager, 1500);
             //DatabaseSeeder.ClearDatabase(context);
 
-            {
-                var evaluations = context.Applicants
-                    .Where(a => a.JobVacancyId == "a0c7d5ee-1d02-4e21-8efa-f122e10baea9")
-                    .Select(a => FilesManager.Read<Evaluation>(env, "Evaluations", a.Id))
-                    .ToList();
-            }
+            //{
+            //    var evaluations = context.Applicants
+            //        .Where(a => a.JobVacancyId == "a0c7d5ee-1d02-4e21-8efa-f122e10baea9")
+            //        .Select(a => FilesManager.Read<Evaluation>(env, "Evaluations", a.Id))
+            //        .ToList();
+            //}
 
             app.UseMvc();
         }

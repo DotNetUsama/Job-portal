@@ -1,10 +1,13 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Job_Portal_System.Data;
 using Job_Portal_System.Enums;
 using Job_Portal_System.Managers;
 using Job_Portal_System.Models;
 using Job_Portal_System.RankingSystem;
+using Job_Portal_System.RankingSystem.Helpers;
 using Job_Portal_System.SignalR;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -129,6 +132,76 @@ namespace Job_Portal_System.Handlers
                 }, evaluatedResume.Applicant.JobSeeker));
 
             await context.SaveChangesAsync();
+        }
+
+        public static async Task Recommend(ApplicationDbContext context,
+            IHubContext<SignalRHub> hubContext, JobVacancy jobVacancy)
+        {
+            var fetchedResumes = FetchMatchingResumes(context, jobVacancy);
+            var recommendedResumes = Operator.GetRecommendedResumes(fetchedResumes, jobVacancy);
+            recommendedResumes.ForEach(async r =>
+            {
+                var applicant = context.Applicants.Add(new Applicant
+                {
+                    Resume = r,
+                    JobSeeker = r.User,
+                    JobVacancy = jobVacancy,
+                    Recruiter = jobVacancy.User,
+                    Status = (int) ApplicantStatus.PendingRecommendation,
+                }).Entity;
+                await context.SendNotificationAsync(hubContext, new Notification
+                {
+                    Type = (int)NotificationType.ResumeRecommendation,
+                    EntityId = applicant.Id,
+                    Peer1 = jobVacancy.Title,
+                }, r.User);
+            });
+            await context.SendNotificationAsync(hubContext, new Notification
+            {
+                Type = (int)NotificationType.FinishedRecommendation,
+                EntityId = jobVacancy.Id,
+                Peer1 = jobVacancy.Title,
+            }, jobVacancy.User);
+
+            await context.SaveChangesAsync();
+        }
+
+        private static List<EvaluatedResume> FetchMatchingResumes(ApplicationDbContext context, JobVacancy jobVacancy)
+        {
+            return context.Resumes
+                .Include(r => r.Educations)
+                .Include(r => r.WorkExperiences)
+                .Include(r => r.OwnedSkills)
+                .Include(r => r.User)
+                .Where(r => r.JobSeeker.IsSeeking &&
+                            r.JobTypes
+                                .Select(type => type.JobType)
+                                .Intersect(jobVacancy.JobTypes.Select(type => type.JobType))
+                                .Any() &&
+                            r.MinSalary <= jobVacancy.MaxSalary && r.MinSalary >= jobVacancy.MinSalary &&
+                            jobVacancy.EducationQualifications
+                                .Where(educationQualification =>
+                                    educationQualification.Type == (int)QualificationType.Required)
+                                .All(educationQualification => r.Educations
+                                    .Any(education =>
+                                        education.FieldOfStudyId == educationQualification.FieldOfStudyId &&
+                                        HelperFunctions.GetYears(education.StartDate, (education.EndDate ?? DateTime.Now)) >= educationQualification.MinimumYears)) &&
+                            jobVacancy.WorkExperienceQualifications
+                                .Where(workExperienceQualification =>
+                                    workExperienceQualification.Type == (int)QualificationType.Required)
+                                .All(workExperienceQualification => r.WorkExperiences
+                                    .Any(workExperience =>
+                                        workExperience.JobTitleId == workExperienceQualification.JobTitleId &&
+                                        HelperFunctions.GetYears(workExperience.StartDate, (workExperience.EndDate ?? DateTime.Now)) >= workExperienceQualification.MinimumYears)) &&
+                            jobVacancy.DesiredSkills
+                                .Where(desiredSkill =>
+                                    desiredSkill.Type == (int)QualificationType.Required)
+                                .All(desiredSkill => r.OwnedSkills
+                                    .Any(ownedSkill =>
+                                        ownedSkill.SkillId == desiredSkill.SkillId &&
+                                        ownedSkill.Years >= desiredSkill.MinimumYears)))
+                .Select(r => new EvaluatedResume { Resume = r })
+                .ToList();
         }
     }
 }

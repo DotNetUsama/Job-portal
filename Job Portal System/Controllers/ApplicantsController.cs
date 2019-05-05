@@ -1,9 +1,13 @@
-﻿using System;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Job_Portal_System.Data;
 using Job_Portal_System.Enums;
+using Job_Portal_System.Managers;
 using Job_Portal_System.Models;
+using Job_Portal_System.RankingSystem;
 using Job_Portal_System.SignalR;
+using Job_Portal_System.ViewModels;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
@@ -14,14 +18,17 @@ namespace Job_Portal_System.Controllers
     [Route("Applicants")]
     public class ApplicantsController : Controller
     {
+        private readonly IHostingEnvironment _env;
         private readonly ApplicationDbContext _context;
         private readonly UserManager<User> _userManager;
         private readonly IHubContext<SignalRHub> _hubContext;
 
-        public ApplicantsController(ApplicationDbContext context,
+        public ApplicantsController(IHostingEnvironment env,
+            ApplicationDbContext context,
             UserManager<User> userManager,
             IHubContext<SignalRHub> hubContext)
         {
+            _env = env;
             _context = context;
             _userManager = userManager;
             _hubContext = hubContext;
@@ -48,13 +55,64 @@ namespace Job_Portal_System.Controllers
                 applicant.JobVacancy = await _context.JobVacancies
                     .Include(j => j.CompanyDepartment).ThenInclude(d => d.Company)
                     .Include(j => j.CompanyDepartment).ThenInclude(d => d.City)
-                    .Include(r => r.EducationQualifications).ThenInclude(e => e.FieldOfStudy)
-                    .Include(r => r.WorkExperienceQualifications).ThenInclude(w => w.JobTitle)
-                    .Include(r => r.DesiredSkills).ThenInclude(s => s.Skill)
                     .Include(r => r.JobTypes)
                     .Include(r => r.JobTitle)
                     .SingleOrDefaultAsync(j => j.Id == applicant.JobVacancyId);
-                return View("DetailsForJobSeeker", applicant);
+
+                EvaluatedJobSeekerApplicant viewModel;
+                try
+                {
+                    var evaluation = FilesManager.Read<Evaluation>(_env, "Evaluations", applicant.Id);
+                    viewModel = new EvaluatedJobSeekerApplicant
+                    {
+                        Applicant = applicant,
+                        IsEvaluated = true,
+                        Educations = _context.EducationQualifications
+                            .Include(e => e.FieldOfStudy)
+                            .Where(e => e.JobVacancyId == applicant.JobVacancyId)
+                            .Select(e => new EvaluatedEducationQualification(e,
+                                evaluation.EducationsRanks[e.FieldOfStudyId]))
+                            .ToList(),
+                        WorkExperiences = _context.WorkExperienceQualifications
+                            .Include(w => w.JobTitle)
+                            .Where(w => w.JobVacancyId == applicant.JobVacancyId)
+                            .Select(w => new EvaluatedWorkExperienceQualification(w,
+                                evaluation.WorkExperiencesRanks[w.JobTitleId]))
+                            .ToList(),
+                        DesiredSkills = _context.DesiredSkills
+                            .Include(s => s.Skill)
+                            .Where(s => s.JobVacancyId == applicant.JobVacancyId)
+                            .Select(s => new EvaluatedDesiredSkill(s,
+                                evaluation.SkillsRanks[s.SkillId]))
+                            .ToList(),
+                        SalaryRank = evaluation.SalaryRank,
+                    };
+                }
+                catch
+                {
+                    viewModel = new EvaluatedJobSeekerApplicant
+                    {
+                        Applicant = applicant,
+                        IsEvaluated = false,
+                        Educations = _context.EducationQualifications
+                            .Include(e => e.FieldOfStudy)
+                            .Where(e => e.JobVacancyId == applicant.JobVacancyId)
+                            .Select(e => new EvaluatedEducationQualification(e))
+                            .ToList(),
+                        WorkExperiences = _context.WorkExperienceQualifications
+                            .Include(w => w.JobTitle)
+                            .Where(w => w.JobVacancyId == applicant.JobVacancyId)
+                            .Select(w => new EvaluatedWorkExperienceQualification(w))
+                            .ToList(),
+                        DesiredSkills = _context.DesiredSkills
+                            .Include(s => s.Skill)
+                            .Where(s => s.JobVacancyId == applicant.JobVacancyId)
+                            .Select(s => new EvaluatedDesiredSkill(s))
+                            .ToList(),
+                    };
+                }
+
+                return View("DetailsForJobSeeker", viewModel);
             }
 
             applicant = await _context.Applicants
@@ -76,7 +134,7 @@ namespace Job_Portal_System.Controllers
                 .SingleOrDefaultAsync(j => j.Id == applicant.JobVacancyId);
             return View("DetailsForRecruiter", applicant);
         }
-        
+
         [HttpPost]
         [Route("ChangeStatus")]
         public async Task<IActionResult> ChangeStatus(string id, int status)
@@ -90,7 +148,7 @@ namespace Job_Portal_System.Controllers
             var userType = User.IsInRole("JobSeeker") ? UserType.JobSeeker :
                 User.IsInRole("Recruiter") ? UserType.Recruiter : UserType.Other;
 
-            if (!((ApplicantStatus) applicant.Status).IsNextState((ApplicantStatus)status, userType))
+            if (!((ApplicantStatus)applicant.Status).IsNextState((ApplicantStatus)status, userType))
                 return BadRequest();
 
             await ProcessChangingStatus(applicant, status);
@@ -105,7 +163,7 @@ namespace Job_Portal_System.Controllers
             {
                 case ApplicantStatus.DummyAccepted:
                 case ApplicantStatus.DummyRejected:
-                    if (applicant.Status != (int) ApplicantStatus.WaitingRecruiterDecision) break;
+                    if (applicant.Status != (int)ApplicantStatus.WaitingRecruiterDecision) break;
                     jobVacancy = await _context.JobVacancies
                         .SingleOrDefaultAsync(j => j.Id == applicant.JobVacancyId);
                     jobVacancy.AwaitingApplicants--;

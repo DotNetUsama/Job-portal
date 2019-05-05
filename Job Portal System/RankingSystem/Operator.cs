@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Job_Portal_System.Client;
+using Job_Portal_System.Enums;
 using Job_Portal_System.Models;
 
 namespace Job_Portal_System.RankingSystem
 {
     internal class Operator
     {
-        private static void NormalizeEvaluations(List<List<Rank>> ranks, int i)
+        private static void NormalizeEvaluations(List<List<Rank>> ranks, int i, double weight = 1)
         {
             var min = ranks.First().First().Rate;
             var max = ranks.First().First().Rate;
@@ -20,7 +20,7 @@ namespace Job_Portal_System.RankingSystem
             }
             var range = max - min;
 
-            ranks.ForEach(r => r[i].SetRate(min, range));
+            ranks.ForEach(r => r[i].SetRate(min, range, weight));
         }
 
         private static void NormalizeEvaluations(List<List<Rank>> ranks, JobVacancy jobVacancy)
@@ -28,45 +28,45 @@ namespace Job_Portal_System.RankingSystem
             var i = 0;
             jobVacancy.EducationQualifications.ForEach(education =>
             {
-                NormalizeEvaluations(ranks, i++);
+                NormalizeEvaluations(ranks, i++, ((QualificationType)education.Type).GetWeight());
             });
             jobVacancy.WorkExperienceQualifications.ForEach(workExperience =>
             {
-                NormalizeEvaluations(ranks, i++);
+                NormalizeEvaluations(ranks, i++, ((QualificationType)workExperience.Type).GetWeight());
             });
             jobVacancy.DesiredSkills.ForEach(skill =>
             {
-                NormalizeEvaluations(ranks, i++);
+                NormalizeEvaluations(ranks, i++, ((QualificationType)skill.Type).GetWeight());
             });
             NormalizeEvaluations(ranks, i);
         }
 
-        //private static Dictionary<Resume, double> GetFinalRanks(
-        //    Dictionary<Resume, List<double>> rankedResumes)
-        //{
-        //    var ranks = new Dictionary<Resume, double>();
-        //    foreach (var rankedResume in rankedResumes)
-        //    {
-        //        ranks.Add(rankedResume.Key, 
-        //            rankedResume.Value.Aggregate(0.0, (counter, rank) => counter + rank));
-        //    }
-        //    return ranks;
-        //}
+        private static Dictionary<Resume, double> GetFinalRanks(List<EvaluatedResume> rankedResumes)
+        {
+            var ranks = new Dictionary<Resume, double>();
+            foreach (var rankedResume in rankedResumes)
+            {
+                var resumeRanks = rankedResume.Evaluation.ToList();
+                ranks.Add(rankedResume.Resume,
+                    resumeRanks.Aggregate(0.0, (counter, rank) => counter + rank));
+            }
+            return ranks;
+        }
 
-        //public static List<Resume> GetRecommendedResumes(List<Resume> fetchedResumes, JobVacancy jobVacancy)
-        //{
-        //    var rankedResumes = new Dictionary<Resume, List<double>>();
-        //    fetchedResumes.ForEach(evaluatedResume =>
-        //    {
-        //        rankedResumes.Add(evaluatedResume, EvaluateResume(evaluatedResume, jobVacancy).ToList());
-        //    });
+        public static List<Resume> GetRecommendedResumes(List<EvaluatedResume> fetchedResumes, JobVacancy jobVacancy)
+        {
+            fetchedResumes.ForEach(r => r.Evaluate(jobVacancy));
 
-        //    NormalizeEvaluations(rankedResumes, jobVacancy);
+            NormalizeEvaluations(fetchedResumes.Select(e => e.Evaluation.GetRanksList()).ToList(), jobVacancy);
 
-        //    var ranks = GetFinalRanks(rankedResumes);
+            var ranks = GetFinalRanks(fetchedResumes);
 
-        //    return (from entry in ranks orderby entry.Value descending select entry.Key).Take(10).ToList();
-        //}
+            return ranks
+                .OrderByDescending(r => r.Value)
+                .Select(r => r.Key)
+                .Take(10)
+                .ToList();
+        }
 
         public static void GetEvaluations(List<EvaluatedResume> evaluatedResumes, 
             JobVacancy jobVacancy)

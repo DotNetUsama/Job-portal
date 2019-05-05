@@ -30,7 +30,7 @@ namespace Job_Portal_System.Models
         
         public double GetRank(OwnedSkill skill)
         {
-            return ((QualificationType)Type).GetWeight() * skill.Years;
+            return skill.Years;
         }
         
         public void SetMinAndRange(double min, double range)

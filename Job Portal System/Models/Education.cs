@@ -23,6 +23,7 @@ namespace Job_Portal_System.Models
         public long FieldOfStudyId { get; set; }
 
         public School School { get; set; }
+        public string SchoolId { get; set; }
 
         public long ToNumber()
         {

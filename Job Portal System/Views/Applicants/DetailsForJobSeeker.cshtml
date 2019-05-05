@@ -1,7 +1,7 @@
-﻿@model Models.Applicant
+﻿@model ViewModels.EvaluatedJobSeekerApplicant
 @using Enums
 @{
-    ViewData["Title"] = Model.JobVacancy.Title;
+    ViewData["Title"] = Model.Applicant.JobVacancy.Title;
 }
 
 <div class="row">
@@ -13,54 +13,64 @@
         <div class="form-container">
             <div class="form-head2">
                 <h1 class="form-head-title">@ViewData["Title"]</h1>
-                <span class="@(((ApplicantStatus) Model.Status).GetCssClass())">
-                    @(((ApplicantStatus)Model.Status).GetDescription())
+                <span class="@(((ApplicantStatus) Model.Applicant.Status).GetCssClass())">
+                    @(((ApplicantStatus)Model.Applicant.Status).GetDescription())
                 </span>
-                <p class="form-head-details">Submitted at: @Model.SubmittedAt.ToString("d")</p>
+                <p class="form-head-details">Submitted at: @Model.Applicant.SubmittedAt.ToString("d")</p>
             </div>
             <div class="form-body">
                 <fieldset id="general-info-partial">
                     <legend><i class="fa fa-question-circle"></i> General information</legend>
-                    <dl class="row">
+                    <dl class="row mb-0">
                         <dt class="col-sm-3">
                             Job title:
                         </dt>
                         <dd class="col-sm-9">
-                            @Model.JobVacancy.JobTitle.Title
+                            @Model.Applicant.JobVacancy.JobTitle.Title
                         </dd>
                         <dt class="col-sm-3">
                             Company:
                         </dt>
                         <dd class="col-sm-9">
-                            @Model.JobVacancy.CompanyDepartment.Company.Name
+                            @Model.Applicant.JobVacancy.CompanyDepartment.Company.Name
                         </dd>
                         <dt class="col-sm-3">
                             Address:
                         </dt>
                         <dd class="col-sm-9">
-                            @Model.JobVacancy.CompanyDepartment.City.Name (@Model.JobVacancy.CompanyDepartment.DetailedAddress)
+                            @Model.Applicant.JobVacancy.CompanyDepartment.City.Name (@Model.Applicant.JobVacancy.CompanyDepartment.DetailedAddress)
                         </dd>
                         <dt class="col-sm-3">
                             Published at:
                         </dt>
                         <dd class="col-sm-9">
-                            @Model.JobVacancy.PublishedAt
+                            @Model.Applicant.JobVacancy.PublishedAt
                         </dd>
                         <dt class="col-sm-3">
                             Job types:
                         </dt>
                         <dd class="col-sm-9">
-                            @string.Join(" | ", Model.JobVacancy.JobTypes
-                                    .Select(jobType => ((JobType) jobType.JobType).GetDescription())
-                                    .ToArray())
+                            @string.Join(" | ", Model.Applicant.JobVacancy.JobTypes
+                                .Select(jobType => ((JobType) jobType.JobType).GetDescription())
+                                .ToArray())
                         </dd>
                     </dl>
-                    @if (!string.IsNullOrEmpty(Model.JobVacancy.Description))
+                    <div class="row@(Model.IsEvaluated && Model.SalaryRank.IsWeakness ?
+                                      " color-form-light-danger"
+                                      :"")">
+                        <div class="col-sm-3 font-weight-bold">
+                            Salary:
+                        </div>
+                        <div class="col-sm-9">
+                            @Model.Applicant.JobVacancy.MinSalary to @Model.Applicant.JobVacancy.MaxSalary
+                        </div>
+                    </div>
+                    @if (!string.IsNullOrEmpty(Model.Applicant.JobVacancy.Description))
                     {
                         <div class="mt-3">
                             <span class="d-block font-weight-little-bold">Description:</span>
                             <div class="mt-2">
-                                @Html.Raw(Model.JobVacancy.Description)
+                                @Html.Raw(Model.Applicant.JobVacancy.Description)
                             </div>
                         </div>
                     }
@@ -68,17 +78,20 @@
                 <hr />
                 <fieldset id="educations-partial">
                     <legend><i class="fa fa-graduation-cap"></i> Educations</legend>
-                    @if (Model.JobVacancy.EducationQualifications.Count == 0)
+                    @if (Model.Educations.Count == 0)
                     {
                         <p style="font-family: 'Nanum Gothic', sans-serif;">No education qualifications added to this job vacancy</p>
                     }
                     else
                     {
                         <ul class="list-unstyled">
-                            @foreach (var education in Model.JobVacancy.EducationQualifications)
+                            @foreach (var education in Model.Educations)
                             {
+                                var cssClass = Model.IsEvaluated && education.Evaluation.IsWeakness ?
+                                    "bg-form-light-danger" :
+                                    "bg-form-light-main-hover";
                                 <li class="collapse-container">
-                                    <div class="row info-item bg-form-light-main-hover">
+                                    <div class="row info-item @cssClass">
                                         <div class="col-md-10">
                                             <span>
                                                 Minimum <span class="font-weight-bold">@education.MinimumYears</span> in <span class="font-weight-bold">@education.FieldOfStudy.Title</span>
@@ -105,17 +118,20 @@
                 <fieldset id="work-experiences-partial">
                     <legend><i class="fa fa-briefcase"></i> Work experiences</legend>
 
-                    @if (Model.JobVacancy.WorkExperienceQualifications.Count == 0)
+                    @if (Model.WorkExperiences.Count == 0)
                     {
                         <p style="font-family: 'Nanum Gothic', sans-serif;">No work experience qualifications added to this job vacancy</p>
                     }
                     else
                     {
                         <ul class="list-unstyled">
-                            @foreach (var workExperience in Model.JobVacancy.WorkExperienceQualifications)
+                            @foreach (var workExperience in Model.WorkExperiences)
                             {
-                                <li class="show-item collapse-container">
-                                    <div class="row info-item bg-form-light-main-hover">
+                                var cssClass = Model.IsEvaluated && workExperience.Evaluation.IsWeakness ?
+                                    "bg-form-light-danger" :
+                                    "bg-form-light-main-hover";
+                                <li class="collapse-container">
+                                    <div class="row info-item @cssClass">
                                         <div class="col-md-10">
                                             <span>
                                                 Minimum <span class="font-weight-bold">@workExperience.MinimumYears</span> in <span class="font-weight-bold">@workExperience.JobTitle.Title</span>
@@ -137,16 +153,19 @@
                         </ul>
                     }
                 </fieldset>
-                @if (Model.JobVacancy.DesiredSkills.Count != 0)
+                @if (Model.DesiredSkills.Count != 0)
                 {
                     <hr />
                     <fieldset id="desired-skills-sub-form">
                         <legend><i class="fa fa-star"></i> Desired Skills</legend>
                         <ul class="list-unstyled">
-                            @foreach (var skill in Model.JobVacancy.DesiredSkills)
+                            @foreach (var skill in Model.DesiredSkills)
                             {
+                                var cssClass = Model.IsEvaluated && skill.Evaluation.IsWeakness ?
+                                    "bg-form-light-danger" :
+                                    "bg-form-light-main-hover";
                                 <li>
-                                    <div class="row info-item bg-form-light-main-hover">
+                                    <div class="row info-item @cssClass">
                                         <div class="col-md-10">
                                             <span>
                                                 <span class="font-weight-little-bold text-info @(((QualificationType)skill.Type).GetCssClass())">[@((QualificationType)skill.Type)]</span> Minimum <span class="font-weight-bold">@skill.MinimumYears</span> years in <span class="font-weight-bold">@skill.Skill.Title</span>
@@ -159,7 +178,7 @@
                     </fieldset>
                 }
                 @{
-                    var nextStates = ((ApplicantStatus)Model.Status).NextStates(UserType.Recruiter);
+                    var nextStates = ((ApplicantStatus)Model.Applicant.Status).NextStates(UserType.Recruiter);
                     if (nextStates.Count > 0)
                     {
                         <hr />
@@ -167,7 +186,7 @@
                         {
                             <form asp-controller="Applicants"
                                   asp-action="ChangeStatus"
-                                  asp-route-id="@Model.Id"
+                                  asp-route-id="@Model.Applicant.Id"
                                   asp-route-status="@((int)state)"
                                   class="d-inline"
                                   method="post">

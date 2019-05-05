@@ -22,6 +22,7 @@ namespace Job_Portal_System.Models
         public JobTitle JobTitle { get; set; }
         public long JobTitleId { get; set; }
         public Company Company { get; set; }
+        public string CompanyId { get; set; }
 
         public long ToNumber()
         {

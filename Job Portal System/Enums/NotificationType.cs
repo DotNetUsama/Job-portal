@@ -15,7 +15,11 @@ namespace Job_Portal_System.Enums
         MeetingRejected,
         CancelledApplicant,
         CancelledJobVacancy,
+        // Sent to: JobSeeker | When: reqruiter accept job seeker's applicant on his job vacancy
+        [Description("Applicant accepted")]
         ApplicantAccepted,
+        // Sent to: JobSeeker | When: reqruiter reject job seeker's applicant on his job vacancy
+        [Description("Applicant rejected")]
         ApplicantRejected,
         ResumeRecommendation,
         // Sent to: Recruiter | When: An administrator approve recruiter account and his company info doesn't need to be edited

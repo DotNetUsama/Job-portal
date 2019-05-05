@@ -64,7 +64,7 @@ namespace Job_Portal_System.Models
                 }
                 previousDate = currentDate;
             }
-            return ((QualificationType)Type).GetWeight() * rank;
+            return rank;
         }
 
         public void SetMinAndRange(double min, double range)

@@ -2,29 +2,29 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Job_Portal_System.Client
+namespace Job_Portal_System.RankingSystem
 {
     [Serializable]
     public class Evaluation
     {
-        public List<KeyValuePair<long, Rank>> EducationsRanks { get; set; } = new List<KeyValuePair<long, Rank>>();
-        public List<KeyValuePair<long, Rank>> WorkExperiencesRanks { get; set; } = new List<KeyValuePair<long, Rank>>();
-        public List<KeyValuePair<long, Rank>> SkillsRanks { get; set; } = new List<KeyValuePair<long, Rank>>();
+        public Dictionary<long, Rank> EducationsRanks { get; set; } = new Dictionary<long, Rank>();
+        public Dictionary<long, Rank> WorkExperiencesRanks { get; set; } = new Dictionary<long, Rank>();
+        public Dictionary<long, Rank> SkillsRanks { get; set; } = new Dictionary<long, Rank>();
         public Rank SalaryRank { get; set; }
 
         public void AddEducationRank(long id, double rate)
         {
-            EducationsRanks.Add(new KeyValuePair<long, Rank>(id, new Rank { Rate = rate }));
+            EducationsRanks.Add(id, new Rank { Rate = rate });
         }
 
         public void AddWorkExperienceRank(long id, double rate)
         {
-            WorkExperiencesRanks.Add(new KeyValuePair<long, Rank>(id, new Rank { Rate = rate }));
+            WorkExperiencesRanks.Add(id, new Rank { Rate = rate });
         }
 
         public void AddSkillRank(long id, double rate)
         {
-            SkillsRanks.Add(new KeyValuePair<long, Rank>(id, new Rank { Rate = rate }));
+            SkillsRanks.Add(id, new Rank { Rate = rate });
         }
 
         public void AddSalaryRank(double rate)
@@ -66,9 +66,9 @@ namespace Job_Portal_System.Client
         public double Rate { get; set; }
         public bool IsWeakness { get; set; } = false;
 
-        public void SetRate(double min, double range)
+        public void SetRate(double min, double range, double weight)
         {
-            Rate = range > 0.00001 ? (Rate - min) / range : 0;
+            Rate = range > 0.00001 ? weight * ((Rate - min) / range) : 0;
         }
     }
 }

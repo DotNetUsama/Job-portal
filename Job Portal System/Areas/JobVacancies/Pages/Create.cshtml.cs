@@ -4,10 +4,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using Job_Portal_System.Data;
 using Job_Portal_System.Enums;
+using Job_Portal_System.Handlers;
 using Job_Portal_System.Models;
+using Job_Portal_System.SignalR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.SignalR;
 
 namespace Job_Portal_System.Areas.JobVacancies.Pages
 {
@@ -15,12 +18,15 @@ namespace Job_Portal_System.Areas.JobVacancies.Pages
     public class CreateModel : PageModel
     {
         private readonly ApplicationDbContext _context;
+        private readonly IHubContext<SignalRHub> _hubContext;
         private readonly UserManager<User> _userManager;
 
         public CreateModel(ApplicationDbContext context,
+            IHubContext<SignalRHub> hubContext,
             UserManager<User> userManager)
         {
             _context = context;
+            _hubContext = hubContext;
             _userManager = userManager;
         }
 
@@ -169,15 +175,14 @@ namespace Job_Portal_System.Areas.JobVacancies.Pages
 
         public IActionResult OnGet()
         {
-            //var recruiter = _context.Recruiters
-            //    .SingleOrDefault(r => r.User.UserName == User.Identity.Name);
+            var recruiter = _context.Recruiters
+                .SingleOrDefault(r => r.User.UserName == User.Identity.Name);
 
-            //if (recruiter == null)
-            //{
-            //    return BadRequest();
-            //}
-            CompanyId = "DD";
-            //CompanyId = recruiter.CompanyId;
+            if (recruiter == null)
+            {
+                return BadRequest();
+            }
+            CompanyId = recruiter.CompanyId;
             return Page();
         }
 
@@ -208,7 +213,7 @@ namespace Job_Portal_System.Areas.JobVacancies.Pages
             AddCompanyDepartment(jobVacancy);
             AddJobTypes(jobVacancy);
             _context.JobVacancies.Add(jobVacancy);
-            await _context.SaveChangesAsync();
+            await AsyncHandler.Recommend(_context, _hubContext, jobVacancy);
             return Redirect("./Index");
         }
 
