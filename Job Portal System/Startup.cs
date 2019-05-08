@@ -1,3 +1,4 @@
+using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI;
@@ -80,7 +81,10 @@ namespace Job_Portal_System
             //DatabaseSeeder.SeedCompanies(context);
             //DatabaseSeeder.SeedSchools(context);
             //DatabaseSeeder.SeedSkills(context);
-            //DatabaseSeeder.SeedJobSeekers(context, userManager, roleManager, 1500);
+            //DatabaseSeeder.SeedJobSeekers(context, userManager, roleManager, 1000);
+            {
+                var count = context.Resumes.Count();
+            }
             //DatabaseSeeder.ClearDatabase(context);
 
             //{

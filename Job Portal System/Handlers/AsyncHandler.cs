@@ -116,7 +116,7 @@ namespace Job_Portal_System.Handlers
                 })
                 .ToList();
 
-            Operator.GetEvaluations(evaluatedResumes, jobVacancy);
+            Operator.CalculateAndNormalizeEvaluations(evaluatedResumes, jobVacancy);
             evaluatedResumes.ForEach(r => FilesManager.Store(env, "Evaluations", r.Applicant.Id, r.Evaluation));
 
             jobVacancy.Status = (int) JobVacancyStatus.InAction;
@@ -163,6 +163,49 @@ namespace Job_Portal_System.Handlers
                 Peer1 = jobVacancy.Title,
             }, jobVacancy.User);
 
+            await context.SaveChangesAsync();
+        }
+
+        public static async Task DeleteJobVacancy(ApplicationDbContext context,
+            IHubContext<SignalRHub> hubContext, JobVacancy jobVacancy)
+        {
+            if (jobVacancy.Status != (int)JobVacancyStatus.Finished)
+            {
+                var applicants = context.Applicants
+                    .Include(a => a.JobSeeker)
+                    .Where(a => a.JobVacancyId == jobVacancy.Id);
+
+                var applicantsUsers = applicants.Select(a => a.JobSeeker).ToList();
+
+                await context.SendNotificationAsync(hubContext, new Notification
+                {
+                    Type = (int) NotificationType.CancelledJobVacancy,
+                    Peer1 = jobVacancy.Title,
+                }, applicantsUsers);
+                
+                context.Applicants.RemoveRange(applicants);
+            }
+            context.JobVacancies.Remove(jobVacancy);
+            await context.SaveChangesAsync();
+        }
+
+        public static async Task DeleteApplicant(ApplicationDbContext context,
+            IHubContext<SignalRHub> hubContext, Applicant applicant)
+        {
+            var jobVacancy = context.JobVacancies
+                .Include(j => j.User)
+                .SingleOrDefault(j => j.Id == applicant.JobVacancyId);
+
+            if (jobVacancy != null)
+                await context.SendNotificationAsync(hubContext, new Notification
+                {
+                    Type = (int) NotificationType.CancelledApplicant,
+                    Peer1 = $"{applicant.JobSeeker.FirstName} {applicant.JobSeeker.LastName}",
+                    Peer2 = jobVacancy.Title,
+                    EntityId = jobVacancy.Id,
+                }, jobVacancy.User);
+
+            context.Applicants.Remove(applicant);
             await context.SaveChangesAsync();
         }
 

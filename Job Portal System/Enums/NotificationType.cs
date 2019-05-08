@@ -54,14 +54,17 @@ namespace Job_Portal_System.Enums
                 case NotificationType.ReceivedSubmission:
                 case NotificationType.ApplicantAccepted:
                 case NotificationType.ApplicantRejected:
-                    return $"/Applicants/Details?id={notification.EntityId}";
-                case NotificationType.FinishedRecommendation:
+                case NotificationType.ResumeRecommendation:
                 case NotificationType.RecommendationAccepted:
                 case NotificationType.MeetingAccepted:
                 case NotificationType.MeetingRejected:
+                    return $"/Applicants/Details?id={notification.EntityId}";
+                case NotificationType.FinishedRecommendation:
+                    return $"/Applicants?jobVacancyId={notification.EntityId}";
                 case NotificationType.CancelledApplicant:
+                    return $"/JobVacancies/Details?id={notification.EntityId}";
                 case NotificationType.CancelledJobVacancy:
-                case NotificationType.ResumeRecommendation:
+                    return "#";
                 case NotificationType.Other:
                     return null;
                 default: 
@@ -83,9 +86,24 @@ namespace Job_Portal_System.Enums
                 case NotificationType.ReceivedSubmission:
                     return $"{notification.Peer1} submitted to your job vacancy ({notification.Peer2})";
                 case NotificationType.ApplicantAccepted:
-                    return $"Your applicant on job vacancy ({notification.Peer1} has been accepted)";
+                    return $"Your applicant on job vacancy ({notification.Peer1}) has been accepted";
                 case NotificationType.ApplicantRejected:
-                    return $"Your applicant on job vacancy ({notification.Peer1} has been rejected)";
+                    return $"Your applicant on job vacancy ({notification.Peer1}) has been rejected";
+                case NotificationType.ResumeRecommendation:
+                    return $"Your resume has been recommended on job vacancy ({notification.Peer1})";
+                case NotificationType.FinishedRecommendation:
+                    return $"Recommending operation on your job vacancy ({notification.Peer1}) has been finished";
+                case NotificationType.CancelledApplicant:
+                    return
+                        $"{notification.Peer1} cancelled his/her applicant on your job vacancy ({notification.Peer1})";
+                case NotificationType.CancelledJobVacancy:
+                    return $"job vacancy ({notification.Peer1}) has been cancelled";
+                case NotificationType.RecommendationAccepted:
+                    return $"{notification.Peer1} accepted recommendation on your job vacancy ({notification.Peer2})";
+                case NotificationType.MeetingAccepted:
+                    return $"{notification.Peer1} accepted meeting on your job vacancy ({notification.Peer2})";
+                case NotificationType.MeetingRejected:
+                    return $"{notification.Peer1} rejected meeting on your job vacancy ({notification.Peer2})";
                 default:
                     return null;
             }

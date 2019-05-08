@@ -13,6 +13,7 @@
     <PackageReference Include="Accord.MachineLearning.GPL" Version="3.8.0" />
     <PackageReference Include="dotNetRDF" Version="2.2.0" />
     <PackageReference Include="Font.Awesome" Version="5.8.1" />
+    <PackageReference Include="JW.Pager" Version="1.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client.Core" Version="1.0.3" />

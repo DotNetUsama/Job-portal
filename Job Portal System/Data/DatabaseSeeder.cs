@@ -143,6 +143,29 @@ namespace Job_Portal_System.Data
             return res;
         }
 
+        private static List<SeekedJobTitle> RandomJobTitles(ApplicationDbContext context)
+        {
+            var jobTitles = context.JobTitles;
+            var jobTitlesCount = jobTitles.Count();
+            var count = Random.Next(5);
+
+            var res = new List<SeekedJobTitle>();
+            for (var i = 0; i < count; i++)
+            {
+                var jobTitle = jobTitles.Skip(Random.Next(0, jobTitlesCount)).Take(1).First();
+                while (res.Any(j => j.JobTitle.Id == jobTitle.Id))
+                {
+                    jobTitle = jobTitles.Skip(Random.Next(0, jobTitlesCount)).Take(1).First();
+                }
+                res.Add(new SeekedJobTitle()
+                {
+                    JobTitle = jobTitle,
+                });
+            }
+
+            return res;
+        }
+
         public static void SeedData(IHostingEnvironment env, ApplicationDbContext context,
             UserManager<User> userManager, RoleManager<IdentityRole> roleManager)
         {
@@ -329,9 +352,11 @@ namespace Job_Portal_System.Data
                     WorkExperiences = RandomWorkExperiences(context, birthDate.Value),
                     OwnedSkills = RandomSkills(context),
                     JobTypes = RandomJobTypes(),
+                    SeekedJobTitles = RandomJobTitles(context),
                 });
-                context.SaveChanges();
+                if (i % 100 == 0) context.SaveChanges();
             }
+            context.SaveChanges();
         }
 
         private static void SeedUsers(UserManager<User> userManager)

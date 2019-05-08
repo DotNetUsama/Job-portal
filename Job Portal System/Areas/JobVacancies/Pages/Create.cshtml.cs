@@ -213,7 +213,13 @@ namespace Job_Portal_System.Areas.JobVacancies.Pages
             AddCompanyDepartment(jobVacancy);
             AddJobTypes(jobVacancy);
             _context.JobVacancies.Add(jobVacancy);
-            await AsyncHandler.Recommend(_context, _hubContext, jobVacancy);
+            if (JobVacancyInfo.Method == (int) JobVacancyMethod.Recommendation)
+            {
+                await AsyncHandler.Recommend(_context, _hubContext, jobVacancy);
+                return Redirect("./Index");
+            }
+
+            await _context.SaveChangesAsync();
             return Redirect("./Index");
         }
 

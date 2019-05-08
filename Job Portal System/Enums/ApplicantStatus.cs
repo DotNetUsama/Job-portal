@@ -122,6 +122,7 @@ namespace Job_Portal_System.Enums
                 case ApplicantStatus.RejectedRecommendation:
                 case ApplicantStatus.DummyAccepted:
                 case ApplicantStatus.DummyRejected:
+                case ApplicantStatus.Other:
                     return NotificationType.Other;
                 default:
                     return NotificationType.Other;
@@ -163,6 +164,27 @@ namespace Job_Portal_System.Enums
                 case ApplicantStatus.RejectedByRecruiter:
                 case ApplicantStatus.AcceptMeeting:
                 case ApplicantStatus.RejectMeeting:
+                case ApplicantStatus.Other:
+                    return false;
+                default:
+                    return false;
+            }
+        }
+
+        public static bool IsFinal(this ApplicantStatus status)
+        {
+            switch (status)
+            {
+                case ApplicantStatus.RejectedRecommendation:
+                case ApplicantStatus.RejectedByRecruiter:
+                case ApplicantStatus.RejectMeeting:
+                case ApplicantStatus.AcceptMeeting:
+                    return true;
+                case ApplicantStatus.PendingRecommendation:
+                case ApplicantStatus.WaitingRecruiterDecision:
+                case ApplicantStatus.DummyAccepted:
+                case ApplicantStatus.DummyRejected:
+                case ApplicantStatus.AcceptedByRecruiter:
                 case ApplicantStatus.Other:
                     return false;
                 default:

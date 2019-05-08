@@ -50,9 +50,6 @@ namespace Job_Portal_System.Models
         [Display(Name = "Finished at")]
         public DateTime? FinishedAt { get; set; }
 
-        [StringLength(64)]
-        public string DeciderFile { get; set; }
-
         [Display(Name = "Department")]
         public CompanyDepartment CompanyDepartment { get; set; }
 
@@ -68,10 +65,10 @@ namespace Job_Portal_System.Models
         public List<JobVacancyJobType> JobTypes { get; set; }
         public List<Applicant> Applicants { get; set; }
 
-        public void SetMinAndRange(double min, double range)
+        public void SetMinAndRange(double[] minRange)
         {
-            Min = min;
-            Range = range;
+            Min = minRange[0];
+            Range = minRange[1];
         }
     }
 }

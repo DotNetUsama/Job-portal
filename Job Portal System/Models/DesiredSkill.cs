@@ -33,10 +33,10 @@ namespace Job_Portal_System.Models
             return skill.Years;
         }
         
-        public void SetMinAndRange(double min, double range)
+        public void SetMinAndRange(double[] minRange)
         {
-            Min = min;
-            Range = range;
+            Min = minRange[0];
+            Range = minRange[1];
         }
     }
 }

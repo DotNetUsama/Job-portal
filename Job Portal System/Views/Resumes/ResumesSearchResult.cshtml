@@ -1,0 +1,33 @@
+﻿@model ViewModels.ResumesSearchResult
+
+@{
+    ViewData["Title"] = $"Search results for {Model.Query}";
+}
+
+
+<h1 class="mb-5">Search results for <i>@Model.Query</i></h1>
+
+<div class="row">
+    @foreach (var resume in Model.Resumes)
+    {
+        var seekedJobTitles = string.Join(" | ", resume.SeekedJobTitles.Select(s => s.JobTitle.Title));
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">@resume.User.FirstName @resume.User.LastName</div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                            <span class="font-weight-little-bold">Minimum salary: </span> @resume.MinSalary
+                        </li>
+                        <li class="list-group-item">
+                            <span class="font-weight-little-bold">Seeking for: </span> @seekedJobTitles
+                        </li>
+                    </ul>
+                    <div class="card-body">
+                        <a href="/Resumes/Details?id=@resume.Id">View</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>

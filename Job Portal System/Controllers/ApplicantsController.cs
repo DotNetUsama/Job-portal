@@ -2,11 +2,13 @@
 using System.Threading.Tasks;
 using Job_Portal_System.Data;
 using Job_Portal_System.Enums;
+using Job_Portal_System.Handlers;
 using Job_Portal_System.Managers;
 using Job_Portal_System.Models;
 using Job_Portal_System.RankingSystem;
 using Job_Portal_System.SignalR;
 using Job_Portal_System.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -41,8 +43,7 @@ namespace Job_Portal_System.Controllers
             if (!User.IsInRole("Recruiter") && !User.IsInRole("JobSeeker")) return BadRequest();
 
             Applicant applicant;
-
-
+            
             if (User.IsInRole("JobSeeker"))
             {
                 applicant = await _context.Applicants
@@ -156,6 +157,23 @@ namespace Job_Portal_System.Controllers
             return Redirect(Request.Headers["Referer"].ToString());
         }
 
+        [HttpPost]
+        [Route("Delete")]
+        [Authorize(Roles = "JobSeeker")]
+        public async Task<IActionResult> Delete(string id)
+        {
+            var applicant = await _context.Applicants
+                .Include(a => a.JobSeeker)
+                .SingleOrDefaultAsync(a => a.Id == id);
+
+            if (applicant == null) return NotFound();
+            if (applicant.JobSeeker.UserName != User.Identity.Name ||
+                ((ApplicantStatus)applicant.Status).IsFinal()) return BadRequest();
+
+            await AsyncHandler.DeleteApplicant(_context, _hubContext, applicant);
+            return LocalRedirect("/");
+        }
+
         private async Task ProcessChangingStatus(Applicant applicant, int newStatus)
         {
             JobVacancy jobVacancy;
@@ -174,11 +192,12 @@ namespace Job_Portal_System.Controllers
                     var recruiter = await _userManager.FindByIdAsync(applicant.RecruiterId);
                     jobVacancy = await _context.JobVacancies
                         .SingleOrDefaultAsync(j => j.Id == applicant.JobVacancyId);
+                    var user = await _userManager.FindByIdAsync(applicant.JobSeekerId);
                     await _context.SendNotificationAsync(_hubContext, new Notification
                     {
                         Type = (int)((ApplicantStatus)newStatus).GetNotificationType(),
                         EntityId = applicant.Id,
-                        Peer1 = recruiter.FirstName,
+                        Peer1 = $"{user.FirstName} {user.LastName}",
                         Peer2 = jobVacancy.Title,
                     }, recruiter);
                     break;

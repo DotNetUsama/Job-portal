@@ -7,7 +7,7 @@ namespace Job_Portal_System.RankingSystem
 {
     internal class Operator
     {
-        private static void NormalizeEvaluations(List<List<Rank>> ranks, int i, double weight = 1)
+        private static double[] NormalizeEvaluations(List<List<Rank>> ranks, int i, double weight = 1)
         {
             var min = ranks.First().First().Rate;
             var max = ranks.First().First().Rate;
@@ -21,6 +21,7 @@ namespace Job_Portal_System.RankingSystem
             var range = max - min;
 
             ranks.ForEach(r => r[i].SetRate(min, range, weight));
+            return new[] {min, range};
         }
 
         private static void NormalizeEvaluations(List<List<Rank>> ranks, JobVacancy jobVacancy)
@@ -28,20 +29,20 @@ namespace Job_Portal_System.RankingSystem
             var i = 0;
             jobVacancy.EducationQualifications.ForEach(education =>
             {
-                NormalizeEvaluations(ranks, i++, ((QualificationType)education.Type).GetWeight());
+                education.SetMinAndRange(NormalizeEvaluations(ranks, i++, ((QualificationType)education.Type).GetWeight()));
             });
             jobVacancy.WorkExperienceQualifications.ForEach(workExperience =>
             {
-                NormalizeEvaluations(ranks, i++, ((QualificationType)workExperience.Type).GetWeight());
+                workExperience.SetMinAndRange(NormalizeEvaluations(ranks, i++, ((QualificationType)workExperience.Type).GetWeight()));
             });
             jobVacancy.DesiredSkills.ForEach(skill =>
             {
-                NormalizeEvaluations(ranks, i++, ((QualificationType)skill.Type).GetWeight());
+                skill.SetMinAndRange(NormalizeEvaluations(ranks, i++, ((QualificationType)skill.Type).GetWeight()));
             });
-            NormalizeEvaluations(ranks, i);
+            jobVacancy.SetMinAndRange(NormalizeEvaluations(ranks, i));
         }
 
-        private static Dictionary<Resume, double> GetFinalRanks(List<EvaluatedResume> rankedResumes)
+        private static Dictionary<Resume, double> GetFinalRanks(IEnumerable<EvaluatedResume> rankedResumes)
         {
             var ranks = new Dictionary<Resume, double>();
             foreach (var rankedResume in rankedResumes)
@@ -68,7 +69,7 @@ namespace Job_Portal_System.RankingSystem
                 .ToList();
         }
 
-        public static void GetEvaluations(List<EvaluatedResume> evaluatedResumes, 
+        public static void CalculateAndNormalizeEvaluations(List<EvaluatedResume> evaluatedResumes, 
             JobVacancy jobVacancy)
         {
             evaluatedResumes.ForEach(r => r.Evaluate(jobVacancy));
