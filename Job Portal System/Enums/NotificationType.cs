@@ -9,11 +9,17 @@ namespace Job_Portal_System.Enums
         // Sent to: Recruiter | When: A job seeker submit to job vacancy
         [Description("Received submission")]
         ReceivedSubmission,
+        [Description("Finished recommendation")]
         FinishedRecommendation,
+        [Description("Recommendation accepted")]
         RecommendationAccepted,
+        [Description("Meeting accepted")]
         MeetingAccepted,
+        [Description("Meeting rejected")]
         MeetingRejected,
+        [Description("Applicant cancelled")]
         CancelledApplicant,
+        [Description("Job vacancy cancelled")]
         CancelledJobVacancy,
         // Sent to: JobSeeker | When: reqruiter accept job seeker's applicant on his job vacancy
         [Description("Applicant accepted")]
@@ -21,6 +27,7 @@ namespace Job_Portal_System.Enums
         // Sent to: JobSeeker | When: reqruiter reject job seeker's applicant on his job vacancy
         [Description("Applicant rejected")]
         ApplicantRejected,
+        [Description("Resume recommended")]
         ResumeRecommendation,
         // Sent to: Recruiter | When: An administrator approve recruiter account and his company info doesn't need to be edited
         [Description("Account approved")]
@@ -95,7 +102,7 @@ namespace Job_Portal_System.Enums
                     return $"Recommending operation on your job vacancy ({notification.Peer1}) has been finished";
                 case NotificationType.CancelledApplicant:
                     return
-                        $"{notification.Peer1} cancelled his/her applicant on your job vacancy ({notification.Peer1})";
+                        $"{notification.Peer1} cancelled his/her applicant on your job vacancy ({notification.Peer2})";
                 case NotificationType.CancelledJobVacancy:
                     return $"job vacancy ({notification.Peer1}) has been cancelled";
                 case NotificationType.RecommendationAccepted:

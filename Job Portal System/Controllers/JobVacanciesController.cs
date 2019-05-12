@@ -38,6 +38,7 @@ namespace Job_Portal_System.Controllers
 
         [HttpPost]
         [Route("Close")]
+        [Authorize(Roles = "Recruiter")]
         public async Task<IActionResult> Close(string id)
         {
             if (id == null) return NotFound();
@@ -49,13 +50,23 @@ namespace Job_Portal_System.Controllers
             if (jobVacancy == null) return NotFound();
 
             if (jobVacancy.User.UserName != User.Identity.Name ||
-                jobVacancy.Status != (int)JobVacancyStatus.Open ||
-                jobVacancy.Method != (int)JobVacancyMethod.Submission)
+                jobVacancy.Status != (int)JobVacancyStatus.Open)
             {
                 return BadRequest();
             }
 
             jobVacancy.Status = (int)JobVacancyStatus.Closed;
+
+            if (jobVacancy.Method == (int) JobVacancyMethod.Recommendation)
+            {
+                var pendingApplicants = _context.Applicants
+                    .Where(a => a.JobVacancyId == jobVacancy.Id &&
+                                a.Status == (int) ApplicantStatus.PendingRecommendation);
+                foreach (var pendingApplicant in pendingApplicants)
+                {
+                    pendingApplicant.Status = (int) ApplicantStatus.RejectedByRecruiter;
+                }
+            }
 
             await _context.SaveChangesAsync();
 
@@ -64,6 +75,7 @@ namespace Job_Portal_System.Controllers
 
         [HttpPost]
         [Route("Delete")]
+        [Authorize(Roles = "Recruiter")]
         public async Task<IActionResult> Delete(string id)
         {
             if (id == null) return NotFound();
@@ -87,6 +99,7 @@ namespace Job_Portal_System.Controllers
         
         [HttpPost]
         [Route("Submit")]
+        [Authorize(Roles = "JobSeeker")]
         public async Task<IActionResult> Submit(string id)
         {
             if (id == null)
@@ -167,7 +180,7 @@ namespace Job_Portal_System.Controllers
 
         [HttpGet]
         [Route("Search")]
-        public IActionResult Search(string query, int p = 1)
+        public async Task<IActionResult> Search(string query, int p = 1)
         {
             var queries = query.Split(",");
             var jobTitles = new List<JobTitle>();
@@ -187,11 +200,12 @@ namespace Job_Portal_System.Controllers
                 jobTitles.Add(similar.JobTitle);
             }
 
-            var jobVacancies = _context.JobVacancies
+            var jobVacancies = await _context.JobVacancies
                 .Include(j => j.JobTitle)
                 .Include(j => j.CompanyDepartment).ThenInclude(c => c.Company)
-                .Where(r => jobTitles.Any(j => j.Id == r.JobTitle.Id));
-            var pager = new Pager(jobVacancies.Count(), p);
+                .Where(r => jobTitles.Any(j => j.Id == r.JobTitle.Id))
+                .ToListAsync();
+            var pager = new Pager(jobVacancies.Count, p);
 
             var viewedJobVacancies = jobVacancies.Skip((pager.CurrentPage - 1) * pager.PageSize).Take(pager.PageSize);
             return View("JobVacanciesSearchResult", new JobVacanciesSearchResult

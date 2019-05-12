@@ -13,8 +13,7 @@
         </span>
         <p class="lead">@Model.JobVacancy.JobTitle.Title | <i class="fa fa-building"></i> @Model.JobVacancy.CompanyDepartment.City.Name (@Model.JobVacancy.CompanyDepartment.DetailedAddress)</p>
         <div class="d-flex">
-            @if (Model.JobVacancy.Status == (int)JobVacancyStatus.Open &&
-                 Model.JobVacancy.Applicants.Count != 0)
+            @if (Model.CanClose)
             {
                 <form asp-controller="JobVacancies"
                       asp-action="Close"
@@ -27,11 +26,22 @@
             <a asp-area="JobVacancies"
                asp-page="Details"
                asp-route-id="@Model.JobVacancy.Id"
-               class="btn btn-info btn-sm">Details</a>
-
+               class="btn btn-info btn-sm mr-2">Details</a>
+            @if (Model.JobVacancy.Method == (int) JobVacancyMethod.Submission ||
+                 (Model.JobVacancy.Method == (int) JobVacancyMethod.Recommendation &&
+                  Model.JobVacancy.Status != (int) JobVacancyStatus.Open))
+            {
+                <form asp-controller="JobVacancies"
+                      asp-action="Delete"
+                      asp-route-id="@Model.JobVacancy.Id"
+                      class="d-inline"
+                      method="post">
+                    <button class="btn btn-danger btn-sm">Delete</button>
+                </form>
+            }
             @if (Model.JobVacancy.Status == (int)JobVacancyStatus.Closed
-               && Model.JobVacancy.AwaitingApplicants == 0
-               && Model.JobVacancy.Applicants.Count != 0)
+              && Model.JobVacancy.AwaitingApplicants == 0
+              && Model.JobVacancy.Applicants.Count != 0)
             {
                 <form asp-controller="JobVacancies"
                       asp-action="FinalDecision"

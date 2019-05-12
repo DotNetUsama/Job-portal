@@ -1,5 +1,8 @@
+using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Job_Portal_System.Data;
+using Job_Portal_System.Enums;
 using Job_Portal_System.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -19,6 +22,7 @@ namespace Job_Portal_System.Areas.Applicants.Pages
         }
 
         public JobVacancy JobVacancy { get; set; }
+        public bool CanClose { get; set; }
 
         public async Task<IActionResult> OnGetAsync(string jobVacancyId)
         {
@@ -32,6 +36,22 @@ namespace Job_Portal_System.Areas.Applicants.Pages
             if (JobVacancy == null) return NotFound();
             if (JobVacancy.User.UserName != User.Identity.Name) return BadRequest();
 
+            switch ((JobVacancyMethod)JobVacancy.Method)
+            {
+                case JobVacancyMethod.Recommendation:
+                    CanClose = JobVacancy.Status == (int)JobVacancyStatus.Open &&
+                               _context.Applicants
+                                   .Count(a => a.JobVacancyId == JobVacancy.Id &&
+                                               a.Status == (int)ApplicantStatus.WaitingRecruiterDecision) != 0;
+                    break;
+                case JobVacancyMethod.Submission:
+                    CanClose = JobVacancy.Status == (int)JobVacancyStatus.Open &&
+                               _context.Applicants.Count(a => a.JobVacancyId == JobVacancy.Id) != 0;
+                    break;
+
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
             return Page();
         }
     }

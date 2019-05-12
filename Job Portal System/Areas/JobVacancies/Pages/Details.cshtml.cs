@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Job_Portal_System.Data;
@@ -56,8 +57,22 @@ namespace Job_Portal_System.Areas.JobVacancies.Pages
 
             if (IsOwner)
             {
-                CanClose = JobVacancy.Status == (int) JobVacancyStatus.Open &&
-                           _context.Applicants.Count(a => a.JobVacancyId == JobVacancy.Id) != 0;
+                switch ((JobVacancyMethod) JobVacancy.Method)
+                {
+                    case JobVacancyMethod.Recommendation:
+                        CanClose = JobVacancy.Status == (int)JobVacancyStatus.Open &&
+                                   _context.Applicants
+                                       .Count(a => a.JobVacancyId == JobVacancy.Id &&
+                                                   a.Status == (int)ApplicantStatus.WaitingRecruiterDecision) != 0;
+                        break;
+                    case JobVacancyMethod.Submission:
+                        CanClose = JobVacancy.Status == (int)JobVacancyStatus.Open &&
+                                   _context.Applicants.Count(a => a.JobVacancyId == JobVacancy.Id) != 0;
+                        break;
+
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
             }
             else
             {

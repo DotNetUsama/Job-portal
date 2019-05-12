@@ -86,7 +86,7 @@ namespace Job_Portal_System.Handlers
             await context.SendNotificationAsync(hubContext, new Notification
             {
                 Type = (int)NotificationType.ReceivedSubmission,
-                Peer1 = resume.User.FirstName,
+                Peer1 = $"{resume.User.FirstName} {resume.User.LastName}",
                 Peer2 = jobVacancy.Title,
                 EntityId = applicant.Entity.Id,
             }, applicant.Entity.Recruiter);

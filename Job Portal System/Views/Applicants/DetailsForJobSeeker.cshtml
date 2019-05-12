@@ -178,21 +178,35 @@
                     </fieldset>
                 }
                 @{
-                    var nextStates = ((ApplicantStatus)Model.Applicant.Status).NextStates(UserType.Recruiter);
-                    if (nextStates.Count > 0)
+                    var nextStates = ((ApplicantStatus)Model.Applicant.Status).NextStates(UserType.JobSeeker);
+                    var isFinalState = ((ApplicantStatus) Model.Applicant.Status).IsFinal();
+                    if (nextStates.Count > 0 || !isFinalState)
                     {
                         <hr />
-                        foreach (var state in nextStates)
+                        if (nextStates.Count > 0)
+                        {
+                            foreach (var state in nextStates)
+                            {
+                                <form asp-controller="Applicants"
+                                      asp-action="ChangeStatus"
+                                      asp-route-id="@Model.Applicant.Id"
+                                      asp-route-status="@((int)state)"
+                                      class="d-inline"
+                                      method="post">
+                                    <button class="btn btn-sm mr-2 @state.GetBtnCssClass()">
+                                        @state.GetActionName()
+                                    </button>
+                                </form>
+                            }
+                        }
+                        if (!isFinalState)
                         {
                             <form asp-controller="Applicants"
-                                  asp-action="ChangeStatus"
+                                  asp-action="Delete"
                                   asp-route-id="@Model.Applicant.Id"
-                                  asp-route-status="@((int)state)"
-                                  class="d-inline"
+                                  class="d-inline ml-auto"
                                   method="post">
-                                <button class="btn btn-sm mr-2 @state.GetBtnCssClass()">
-                                    @state.GetActionName()
-                                </button>
+                                <button class="btn btn-danger btn-sm">Delete</button>
                             </form>
                         }
                     }

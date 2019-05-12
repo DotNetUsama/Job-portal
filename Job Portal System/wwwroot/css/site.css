@@ -412,6 +412,33 @@ a.no-hover-anchor:hover {
 .bg-form-light-danger:hover {
     background-color: var(--form-light-danger-hover);
 }
+
+.search-box {
+    color: #313437;
+    padding: 50px 0;
+}
+
+.search-box p {
+    color: #7d8285;
+    line-height: 1.5;
+}
+
+.search-box .form-control {
+    background: #eff1f4;
+    border: none;
+    border-radius: 3px;
+    box-shadow: none;
+    outline: none;
+    color: inherit;
+    text-indent: 9px;
+    margin-right: 10px;
+    min-width: 250px;
+}
+
+.search-box .btn-main {
+    background-color: var(--form-main) !important;
+    color: #fff;
+    outline: none !important;
 }
 
 .bg-form-background {

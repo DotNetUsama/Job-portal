@@ -4,7 +4,43 @@
     ViewData["Title"] = "Home page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="search-box">
+    <div class="container" style="width:684px;">
+        <div>
+            <h2 class="text-center">Searching is helpfull!</h2>
+            <p class="text-center">Hundreds of job vacancies available here, get your job now.<br></p>
+            <p class="text-center">Thousands of resumes available here. If you're searching for a job, you should have a good resume. Search for other's resumes to help you build your own.</p>
+        </div>
+        <form asp-page-handler="search">
+            <div class="form-row">
+                <div class="col-10">
+                    <div class="form-group">
+                        <input class="form-control" type="text" placeholder="Web developer, Civil engineer ..."
+                               asp-for="Query">
+                    </div>
+                </div>
+                <div class="col-2">
+                    <div class="form-group">
+                        <button class="btn btn-main" type="submit">Search</button>
+                    </div>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="col">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" checked="" asp-for="Option" 
+                               value="@IndexModel.SearchOption.Resumes">
+                        <label class="form-check-label">Resumes</label>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" asp-for="Option" 
+                               value="@IndexModel.SearchOption.JobVacancies">
+                        <label class="form-check-label">Job vacancies</label>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
 </div>

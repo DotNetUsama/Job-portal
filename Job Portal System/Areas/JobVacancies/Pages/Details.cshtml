@@ -183,6 +183,18 @@
                                class="btn btn-submit">
                                 View applicants
                             </a>
+                            @if (Model.JobVacancy.Method == (int) JobVacancyMethod.Submission ||
+                                 (Model.JobVacancy.Method == (int) JobVacancyMethod.Recommendation &&
+                                  Model.JobVacancy.Status != (int) JobVacancyStatus.Open))
+                            {
+                                <form asp-controller="JobVacancies"
+                                      asp-action="Delete"
+                                      asp-route-id="@Model.JobVacancy.Id"
+                                      class="d-inline"
+                                      method="post">
+                                    <button class="btn btn-submit ml-2">Delete</button>
+                                </form>
+                            }
                             @if (Model.CanClose)
                             {
                                 <form asp-controller="JobVacancies" 
