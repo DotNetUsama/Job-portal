@@ -1,0 +1,27 @@
+﻿@model ViewModels.AbstractSearchResultViewModel
+
+<div class="d-flex">
+    <div class="mx-auto">
+        @if (!Model.IsFirst)
+        {
+            var action = ViewContext.RouteData.Values["action"].ToString();
+            var controller = ViewContext.RouteData.Values["controller"].ToString();
+            @Html.ActionLink("Prev", action, controller, new
+            {
+                Model.Query,
+                p = Model.PageNumber - 1,
+            }, new { @class = "btn btn-submit mx-1" });
+        }
+        @Model.PageNumber of @Model.TotalPages
+        @if (!Model.IsLast)
+        {
+            var action = ViewContext.RouteData.Values["action"].ToString();
+            var controller = ViewContext.RouteData.Values["controller"].ToString();
+            @Html.ActionLink("Next", action, controller, new
+            {
+                Model.Query,
+                p = Model.PageNumber + 1,
+            }, new { @class = "btn btn-submit mx-1" });
+        }
+    </div>
+</div>

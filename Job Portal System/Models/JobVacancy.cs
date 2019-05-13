@@ -55,6 +55,7 @@ namespace Job_Portal_System.Models
 
         [Display(Name = "Job title")]
         public JobTitle JobTitle { get; set; }
+        public long JobTitleId { get; set; }
         public User User { get; set; }
         public string UserId { get; set; }
         public Recruiter Recruiter { get; set; }

@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Job_Portal_System.Data;
 using Job_Portal_System.Models;
 using Job_Portal_System.ViewModels;
@@ -22,7 +21,7 @@ namespace Job_Portal_System.Controllers
 
         [HttpGet]
         [Route("Search")]
-        public async Task<IActionResult> Search(string query, int p = 1)
+        public IActionResult Search(string query, int p = 1)
         {
             var queries = query.Split(",");
             var jobTitles = new List<JobTitle>();
@@ -33,29 +32,39 @@ namespace Job_Portal_System.Controllers
                 if (jobInDb != null)
                 {
                     jobTitles.Add(jobInDb);
-                    break;
+                    continue;
                 }
 
                 var similar = _context.JobTitleSimilarities
+                    .Include(s => s.JobTitle)
                     .SingleOrDefault(s => s.SimilarTitle.Title == queryJob);
-                if (similar == null) break;
+                if (similar == null) continue;
                 jobTitles.Add(similar.JobTitle);
             }
-            
-            var resumes = await _context.Resumes
-                .Include(r => r.User)
-                .Include(r => r.SeekedJobTitles).ThenInclude(s => s.JobTitle)
-                .Where(r => r.IsPublic && 
-                            r.SeekedJobTitles.Count != 0 &&
-                            r.SeekedJobTitles.Select(s => s.JobTitle).Intersect(jobTitles).Any())
-                .ToListAsync();
-            var pager = new Pager(resumes.Count, p);
 
-            var viewedResumes = resumes.Skip((pager.CurrentPage - 1) * pager.PageSize).Take(pager.PageSize);
+            var resumes = new List<Resume>();
+            foreach (var job in jobTitles)
+            {
+                resumes.AddRange(_context.SeekedJobTitles
+                    .Where(s => s.JobTitleId == job.Id)
+                    .Select(s => s.Resume)
+                    .Include(r => r.User)
+                    .Include(r => r.SeekedJobTitles).ThenInclude(s => s.JobTitle));
+            }
+            var pager = new Pager(resumes.Count, p, 3);
+
+            var viewedResumes = resumes
+                .Distinct()
+                .Skip((pager.CurrentPage - 1) * pager.PageSize)
+                .Take(pager.PageSize);
             return View("ResumesSearchResult", new ResumesSearchResult
             {
                 Resumes = viewedResumes,
                 Query = query,
+                TotalPages = pager.TotalPages,
+                PageNumber = pager.CurrentPage,
+                IsFirst = pager.CurrentPage == 1 || pager.CurrentPage == 0,
+                IsLast = pager.CurrentPage == pager.TotalPages,
             });
         }
     }

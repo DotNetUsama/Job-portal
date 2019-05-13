@@ -16,7 +16,7 @@
                 <div class="col-10">
                     <div class="form-group">
                         <input class="form-control" type="text" placeholder="Web developer, Civil engineer ..."
-                               asp-for="Query">
+                               asp-for="Query" id="search-input">
                     </div>
                 </div>
                 <div class="col-2">
@@ -28,14 +28,14 @@
             <div class="form-row">
                 <div class="col">
                     <div class="form-check">
-                        <input class="form-check-input" type="radio" checked="" asp-for="Option" 
+                        <input class="form-check-input" type="radio" checked="" asp-for="Option"
                                value="@IndexModel.SearchOption.Resumes">
                         <label class="form-check-label">Resumes</label>
                     </div>
                 </div>
                 <div class="col">
                     <div class="form-check">
-                        <input class="form-check-input" type="radio" asp-for="Option" 
+                        <input class="form-check-input" type="radio" asp-for="Option"
                                value="@IndexModel.SearchOption.JobVacancies">
                         <label class="form-check-label">Job vacancies</label>
                     </div>
@@ -44,3 +44,7 @@
         </form>
     </div>
 </div>
+
+@section Scripts {
+    <partial name="_IndexScriptsPartial" />
+}

@@ -4,32 +4,41 @@
     ViewData["Title"] = $"Search results for {Model.Query}";
 }
 
-<h1 class="mb-5">Search results for <i>@Model.Query</i></h1>
+<h3 class="mb-5">Search results for <i>@Model.Query</i></h3>
 
-<div class="row">
-    @foreach (var jobVacancy in Model.JobVacancies)
-    {
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-header">@jobVacancy.Title</div>
-                <div class="card-body">
-                    <h5 class="card-title">@jobVacancy.JobTitle.Title</h5>
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item">
-                            <span class="font-weight-little-bold">Company: </span> <a href="/Companies/Details?id=@jobVacancy.CompanyDepartment.Company.Id">@jobVacancy.CompanyDepartment.Company.Name</a>
-                        </li>
-                        <li class="list-group-item">
-                            <span class="font-weight-little-bold">Salary: </span> (@jobVacancy.MinSalary to @jobVacancy.MaxSalary)
-                        </li>
-                        <li class="list-group-item">
-                            <span class="font-weight-little-bold">Required hires: </span> @jobVacancy.RequiredHires
-                        </li>
-                    </ul>
+@if (Model.JobVacancies.Any())
+{
+    <div class="row">
+        @foreach (var jobVacancy in Model.JobVacancies)
+        {
+            <div class="col-md-4 mb-3">
+                <div class="card">
+                    <div class="card-header">@jobVacancy.Title</div>
                     <div class="card-body">
-                        <a href="/JobVacancies/Details?id=@jobVacancy.Id">View</a>
+                        <h5 class="card-title">@jobVacancy.JobTitle.Title</h5>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">
+                                <span class="font-weight-little-bold">Company: </span> <a href="/Companies/Details?id=@jobVacancy.CompanyDepartment.Company.Id">@jobVacancy.CompanyDepartment.Company.Name</a>
+                            </li>
+                            <li class="list-group-item">
+                                <span class="font-weight-little-bold">Salary: </span> (@jobVacancy.MinSalary to @jobVacancy.MaxSalary)
+                            </li>
+                            <li class="list-group-item">
+                                <span class="font-weight-little-bold">Required hires: </span> @jobVacancy.RequiredHires
+                            </li>
+                        </ul>
+                        <div class="card-body">
+                            <a href="/JobVacancies/Details?id=@jobVacancy.Id">View</a>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    }
-</div>
+        }
+    </div>
+
+    <partial name="_SearchPartial" model="@Model" />
+}
+else
+{
+    <span>No results found</span>
+}

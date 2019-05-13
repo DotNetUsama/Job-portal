@@ -119,6 +119,22 @@ namespace Job_Portal_System.Controllers
         }
 
         [HttpPost]
+        [Route("JobTitlesWithSimilarities")]
+        public IActionResult JobTitlesWithSimilarities()
+        {
+            return Json(_context.JobTitles
+                .Select(jobTitle => new
+                {
+                    Label = jobTitle.Title,
+                })
+                .Union(_context.JobTitleSimilarities
+                    .Select(s => new
+                    {
+                        Label = s.SimilarTitle.Title,
+                    })));
+        }
+
+        [HttpPost]
         [Route("SimilarJobTitles")]
         public IActionResult SimilarJobTitles(string query)
         {

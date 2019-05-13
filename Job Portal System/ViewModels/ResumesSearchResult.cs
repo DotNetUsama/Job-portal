@@ -3,9 +3,8 @@ using Job_Portal_System.Models;
 
 namespace Job_Portal_System.ViewModels
 {
-    public class ResumesSearchResult
+    public class ResumesSearchResult : AbstractSearchResultViewModel
     {
         public IEnumerable<Resume> Resumes { get; set; }
-        public string Query { get; set; }
     }
 }

@@ -180,7 +180,7 @@ namespace Job_Portal_System.Controllers
 
         [HttpGet]
         [Route("Search")]
-        public async Task<IActionResult> Search(string query, int p = 1)
+        public IActionResult Search(string query, int p = 1)
         {
             var queries = query.Split(",");
             var jobTitles = new List<JobTitle>();
@@ -195,23 +195,35 @@ namespace Job_Portal_System.Controllers
                 }
 
                 var similar = _context.JobTitleSimilarities
+                    .Include(s => s.JobTitle)
                     .SingleOrDefault(s => s.SimilarTitle.Title == queryJob);
                 if (similar == null) break;
                 jobTitles.Add(similar.JobTitle);
             }
 
-            var jobVacancies = await _context.JobVacancies
-                .Include(j => j.JobTitle)
-                .Include(j => j.CompanyDepartment).ThenInclude(c => c.Company)
-                .Where(r => jobTitles.Any(j => j.Id == r.JobTitle.Id))
-                .ToListAsync();
-            var pager = new Pager(jobVacancies.Count, p);
+            var jobVacancies = new List<JobVacancy>();
+            foreach (var job in jobTitles)
+            {
+                jobVacancies.AddRange(_context.JobVacancies
+                    .Include(j => j.JobTitle)
+                    .Include(j => j.CompanyDepartment).ThenInclude(c => c.Company)
+                    .Where(r => r.JobTitleId == job.Id));
+            }
 
-            var viewedJobVacancies = jobVacancies.Skip((pager.CurrentPage - 1) * pager.PageSize).Take(pager.PageSize);
+            var pager = new Pager(jobVacancies.Count, p);
+            
+            var viewedJobVacancies = jobVacancies
+                .Distinct()
+                .Skip((pager.CurrentPage - 1) * pager.PageSize)
+                .Take(pager.PageSize);
             return View("JobVacanciesSearchResult", new JobVacanciesSearchResult
             {
                 JobVacancies = viewedJobVacancies,
                 Query = query,
+                TotalPages = pager.TotalPages,
+                PageNumber = pager.CurrentPage,
+                IsFirst = pager.CurrentPage == 1 || pager.CurrentPage == 0,
+                IsLast = pager.CurrentPage == pager.TotalPages,
             });
         }
     }
