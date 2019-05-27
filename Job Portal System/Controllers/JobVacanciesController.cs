@@ -127,17 +127,17 @@ namespace Job_Portal_System.Controllers
                 .Include(j => j.User)
                 .SingleOrDefaultAsync(j => j.User.UserName == User.Identity.Name);
 
-            if (jobSeeker == null || !jobSeeker.IsSeeking ||
+            if (jobSeeker == null) return BadRequest();
+
+            var resume = _context.Resumes
+                .SingleOrDefault(r => r.JobSeekerId == jobSeeker.Id);
+            
+            if (resume == null || !resume.IsSeeking ||
                 _context.Applicants.Any(a => a.JobVacancyId == jobVacancy.Id
                                              && a.JobSeekerId == jobSeeker.User.Id))
             {
                 return BadRequest();
             }
-
-            var resume = _context.Resumes
-                .SingleOrDefault(r => r.JobSeekerId == jobSeeker.Id);
-
-            if (resume == null) return BadRequest();
 
             await AsyncHandler.SubmitToJobVacancy(_context, _hubContext, jobVacancy, resume);
 

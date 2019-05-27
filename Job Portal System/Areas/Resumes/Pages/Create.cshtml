@@ -64,18 +64,46 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="form-group">
-                                <label asp-for="Educations[0].SchoolCity"></label>
-                                <input asp-for="Educations[0].SchoolCity" id="city-input" class="form-control" />
-                                <span asp-validation-for="Educations[0].SchoolCity" class="validation-label text-danger"></span>
+                            <div class="card my-3">
+                                <div class="card-body px-3">
+                                    <h5 class="card-title">School</h5>
+                                    <div class="form-group city-select-container">
+                                        <div class="form-row">
+                                            <div class="col-md-6">
+                                                <select asp-for="Educations[0].State"
+                                                        class="form-control state-select">
+                                                    <option value="">Select state</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <select asp-for="Educations[0].City"
+                                                        disabled="disabled"
+                                                        class="form-control city-select">
+                                                    <option value="">Please select</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <span asp-validation-for="Educations[0].State"
+                                                      class="validation-label text-danger"></span>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <span asp-validation-for="Educations[0].City"
+                                                      class="validation-label text-danger"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-row">
+                                        <label class="col-md-4">School name</label>
+                                        <div class="col-md-8">
+                                            <input asp-for="Educations[0].School" id="school-input"
+                                                   class="form-control" />
+                                            <span asp-validation-for="Educations[0].School"
+                                                  class="validation-label text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <input asp-for="Educations[0].SchoolId" id="school-id" />
+                                </div>
                             </div>
-                            <input asp-for="Educations[0].SchoolCityId" id="city-id" />
-                            <div class="form-group">
-                                <label asp-for="Educations[0].School"></label>
-                                <input asp-for="Educations[0].School" id="school-input" class="form-control" />
-                                <span asp-validation-for="Educations[0].School" class="validation-label text-danger"></span>
-                            </div>
-                            <input asp-for="Educations[0].SchoolId" id="school-id" />
                         </div>
                         <button type="button"
                                 class="btn btn-submit btn-sub-submit">
@@ -137,9 +165,8 @@
                             <i class="fa fa-plus-circle"></i> Add
                         </button>
                     </fieldset>
-
-                    <fieldset id="general-info-partial" class="tab">
-                        <h2 class="form-body-title"><i class="fa fa-question-circle"></i> General information</h2>
+                    
+                    <fieldset id="skills-and-seekded-job-titles-partial" class="tab">
                         <fieldset class="sub-form" data-count="0" data-for="OwnedSkills" id="owned-skills-sub-form">
                             <legend>Owned Skills</legend>
 
@@ -174,36 +201,6 @@
                             </div>
                         </fieldset>
                         <hr />
-
-                        <fieldset>
-                            <legend>Resume information</legend>
-                            <div class="form-group">
-                                <label asp-for="ResumeInfo.MinSalary"></label>
-                                <input asp-for="ResumeInfo.MinSalary" class="form-control" />
-                                <span asp-validation-for="ResumeInfo.MinSalary" class="validation-label text-danger"></span>
-                            </div>
-                            <div class="form-group">
-                                <label class="checkbox-container">
-                                    <label asp-for="ResumeInfo.IsPublic"></label>
-                                    <input asp-for="ResumeInfo.IsPublic" checked />
-                                    <span class="checkmark"></span>
-                                </label>
-                            </div>
-                            <div class="form-row">
-                                @foreach (var entity in Model.ResumeInfo.JobTypes)
-                                {
-                                    <div class="col-md-4">
-                                        <label class="checkbox-container">
-                                            @entity.Key.GetDescription()
-                                            <input asp-for="ResumeInfo.JobTypes[entity.Key]" />
-                                            <span class="checkmark"></span>
-                                        </label>
-                                    </div>
-                                }
-                            </div>
-                        </fieldset>
-                        <hr />
-
                         <fieldset class="sub-form" data-count="0" data-for="SeekedJobTitles" id="seeked-job-titles-sub-form">
                             <legend>Seeked job titles <span class="font-weight-light">(Optional)</span></legend>
 
@@ -232,6 +229,52 @@
                             </div>
                         </fieldset>
                     </fieldset>
+                    <fieldset id="general-info-partial" class="tab">
+                        <h2 class="form-body-title"><i class="fa fa-question-circle"></i> General information</h2>
+                        <div class="form-group">
+                            <label asp-for="ResumeInfo.MinSalary"></label>
+                            <input asp-for="ResumeInfo.MinSalary" class="form-control" />
+                            <span asp-validation-for="ResumeInfo.MinSalary" class="validation-label text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="ResumeInfo.MovingDistanceLimit"></label>
+                            <input asp-for="ResumeInfo.MovingDistanceLimit" class="form-control" />
+                            <span asp-validation-for="ResumeInfo.MovingDistanceLimit" class="validation-label text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="ResumeInfo.Biography"></label>
+                            <textarea asp-for="ResumeInfo.Biography" class="form-control" id="biography">
+                                @Model.ResumeInfo.Biography
+                            </textarea>
+                            <span asp-validation-for="ResumeInfo.Biography" class="validation-label text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label class="checkbox-container">
+                                <label asp-for="ResumeInfo.IsSeeking"></label>
+                                <input asp-for="ResumeInfo.IsSeeking" checked />
+                                <span class="checkmark"></span>
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label class="checkbox-container">
+                                <label asp-for="ResumeInfo.IsPublic"></label>
+                                <input asp-for="ResumeInfo.IsPublic" checked />
+                                <span class="checkmark"></span>
+                            </label>
+                        </div>
+                        <div class="form-row">
+                            @foreach (var entity in Model.ResumeInfo.JobTypes)
+                            {
+                                <div class="col-md-4">
+                                    <label class="checkbox-container">
+                                        @entity.Key.GetDescription()
+                                        <input asp-for="ResumeInfo.JobTypes[entity.Key]" />
+                                        <span class="checkmark"></span>
+                                    </label>
+                                </div>
+                            }
+                        </div>
+                    </fieldset>
 
                     <div class="d-flex">
                         <button type="button" id="prevBtn"
@@ -242,6 +285,7 @@
                                 class="btn btn-step ml-2 mr-2" onclick="nextPrev(1)">
                             Next <i class="fa fa-chevron-right"></i>
                         </button>
+
                         <button asp-page-handler="createResume"
                                 class="btn btn-submit ml-auto cancel">
                             Create
@@ -258,4 +302,5 @@
     <partial name="_ValidationScriptsPartial" />
     <partial name="_EditorScriptPartial" />
     <partial name="_ResumesScriptsPartial" />
+    <partial name="_CitiesSelectorScriptPartial" />
 }

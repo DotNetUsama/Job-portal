@@ -73,7 +73,10 @@ namespace Job_Portal_System.Areas.Resumes.Pages
             ResumeInfo = new ResumeInputModel
             {
                 IsPublic = resumeInDb.IsPublic,
+                IsSeeking = resumeInDb.IsSeeking,
                 MinSalary = resumeInDb.MinSalary,
+                MovingDistanceLimit = resumeInDb.MovingDistanceLimit,
+                Biography = resumeInDb.Biography,
                 JobTypes =
                     JobTypeMethods.GetDictionary(resumeInDb.JobTypes.Select(jobType => jobType.JobType).ToList()),
             };
@@ -100,8 +103,11 @@ namespace Job_Portal_System.Areas.Resumes.Pages
             OwnedSkills.ForEach(skill => AddSkill(resume, skill));
             SeekedJobTitles.ForEach(jobTitle => AddSeekedJobTitle(resume, jobTitle));
             AddJobTypes(resume);
-            resume.IsPublic = ResumeInfo.IsPublic;
             resume.MinSalary = ResumeInfo.MinSalary;
+            resume.MovingDistanceLimit = ResumeInfo.MovingDistanceLimit;
+            resume.IsPublic = ResumeInfo.IsPublic;
+            resume.IsSeeking = ResumeInfo.IsSeeking;
+            resume.Biography = ResumeInfo.Biography;
             await _context.SaveChangesAsync();
             return Redirect("./Index");
         }
@@ -128,15 +134,11 @@ namespace Job_Portal_System.Areas.Resumes.Pages
 
         private void AddEducation(Resume resume, EducationInputModel education)
         {
-            var city = education.SchoolCityId == null
-                ? new City { Name = education.SchoolCity }
-                : _context.Cities.SingleOrDefault(cityInDb => cityInDb.Id == education.SchoolCityId);
-
             var school = education.SchoolId == null
                 ? new School
                 {
                     Name = education.School,
-                    City = city,
+                    CityId = education.City,
                 }
                 : _context.Schools.SingleOrDefault(schoolInDb => schoolInDb.Name == education.School);
 

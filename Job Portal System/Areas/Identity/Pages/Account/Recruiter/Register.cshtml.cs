@@ -80,6 +80,10 @@ namespace Job_Portal_System.Areas.Identity.Pages.Account.Recruiter
             [Display(Name = "Email")]
             public string Email { get; set; }
 
+            [Phone]
+            [Display(Name = "Phone number")]
+            public string PhoneNumber { get; set; }
+
             [Required]
             [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
             [DataType(DataType.Password)]
@@ -90,6 +94,20 @@ namespace Job_Portal_System.Areas.Identity.Pages.Account.Recruiter
             [Display(Name = "Confirm password")]
             [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
             public string ConfirmPassword { get; set; }
+
+            [Required]
+            [Display(Name = "State")]
+            public string State { get; set; }
+
+            [Required]
+            [Display(Name = "City")]
+            public string City { get; set; }
+
+            [Required]
+            [DataType(DataType.Text)]
+            [StringLength(255)]
+            [Display(Name = "Detailed address")]
+            public string DetailedAddress { get; set; }
 
             [Required]
             [Display(Name = "Company name")]
@@ -117,7 +135,10 @@ namespace Job_Portal_System.Areas.Identity.Pages.Account.Recruiter
                 FirstName = Input.FirstName,
                 LastName = Input.LastName,
                 Gender = (byte)Input.Gender,
-                BirthDate = Input.BirthDate
+                BirthDate = Input.BirthDate,
+                PhoneNumber = Input.PhoneNumber,
+                CityId = Input.City,
+                DetailedAddress = Input.DetailedAddress,
             };
             var result = await _userManager.CreateAsync(user, Input.Password);
             if (result.Succeeded)

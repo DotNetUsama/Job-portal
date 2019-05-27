@@ -66,7 +66,7 @@ namespace Job_Portal_System.Areas.Resumes.Pages
 
             return Page();
         }
-        
+
         public async Task<IActionResult> OnPostCreateResumeAsync()
         {
             var user = await _userManager.FindByNameAsync(User.Identity.Name);
@@ -74,7 +74,10 @@ namespace Job_Portal_System.Areas.Resumes.Pages
             var resume = new Resume
             {
                 MinSalary = ResumeInfo.MinSalary,
+                MovingDistanceLimit = ResumeInfo.MovingDistanceLimit,
                 IsPublic = ResumeInfo.IsPublic,
+                IsSeeking = ResumeInfo.IsSeeking,
+                Biography = ResumeInfo.Biography,
                 JobTypes = new List<ResumeJobType>(),
                 Educations = new List<Education>(),
                 WorkExperiences = new List<WorkExperience>(),
@@ -82,7 +85,7 @@ namespace Job_Portal_System.Areas.Resumes.Pages
                 SeekedJobTitles = new List<SeekedJobTitle>(),
                 User = user,
                 JobSeeker = jobSeeker,
-        };
+            };
             PrepareLists();
             Educations.ForEach(education => AddEducation(resume, education));
             WorkExperiences.ForEach(workExperience => AddWorkExperience(resume, workExperience));
@@ -91,6 +94,7 @@ namespace Job_Portal_System.Areas.Resumes.Pages
             AddJobTypes(resume);
             _context.Resumes.Add(resume);
             await _context.SaveChangesAsync();
+
             return Redirect("./Index");
         }
 
@@ -109,22 +113,18 @@ namespace Job_Portal_System.Areas.Resumes.Pages
                 if (resumeInfoJobType.Value)
                     resume.JobTypes.Add(new ResumeJobType
                     {
-                        JobType = (int) resumeInfoJobType.Key,
+                        JobType = (int)resumeInfoJobType.Key,
                     });
             }
         }
 
         private void AddEducation(Resume resume, EducationInputModel education)
         {
-            var city = education.SchoolCityId == null
-                ? new City {Name = education.SchoolCity}
-                : _context.Cities.SingleOrDefault(cityInDb => cityInDb.Id == education.SchoolCityId);
-
             var school = education.SchoolId == null
                 ? new School
                 {
                     Name = education.School,
-                    City = city,
+                    CityId = education.City,
                 }
                 : _context.Schools.SingleOrDefault(schoolInDb => schoolInDb.Name == education.School);
 

@@ -32,6 +32,8 @@ namespace Job_Portal_System.Data
         public DbSet<CompanyDepartment> CompanyDepartments { get; set; }
         public DbSet<DesiredSkill> DesiredSkills { get; set; }
         public DbSet<City> Cities { get; set; }
+        public DbSet<State> States { get; set; }
+        public DbSet<GeoDistance> GeoDistances { get; set; }
         public DbSet<EducationQualification> EducationQualifications { get; set; }
         public DbSet<FieldOfStudy> FieldOfStudies { get; set; }
         public DbSet<FieldOfStudySimilarity> FieldOfStudySimilarities { get; set; }

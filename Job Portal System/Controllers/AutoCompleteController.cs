@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using Job_Portal_System.Client;
 using Job_Portal_System.Data;
-using Job_Portal_System.Models;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Job_Portal_System.Controllers
@@ -62,10 +57,23 @@ namespace Job_Portal_System.Controllers
         }
 
         [HttpPost]
+        [Route("States")]
+        public IActionResult States()
+        {
+            return Json(_context.States
+                .Select(state => new
+                {
+                    state.Id,
+                    Label = state.Name,
+                }));
+        }
+
+        [HttpPost]
         [Route("Cities")]
-        public IActionResult Cities()
+        public IActionResult Cities(string stateId)
         {
             return Json(_context.Cities
+                .Where(city => city.StateId == stateId)
                 .Select(city => new
                 {
                     city.Id,

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using GeoCoordinatePortable;
 using Job_Portal_System.Client;
 using Job_Portal_System.Enums;
 using Job_Portal_System.Models;
@@ -166,103 +167,172 @@ namespace Job_Portal_System.Data
             return res;
         }
 
+        private static void SeedStates(IHostingEnvironment env, ApplicationDbContext context)
+        {
+            var path = Path.Combine(env.ContentRootPath, "Queries", "Syrian-States.txt");
+            string line;
+            var file = new StreamReader(path);
+            while ((line = file.ReadLine()) != null)
+            {
+                var state = context.States.SingleOrDefault(s => s.Name == line) ??
+                            context.States.Add(new State { Name = line }).Entity;
+            }
+
+            context.SaveChanges();
+        }
+
         public static void SeedData(IHostingEnvironment env, ApplicationDbContext context,
             UserManager<User> userManager, RoleManager<IdentityRole> roleManager)
         {
             SeedRoles(roleManager);
             SeedUsers(userManager);
-            SeedJobTitles(env, context);
-            SeedFieldsOfStudy(env, context);
+            //SeedJobTitles(env, context);
+            //SeedFieldsOfStudy(env, context);
+        }
+
+        public static void SeedCities(IHostingEnvironment env, ApplicationDbContext context)
+        {
+            SeedStates(env, context);
+            var path = Path.Combine(env.ContentRootPath, "Queries", "Syrian-Cities.txt");
+            string line;
+            var file = new StreamReader(path);
+            while ((line = file.ReadLine()) != null)
+            {
+                var cityName = line;
+                var latitude = double.Parse(file.ReadLine());
+                var longitude = double.Parse(file.ReadLine());
+                var stateName = file.ReadLine();
+                var state = context.States.SingleOrDefault(s => s.Name == stateName);
+                var city = context.Cities.SingleOrDefault(c => c.Name == cityName && c.StateId == state.Id);
+
+                if (city != null) continue;
+
+                var otherCities = context.Cities.ToList();
+                var cityId = context.Cities.Add(new City
+                {
+                    Name = cityName,
+                    Latitude = latitude,
+                    Longitude = longitude,
+                    StateId = state?.Id,
+                }).Entity.Id;
+
+                var cityCoord = new GeoCoordinate(latitude, longitude);
+                otherCities.ForEach(other =>
+                {
+                    var otherCoord = new GeoCoordinate(other.Latitude, other.Longitude);
+                    var distance = (uint) cityCoord.GetDistanceTo(otherCoord) / 1000;
+                    if (distance > 60) return;
+                    context.GeoDistances.Add(new GeoDistance
+                    {
+                        City1Id = cityId,
+                        City2Id = other.Id,
+                        Distance = distance,
+                    });
+                });
+
+                context.SaveChanges();
+            }
         }
 
         public static void ClearDatabase(ApplicationDbContext context)
         {
-            foreach (var id in context.Educations.Select(e => e.Id))
-            {
-                var entity = new Education { Id = id };
-                context.Educations.Attach(entity);
-                context.Educations.Remove(entity);
-            }
-            foreach (var id in context.WorkExperiences.Select(e => e.Id))
-            {
-                var entity = new WorkExperience { Id = id };
-                context.WorkExperiences.Attach(entity);
-                context.WorkExperiences.Remove(entity);
-            }
-            foreach (var id in context.OwnedSkills.Select(e => e.Id))
-            {
-                var entity = new OwnedSkill { Id = id };
-                context.OwnedSkills.Attach(entity);
-                context.OwnedSkills.Remove(entity);
-            }
-            foreach (var id in context.ResumeJobTypes.Select(e => e.Id))
-            {
-                var entity = new ResumeJobType { Id = id };
-                context.ResumeJobTypes.Attach(entity);
-                context.ResumeJobTypes.Remove(entity);
-            }
-            foreach (var id in context.SeekedJobTitles.Select(e => e.Id))
-            {
-                var entity = new SeekedJobTitle { Id = id };
-                context.SeekedJobTitles.Attach(entity);
-                context.SeekedJobTitles.Remove(entity);
-            }
+            //foreach (var id in context.Educations.Select(e => e.Id))
+            //{
+            //    var entity = new Education { Id = id };
+            //    context.Educations.Attach(entity);
+            //    context.Educations.Remove(entity);
+            //}
+            //foreach (var id in context.WorkExperiences.Select(e => e.Id))
+            //{
+            //    var entity = new WorkExperience { Id = id };
+            //    context.WorkExperiences.Attach(entity);
+            //    context.WorkExperiences.Remove(entity);
+            //}
+            //foreach (var id in context.OwnedSkills.Select(e => e.Id))
+            //{
+            //    var entity = new OwnedSkill { Id = id };
+            //    context.OwnedSkills.Attach(entity);
+            //    context.OwnedSkills.Remove(entity);
+            //}
+            //foreach (var id in context.ResumeJobTypes.Select(e => e.Id))
+            //{
+            //    var entity = new ResumeJobType { Id = id };
+            //    context.ResumeJobTypes.Attach(entity);
+            //    context.ResumeJobTypes.Remove(entity);
+            //}
+            //foreach (var id in context.SeekedJobTitles.Select(e => e.Id))
+            //{
+            //    var entity = new SeekedJobTitle { Id = id };
+            //    context.SeekedJobTitles.Attach(entity);
+            //    context.SeekedJobTitles.Remove(entity);
+            //}
 
-            foreach (var id in context.EducationQualifications.Select(e => e.Id))
-            {
-                var entity = new EducationQualification { Id = id };
-                context.EducationQualifications.Attach(entity);
-                context.EducationQualifications.Remove(entity);
-            }
-            foreach (var id in context.WorkExperienceQualifications.Select(e => e.Id))
-            {
-                var entity = new WorkExperienceQualification { Id = id };
-                context.WorkExperienceQualifications.Attach(entity);
-                context.WorkExperienceQualifications.Remove(entity);
-            }
-            foreach (var id in context.DesiredSkills.Select(e => e.Id))
-            {
-                var entity = new DesiredSkill { Id = id };
-                context.DesiredSkills.Attach(entity);
-                context.DesiredSkills.Remove(entity);
-            }
-            foreach (var id in context.JobVacancyJobTypes.Select(e => e.Id))
-            {
-                var entity = new JobVacancyJobType { Id = id };
-                context.JobVacancyJobTypes.Attach(entity);
-                context.JobVacancyJobTypes.Remove(entity);
-            }
-            foreach (var id in context.Applicants.Select(a => a.Id))
-            {
-                var entity = new Applicant { Id = id };
-                context.Applicants.Attach(entity);
-                context.Applicants.Remove(entity);
-            }
-            foreach (var id in context.UserNotifications.Select(a => a.Id))
-            {
-                var entity = new UserNotification { Id = id };
-                context.UserNotifications.Attach(entity);
-                context.UserNotifications.Remove(entity);
-            }
+            //foreach (var id in context.EducationQualifications.Select(e => e.Id))
+            //{
+            //    var entity = new EducationQualification { Id = id };
+            //    context.EducationQualifications.Attach(entity);
+            //    context.EducationQualifications.Remove(entity);
+            //}
+            //foreach (var id in context.WorkExperienceQualifications.Select(e => e.Id))
+            //{
+            //    var entity = new WorkExperienceQualification { Id = id };
+            //    context.WorkExperienceQualifications.Attach(entity);
+            //    context.WorkExperienceQualifications.Remove(entity);
+            //}
+            //foreach (var id in context.DesiredSkills.Select(e => e.Id))
+            //{
+            //    var entity = new DesiredSkill { Id = id };
+            //    context.DesiredSkills.Attach(entity);
+            //    context.DesiredSkills.Remove(entity);
+            //}
+            //foreach (var id in context.JobVacancyJobTypes.Select(e => e.Id))
+            //{
+            //    var entity = new JobVacancyJobType { Id = id };
+            //    context.JobVacancyJobTypes.Attach(entity);
+            //    context.JobVacancyJobTypes.Remove(entity);
+            //}
+            //foreach (var id in context.Applicants.Select(a => a.Id))
+            //{
+            //    var entity = new Applicant { Id = id };
+            //    context.Applicants.Attach(entity);
+            //    context.Applicants.Remove(entity);
+            //}
+            //foreach (var id in context.UserNotifications.Select(a => a.Id))
+            //{
+            //    var entity = new UserNotification { Id = id };
+            //    context.UserNotifications.Attach(entity);
+            //    context.UserNotifications.Remove(entity);
+            //}
+            //context.SaveChanges();
+            //foreach (var id in context.JobVacancies.Select(e => e.Id))
+            //{
+            //    var entity = new JobVacancy { Id = id };
+            //    context.JobVacancies.Attach(entity);
+            //    context.JobVacancies.Remove(entity);
+            //}
+            //foreach (var id in context.Resumes.Select(e => e.Id))
+            //{
+            //    var entity = new Resume { Id = id };
+            //    context.Resumes.Attach(entity);
+            //    context.Resumes.Remove(entity);
+            //}
+            //foreach (var id in context.Notifications.Select(a => a.Id))
+            //{
+            //    var entity = new Notification { Id = id };
+            //    context.Notifications.Attach(entity);
+            //    context.Notifications.Remove(entity);
+            //}
+            //context.SaveChanges();
+            //foreach (var id in context.Users.Select(a => a.Id))
+            //{
+            //    var entity = new User { Id = id };
+            //    context.Users.Attach(entity);
+            //    context.Users.Remove(entity);
+            //}
+            context.JobSeekers.RemoveRange(context.JobSeekers);
+            context.Recruiters.RemoveRange(context.Recruiters);
             context.SaveChanges();
-            foreach (var id in context.JobVacancies.Select(e => e.Id))
-            {
-                var entity = new JobVacancy { Id = id };
-                context.JobVacancies.Attach(entity);
-                context.JobVacancies.Remove(entity);
-            }
-            foreach (var id in context.Resumes.Select(e => e.Id))
-            {
-                var entity = new Resume { Id = id };
-                context.Resumes.Attach(entity);
-                context.Resumes.Remove(entity);
-            }
-            foreach (var id in context.Notifications.Select(a => a.Id))
-            {
-                var entity = new Notification { Id = id };
-                context.Notifications.Attach(entity);
-                context.Notifications.Remove(entity);
-            }
+            context.Users.RemoveRange(context.Users);
             context.SaveChanges();
         }
 

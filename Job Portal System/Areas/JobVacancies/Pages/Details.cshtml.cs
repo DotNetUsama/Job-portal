@@ -83,10 +83,18 @@ namespace Job_Portal_System.Areas.JobVacancies.Pages
                     var jobSeeker = _context.JobSeekers
                         .Include(j => j.User)
                         .SingleOrDefault(j => j.User.UserName == User.Identity.Name);
-                    CanSubmit = jobSeeker != null && jobSeeker.IsSeeking &&
-                                _context.Resumes.Any(r => r.JobSeekerId == jobSeeker.Id) &&
-                                !_context.Applicants.Any(a => a.JobVacancyId == JobVacancy.Id
-                                                              && a.JobSeekerId == jobSeeker.User.Id);
+                    if (jobSeeker == null)
+                    {
+                        CanSubmit = false;
+                    }
+                    else
+                    {
+                        var resume = _context.Resumes
+                            .SingleOrDefault(r => r.JobSeekerId == jobSeeker.Id);
+                        CanSubmit = resume != null && resume.IsSeeking &&
+                                    !_context.Applicants.Any(a => a.JobVacancyId == JobVacancy.Id
+                                                                  && a.ResumeId == resume.Id);
+                    }
                 }
                 else
                 {
@@ -124,17 +132,17 @@ namespace Job_Portal_System.Areas.JobVacancies.Pages
                 .Include(j => j.User)
                 .SingleOrDefault(j => j.User.UserName == User.Identity.Name);
 
-            if (jobSeeker == null || !jobSeeker.IsSeeking ||
+            if (jobSeeker == null) return BadRequest();
+
+            var resume = _context.Resumes
+                    .SingleOrDefault(r => r.JobSeekerId == jobSeeker.Id);
+
+            if (resume == null || !resume.IsSeeking ||
                 _context.Applicants.Any(a => a.JobVacancyId == JobVacancy.Id
                                              && a.JobSeekerId == jobSeeker.User.Id))
             {
                 return BadRequest();
             }
-
-            var resume = _context.Resumes
-                .SingleOrDefault(r => r.JobSeekerId == jobSeeker.Id);
-
-            if (resume == null) return BadRequest();
 
             await AsyncHandler.SubmitToJobVacancy(_context, _hubContext, JobVacancy, resume);
 

@@ -384,10 +384,25 @@ a.no-hover-anchor:hover {
     display: block;
 }
 
+.custom-control-label {
+    line-height: 2;
+    font-weight: 600;
+}
+
+
+.custom-checkbox .custom-control-input:checked ~ .custom-control-label::before {
+    background-color: var(--form-main);
+}
+
+.custom-control-input:checked ~ .custom-control-label::before {
+    color: #fff;
+    background-color: var(--form-main);
+}
+
 /* Style the checkmark/indicator */
 .checkbox-container .checkmark:after {
     left: 7px;
-    top: 4px;
+    top: 3px;
     width: 5px;
     height: 10px;
     border: solid white;

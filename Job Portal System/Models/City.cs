@@ -10,8 +10,12 @@ namespace Job_Portal_System.Models
         [StringLength(50)]
         public string Name { get; set; }
         
-        public double? Longitude { get; set; }
+        public double Longitude { get; set; }
         
-        public double? Latitude { get; set; }
+        public double Latitude { get; set; }
+
+        public State State { get; set; }
+
+        public string StateId { get; set; }
     }
 }

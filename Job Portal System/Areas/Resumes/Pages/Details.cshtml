@@ -16,6 +16,11 @@
                 <h1 class="form-head-title">@ViewData["Title"]</h1>
             </div>
             <div class="form-body">
+                <fieldset id="biography-partial">
+                    <legend><i class="fa fa-question-circle"></i> Biography</legend>
+                    @Html.Raw(Model.Resume.Biography)
+                </fieldset>
+                <hr />
                 <fieldset id="educations-partial">
                     <legend><i class="fa fa-graduation-cap"></i> Educations</legend>
                     @if (Model.Resume.Educations.Count == 0)

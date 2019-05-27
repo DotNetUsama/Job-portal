@@ -13,6 +13,7 @@ namespace Job_Portal_System.Models
         public string DetailedAddress { get; set; }
 
         public City City { get; set; }
+        public string CityId { get; set; }
         public Company Company { get; set; }
         public string CompanyId { get; set; }
     }

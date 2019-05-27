@@ -1,4 +1,6 @@
 using System.Linq;
+using DinkToPdf;
+using DinkToPdf.Contracts;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI;
@@ -36,10 +38,22 @@ namespace Job_Portal_System
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
-            services.AddDefaultIdentity<User>()
-                .AddRoles<IdentityRole>()
+
+            services.AddIdentity<User, IdentityRole>(options =>
+            {
+                options.Password.RequireDigit = false;
+                options.Password.RequireLowercase = false;
+                options.Password.RequireUppercase = false;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequiredLength = 6;
+            })
+                .AddDefaultTokenProviders()
                 .AddDefaultUI(UIFramework.Bootstrap4)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
+            //services.AddDefaultIdentity<User>()
+            //    .AddRoles<IdentityRole>()
+            //    .AddDefaultUI(UIFramework.Bootstrap4)
+            //    .AddEntityFrameworkStores<ApplicationDbContext>();
 
             services.AddSignalR(options =>
             {
@@ -47,10 +61,12 @@ namespace Job_Portal_System
             });
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+
+            services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new PdfTools()));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, 
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env,
             UserManager<User> userManager, RoleManager<IdentityRole> roleManager,
             ApplicationDbContext context)
         {
@@ -77,13 +93,15 @@ namespace Job_Portal_System
                 routes.MapHub<SignalRHub>("/signalRHub");
             });
 
-            //DatabaseSeeder.SeedData(env, context, userManager, roleManager);
+            DatabaseSeeder.SeedData(env, context, userManager, roleManager);
             //DatabaseSeeder.SeedCompanies(context);
             //DatabaseSeeder.SeedSchools(context);
             //DatabaseSeeder.SeedSkills(context);
             //DatabaseSeeder.SeedJobSeekers(context, userManager, roleManager, 1000);
             {
-                var count = context.Resumes.Count();
+                //DatabaseSeeder.SeedCities(env, context);
+                //DatabaseSeeder.ClearDatabase(context);
+                //var list = context.States.Select(s => s.Name).Distinct().ToList();
             }
             //DatabaseSeeder.ClearDatabase(context);
 

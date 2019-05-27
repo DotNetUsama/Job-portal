@@ -23,5 +23,15 @@ namespace Job_Portal_System.Models
 
         [DataType(DataType.DateTime)]
         public DateTime CreatedAt { get; set; } = DateTime.Now;
+
+        [Required]
+        [DataType(DataType.Text)]
+        [StringLength(255)]
+        [Display(Name = "Detailed address")]
+        public string DetailedAddress { get; set; }
+
+        public City City { get; set; }
+
+        public string CityId { get; set; }
     }
 }

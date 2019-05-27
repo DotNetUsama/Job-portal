@@ -13,22 +13,6 @@ $(document).ready(() => {
         delay: 800
     });
     autoComplete({
-        inputFieldSelector: "#city-input",
-        idSelector: "#city-id",
-        dataUrl: "/AutoComplete/Cities",
-        change: (cityId) => {
-            autoComplete({
-                inputFieldSelector: "#school-input",
-                idSelector: "#school-id",
-                dataUrl: `/AutoComplete/Schools?cityId=${cityId}`,
-                allowNewEntry: true,
-                delay: 300
-            });
-        },
-        allowNewEntry: true,
-        delay: 300
-    });
-    autoComplete({
         inputFieldSelector: "#work-experience-job-title-input",
         idSelector: "#work-experience-job-title-id",
         dataUrl: "/AutoComplete/JobTitles",
@@ -102,6 +86,22 @@ $(document).ready(() => {
     
     tinymce.init({
         selector: "textarea#description",
+        height: 300,
+        menubar: "view",
+        plugins: [
+            "advlist autolink lists link image charmap print preview anchor textcolor",
+            "searchreplace visualblocks code fullscreen",
+            "insertdatetime media table paste code help wordcount"
+        ],
+        toolbar: "undo redo | bold italic strikethrough forecolor backcolor permanentpen formatpainter | link image | alignleft aligncenter alignright alignjustify  | numlist bullist outdent indent | removeformat | fullscrreen | help",
+        content_css: [
+            "//fonts.googleapis.com/css?family=Lato:300,300i,400,400i",
+            "//www.tiny.cloud/css/codepen.min.css"
+        ]
+    });
+
+    tinymce.init({
+        selector: "textarea#biography",
         height: 300,
         menubar: "view",
         plugins: [

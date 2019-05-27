@@ -3,17 +3,11 @@
 });
 
 $(document).ready(() => {
-    autoComplete({
-        inputFieldSelector: "#city-input",
-        idSelector: "#city-id",
-        dataUrl: "/AutoComplete/Cities",
-        allowNewEntry: true,
-        delay: 300
-    });
-
-    $("#departments-partial").subform(() => {
+    $("#departments-partial").subform(function () {
         const nameSpan = $("<span class=\"font-weight-bold\"></span>");
-        nameSpan.html(`${$("#city-input").val()} - ${$("#detailed-address-input").val()}`);
+        const stateInput = $("#state-input option:selected").text();
+        const cityInput = $("#city-input option:selected").text();
+        nameSpan.html(`${stateInput} - ${cityInput} - ${$("#detailed-address-input").val()}`);
         return nameSpan;
     });
 

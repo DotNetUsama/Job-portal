@@ -28,6 +28,25 @@
                             <span asp-validation-for="ResumeInfo.MinSalary" class="validation-label text-danger"></span>
                         </div>
                         <div class="form-group">
+                            <label asp-for="ResumeInfo.MovingDistanceLimit"></label>
+                            <input asp-for="ResumeInfo.MovingDistanceLimit" class="form-control" />
+                            <span asp-validation-for="ResumeInfo.MovingDistanceLimit" class="validation-label text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="ResumeInfo.Biography"></label>
+                            <textarea asp-for="ResumeInfo.Biography" class="form-control" id="biography">
+                                @Model.ResumeInfo.Biography
+                            </textarea>
+                            <span asp-validation-for="ResumeInfo.Biography" class="validation-label text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label class="checkbox-container">
+                                <label asp-for="ResumeInfo.IsSeeking"></label>
+                                <input asp-for="ResumeInfo.IsSeeking" checked />
+                                <span class="checkmark"></span>
+                            </label>
+                        </div>
+                        <div class="form-group">
                             <label class="checkbox-container">
                                 <label asp-for="ResumeInfo.IsPublic"></label>
                                 <input asp-for="ResumeInfo.IsPublic" checked />
@@ -158,18 +177,46 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="form-group">
-                                        <label asp-for="Educations[0].SchoolCity"></label>
-                                        <input asp-for="Educations[0].SchoolCity" id="city-input" class="form-control" />
-                                        <span asp-validation-for="Educations[0].SchoolCity" class="validation-label text-danger"></span>
+                                    <div class="card px-3 mt-3">
+                                        <div class="card-body">
+                                            <h5 class="card-title">School</h5>
+                                            <div class="form-group city-select-container">
+                                                <div class="form-row">
+                                                    <div class="col-md-6">
+                                                        <select asp-for="Educations[0].State"
+                                                                class="form-control state-select">
+                                                            <option value="">Select state</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <select asp-for="Educations[0].City"
+                                                                disabled="disabled"
+                                                                class="form-control city-select">
+                                                            <option value="">Please select</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <span asp-validation-for="Educations[0].State"
+                                                              class="validation-label text-danger"></span>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <span asp-validation-for="Educations[0].City"
+                                                              class="validation-label text-danger"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-row">
+                                                <label class="col-md-4">School name</label>
+                                                <div class="col-md-8">
+                                                    <input asp-for="Educations[0].School" id="school-input"
+                                                           class="form-control" />
+                                                    <span asp-validation-for="Educations[0].School"
+                                                          class="validation-label text-danger"></span>
+                                                </div>
+                                            </div>
+                                            <input asp-for="Educations[0].SchoolId" id="school-id" />
+                                        </div>
                                     </div>
-                                    <input asp-for="Educations[0].SchoolCityId" id="city-id" />
-                                    <div class="form-group">
-                                        <label asp-for="Educations[0].School"></label>
-                                        <input asp-for="Educations[0].School" id="school-input" class="form-control" />
-                                        <span asp-validation-for="Educations[0].School" class="validation-label text-danger"></span>
-                                    </div>
-                                    <input asp-for="Educations[0].SchoolId" id="school-id" />
                                 </div>
                                 <button type="button"
                                         class="btn btn-submit btn-sub-submit">
@@ -468,6 +515,12 @@
                                 class="btn btn-submit ml-auto cancel">
                             Save changes
                         </button>
+                        <button asp-controller="Resumes"
+                                asp-action="ExportAsPdf"
+                                asp-route-id="@Model.Resume.Id"
+                                class="btn btn-submit ml-2 cancel">
+                            Export as PDF
+                        </button>
                     </div>
                 </form>
             </div>
@@ -481,4 +534,5 @@
     <partial name="_EditorScriptPartial" />
     <partial name="_CollapseScriptsPartial" />
     <partial name="_ResumesScriptsPartial" />
+    <partial name="_CitiesSelectorScriptPartial" />
 }

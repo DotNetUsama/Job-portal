@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Job_Portal_System.Data;
 using Job_Portal_System.Models;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
@@ -25,18 +24,18 @@ namespace Job_Portal_System.Areas.Companies.Pages
         public class DepartmentInputModel
         {
             [Required]
+            [Display(Name = "State")]
+            public string State { get; set; }
+            
+            [Required]
+            [Display(Name = "City")]
+            public string City { get; set; }
+
+            [Required]
             [DataType(DataType.Text)]
             [StringLength(255)]
             [Display(Name = "Detailed address")]
             public string DetailedAddress { get; set; }
-            
-            [Required]
-            [DataType(DataType.Text)]
-            [Display(Name = "City")]
-            public string City { get; set; }
-
-            [HiddenInput]
-            public string CityId { get; set; }
         }
 
         public class DepartmentEditModel
@@ -113,19 +112,6 @@ namespace Job_Portal_System.Areas.Companies.Pages
             return RedirectToPage("./Index");
         }
 
-        private void AddDepartment(Company company, DepartmentInputModel department)
-        {
-            var city = department.CityId == null
-                ? new City { Name = department.City }
-                : _context.Cities.SingleOrDefault(cityInDb => cityInDb.Id == department.CityId);
-
-            company.Departments.Add(new CompanyDepartment
-            {
-                City = city,
-                DetailedAddress = department.DetailedAddress,
-            });
-        }
-
         private void EditDepartment(DepartmentEditModel departmentEdit)
         {
             var department = _context.CompanyDepartments.SingleOrDefault(s => s.Id == departmentEdit.Id);
@@ -135,9 +121,13 @@ namespace Job_Portal_System.Areas.Companies.Pages
             }
         }
 
-        private bool CompanyExists(string id)
+        private static void AddDepartment(Company company, DepartmentInputModel department)
         {
-            return _context.Companies.Any(company => company.Id == id);
+            company.Departments.Add(new CompanyDepartment
+            {
+                CityId = department.City,
+                DetailedAddress = department.DetailedAddress,
+            });
         }
     }
 }

@@ -13,6 +13,15 @@ namespace Job_Portal_System.Models
         
         public bool IsPublic { get; set; } = true;
 
+        public bool IsSeeking { get; set; } = true;
+
+        public uint MovingDistanceLimit { get; set; } = 0;
+
+        [Required]
+        [DataType(DataType.MultilineText)]
+        [Display(Name = "Biography")]
+        public string Biography { get; set; }
+
         public User User { get; set; }
         public string UserId { get; set; }
         public JobSeeker JobSeeker { get; set; }

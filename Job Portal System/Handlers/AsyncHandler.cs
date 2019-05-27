@@ -211,12 +211,14 @@ namespace Job_Portal_System.Handlers
 
         private static List<EvaluatedResume> FetchMatchingResumes(ApplicationDbContext context, JobVacancy jobVacancy)
         {
+            var freelancing = jobVacancy.JobTypes.Any(j => j.JobType == (int) JobType.Freelance);
+            var jobVacancyCity = jobVacancy.CompanyDepartment.CityId;
             return context.Resumes
                 .Include(r => r.Educations)
                 .Include(r => r.WorkExperiences)
                 .Include(r => r.OwnedSkills)
                 .Include(r => r.User)
-                .Where(r => r.JobSeeker.IsSeeking &&
+                .Where(r => r.IsSeeking &&
                             r.JobTypes
                                 .Select(type => type.JobType)
                                 .Intersect(jobVacancy.JobTypes.Select(type => type.JobType))
