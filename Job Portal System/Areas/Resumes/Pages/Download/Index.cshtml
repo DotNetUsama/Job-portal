@@ -1,0 +1,92 @@
+﻿@page
+@using Enums
+@model Areas.Resumes.Pages.Download.IndexModel
+
+@{
+    Layout = null;
+}
+
+<link href='https://fonts.googleapis.com/css?family=Lato:400,300,700' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" href="~/css/resume-pdf.css" />
+
+<div class="container">
+    <div class="header">
+        <div class="full-name">
+            <span class="first-name">@Model.Resume.User.FirstName</span>
+            <span class="last-name">@Model.Resume.User.LastName</span>
+        </div>
+        <div class="contact-info">
+            <span class="email">Email: </span>
+            <span class="email-val">@Model.Resume.User.Email</span>
+            <span class="separator"></span>
+            <span class="phone">Phone: </span>
+            <span class="phone-val">@(Model.Resume.User.PhoneNumber ?? "-")</span>
+        </div>
+    </div>
+    <div class="details">
+        <div class="section">
+            <div class="section__title">Biography</div>
+            @Model.Resume.Biography
+        </div>
+        @if (Model.Resume.WorkExperiences.Any())
+        {
+            <div class="section">
+                <div class="section__title">Experience</div>
+                <div class="section__list">
+                    @foreach (var workExperience in Model.Resume.WorkExperiences)
+                    {
+                        <div class="section__list-item">
+                            <div class="left">
+                                <div class="name">@workExperience.Company.Name</div>
+                                <div class="duration">@workExperience.StartDate.ToString("M") - @(workExperience.EndDate?.ToString("M") ?? "Still working")</div>
+                            </div>
+                            <div class="right">
+                                <div class="name">@workExperience.JobTitle.Title</div>
+                                <div class="desc">@workExperience.Description</div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+        @if (Model.Resume.Educations.Any())
+        {
+            <div class="section">
+                <div class="section__title">Education</div>
+                <div class="section__list">
+                    @foreach (var education in Model.Resume.Educations)
+                    {
+                        <div class="section__list-item">
+                            <div class="left">
+                                <div class="name">@education.School.Name</div>
+                                <div class="duration">@education.StartDate.ToString("M") - @(education.EndDate?.ToString("M") ?? "Still working")</div>
+                            </div>
+                            <div class="right">
+                                <div class="name">@((EducationDegree)education.Degree) in @education.FieldOfStudy.Title</div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+
+        @if (Model.Resume.OwnedSkills.Any())
+        {
+            <div class="section">
+                <div class="section__title">Skills</div>
+                <div class="skills">
+                    @foreach (var skill in Model.Resume.OwnedSkills)
+                    {
+                        <div class="skills__item">
+                            <div class="left">
+                                <div class="name">
+                                    @skill.Skill.Title
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+</div>

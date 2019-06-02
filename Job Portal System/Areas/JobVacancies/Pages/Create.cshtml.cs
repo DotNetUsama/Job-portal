@@ -120,6 +120,11 @@ namespace Job_Portal_System.Areas.JobVacancies.Pages
             public string Description { get; set; }
 
             [Required]
+            [Display(Name = "Distance limit")]
+            [Range(0, 60)]
+            public uint DistanceLimit { get; set; } = 0;
+
+            [Required]
             [Display(Name = "Minimum salary")]
             [Range(100, 999999.99)]
             public double MinSalary { get; set; }
@@ -194,6 +199,7 @@ namespace Job_Portal_System.Areas.JobVacancies.Pages
             {
                 Title = JobVacancyInfo.Title,
                 Description = JobVacancyInfo.Description,
+                DistanceLimit = JobVacancyInfo.DistanceLimit,
                 MinSalary = JobVacancyInfo.MinSalary,
                 MaxSalary = JobVacancyInfo.MaxSalary,
                 RequiredHires = JobVacancyInfo.RequiredHires,

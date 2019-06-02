@@ -29,14 +29,6 @@ namespace Job_Portal_System.Areas.Resumes.Pages.InputModels
         [Required]
         [HiddenInput]
         public long FieldOfStudyId { get; set; }
-        
-        [Required]
-        [Display(Name = "State")]
-        public string State { get; set; }
-        
-        [Required]
-        [Display(Name = "City")]
-        public string City { get; set; }
 
         [Required]
         [DataType(DataType.Text)]

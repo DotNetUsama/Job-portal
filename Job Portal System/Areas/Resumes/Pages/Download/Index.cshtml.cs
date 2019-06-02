@@ -5,19 +5,18 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 
-namespace Job_Portal_System.Areas.Resumes.Pages
+namespace Job_Portal_System.Areas.Resumes.Pages.Download
 {
-    public class DetailsModel : PageModel
+    public class IndexModel : PageModel
     {
         private readonly ApplicationDbContext _context;
 
-        public DetailsModel(ApplicationDbContext context)
+        public IndexModel(ApplicationDbContext context)
         {
             _context = context;
         }
 
         public Resume Resume { get; set; }
-        public bool CanEdit { get; set; }
 
         public async Task<IActionResult> OnGetAsync(string id)
         {
@@ -40,9 +39,7 @@ namespace Job_Portal_System.Areas.Resumes.Pages
                 return NotFound();
             }
 
-            CanEdit = Resume.User.UserName == User.Identity.Name;
-
-            if (CanEdit || Resume.IsPublic) return Page();
+            if (Resume.IsPublic) return Page();
 
             return BadRequest();
         }

@@ -121,11 +121,7 @@ namespace Job_Portal_System.Areas.Resumes.Pages
         private void AddEducation(Resume resume, EducationInputModel education)
         {
             var school = education.SchoolId == null
-                ? new School
-                {
-                    Name = education.School,
-                    CityId = education.City,
-                }
+                ? new School { Name = education.School }
                 : _context.Schools.SingleOrDefault(schoolInDb => schoolInDb.Name == education.School);
 
             var fieldOfStudy =

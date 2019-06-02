@@ -17,7 +17,6 @@ namespace Job_Portal_System.Models
 
         public uint MovingDistanceLimit { get; set; } = 0;
 
-        [Required]
         [DataType(DataType.MultilineText)]
         [Display(Name = "Biography")]
         public string Biography { get; set; }

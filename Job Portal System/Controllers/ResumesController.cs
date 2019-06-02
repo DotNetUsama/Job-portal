@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using DinkToPdf;
 using DinkToPdf.Contracts;
@@ -85,7 +84,7 @@ namespace Job_Portal_System.Controllers
         {
             var resume = _context.Resumes
                 .Include(r => r.Educations).ThenInclude(e => e.FieldOfStudy)
-                .Include(r => r.Educations).ThenInclude(e => e.School).ThenInclude(s => s.City)
+                .Include(r => r.Educations).ThenInclude(e => e.School)
                 .Include(r => r.WorkExperiences).ThenInclude(w => w.JobTitle)
                 .Include(r => r.WorkExperiences).ThenInclude(w => w.Company)
                 .Include(r => r.OwnedSkills).ThenInclude(s => s.Skill)
@@ -99,6 +98,33 @@ namespace Job_Portal_System.Controllers
             var pdfFile = ResumeBuilder.GetResumeAsPdf(_env, _converter, resume);
             
             return File(pdfFile, "application/pdf", $"{resume.User.LastName}_Resume.pdf");
+        }
+
+        [HttpGet]
+        [Route("Test")]
+        public IActionResult Test(string id)
+        {
+            var doc = new HtmlToPdfDocument()
+            {
+                GlobalSettings = {
+                    ColorMode = ColorMode.Color,
+                    Orientation = Orientation.Portrait,
+                    PaperSize = PaperKind.A4,
+                    Margins = new MarginSettings { Top = 0, Left = 0, Right = 0, Bottom = 0 },
+                },
+
+                Objects = {
+                    new ObjectSettings()
+                    {
+                        Page = $"{Request.Scheme}://{Request.Host}/Resumes/Download?id={id}",
+                    },
+                }
+            };
+
+            byte[] pdf = _converter.Convert(doc);
+
+
+            return new FileContentResult(pdf, "application/pdf");
         }
     }
 }

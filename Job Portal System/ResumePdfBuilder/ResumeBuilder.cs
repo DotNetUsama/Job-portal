@@ -166,7 +166,7 @@ namespace Job_Portal_System.ResumePdfBuilder
 
                     , education.FieldOfStudy.Title, education.School.Name, education.Degree
                     , "Graduated since " + education.EndDate + " with degree " + education.Degree + " in " +
-                      education.FieldOfStudy.Title + " from " + education.School.Name + " in " + education.School.City.Name + ".");
+                      education.FieldOfStudy.Title + " from " + education.School.Name + ".");
             }
 
             _builder.Append(@"</div>

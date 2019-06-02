@@ -57,7 +57,7 @@ namespace Job_Portal_System.Areas.Resumes.Pages
         {
             var resumeInDb = _context.Resumes
                 .Include(r => r.Educations).ThenInclude(e => e.FieldOfStudy)
-                .Include(r => r.Educations).ThenInclude(e => e.School).ThenInclude(s => s.City)
+                .Include(r => r.Educations).ThenInclude(e => e.School)
                 .Include(r => r.WorkExperiences).ThenInclude(w => w.JobTitle)
                 .Include(r => r.WorkExperiences).ThenInclude(w => w.Company)
                 .Include(r => r.OwnedSkills).ThenInclude(s => s.Skill)
@@ -138,7 +138,6 @@ namespace Job_Portal_System.Areas.Resumes.Pages
                 ? new School
                 {
                     Name = education.School,
-                    CityId = education.City,
                 }
                 : _context.Schools.SingleOrDefault(schoolInDb => schoolInDb.Name == education.School);
 

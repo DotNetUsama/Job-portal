@@ -10,7 +10,6 @@ namespace Job_Portal_System.Enums
     {
         [Description("Part time")] [Display(Name = "Part time")] PartTime,
         [Description("Full time")] [Display(Name = "Full time")] FullTime,
-        [Description("Freelance")] [Display(Name = "Freelance")] Freelance,
         [Description("Internship")] [Display(Name = "Intership")] Internship,
         [Description("Temporary")] [Display(Name = "Temporary")] Temporary,
         [Description("Commission")] [Display(Name = "Commission")] Commission,

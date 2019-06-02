@@ -83,10 +83,9 @@ namespace Job_Portal_System.Controllers
 
         [HttpPost]
         [Route("Schools")]
-        public IActionResult Schools(string cityId)
+        public IActionResult Schools()
         {
             return Json(_context.Schools
-                .Where(school => school.CityId == cityId)
                 .Select(school => new
                 {
                     school.Id,

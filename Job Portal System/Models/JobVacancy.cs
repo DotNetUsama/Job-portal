@@ -19,6 +19,9 @@ namespace Job_Portal_System.Models
         [Display(Name = "Description")]
         public string Description { get; set; }
 
+        [Display(Name = "Distance limit")]
+        public uint DistanceLimit { get; set; } = 0;
+
         [Required]
         [Display(Name = "Minimum salary")]
         public double MinSalary { get; set; }

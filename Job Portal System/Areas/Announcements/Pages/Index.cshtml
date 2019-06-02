@@ -1,0 +1,48 @@
+﻿@model Areas.Announcements.Pages.IndexModel
+
+@{
+    ViewData["Title"] = "Announcements";
+}
+
+<h3 class="mb-5">Announcements</h3>
+
+@if (Model.IsAdmin)
+{
+    <a asp-area="Announcements"
+       asp-page="Create"
+       class="btn btn-info btn-sm mr-2">Create new</a>
+}
+
+@if (Model.Announcements.Any())
+{
+    <div class="row">
+        @foreach (var announcement in Model.Announcements)
+        {
+            <div class="col-md-4 mb-3">
+                <div class="card">
+                    <img class="card-img-top" src="@announcement.Image" alt="@announcement.Headline">
+                    <div class="card-body">
+                        <h5 class="card-title">@announcement.Headline</h5>
+                        <a asp-area="Announcements"
+                           asp-page="Details"
+                           asp-route-id="@announcement.Id"
+                           class="btn btn-info btn-sm mr-2">View</a>
+                        @if (Model.IsAdmin)
+                        {
+                            <a asp-area="Announcements"
+                               asp-page="Edit"
+                               asp-route-id="@announcement.Id"
+                               class="btn btn-info btn-sm mr-2">Edit</a>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <partial name="_SearchPartial" model="@Model" />
+}
+else
+{
+    <span>No announcements yet.</span>
+}

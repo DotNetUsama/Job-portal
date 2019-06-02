@@ -56,6 +56,12 @@
                                 <span asp-validation-for="JobVacancyInfo.MaxSalary" class="validation-label text-danger"></span>
                             </div>
                         </div>
+                        <div class="form-group">
+                            <label asp-for="JobVacancyInfo.DistanceLimit"></label>
+                            <input asp-for="JobVacancyInfo.DistanceLimit" step="5" class="form-control" />
+                            <small class="form-text text-muted">Value 0 of distance limit means your job vacancy will be remote.</small>
+                            <span asp-validation-for="JobVacancyInfo.DistanceLimit" class="validation-label text-danger"></span>
+                        </div>
                         <div class="form-row">
                             @foreach (var entity in Model.JobVacancyInfo.JobTypes)
                             {

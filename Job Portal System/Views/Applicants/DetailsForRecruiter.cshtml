@@ -51,13 +51,13 @@
                                         @if (graduated)
                                         {
                                             <div class="details-container">
-                                                Graduated from <span class="font-weight-little-bold">@education.School.Name</span> (@education.School.City.Name) with <span class="font-weight-little-bold">@((EducationDegree)education.Degree)</span> degree in <span class="font-weight-little-bold">@education.FieldOfStudy.Title</span> (from @education.StartDate.Year to @education.EndDate.Value.Year)
+                                                Graduated from <span class="font-weight-little-bold">@education.School.Name</span> with <span class="font-weight-little-bold">@((EducationDegree)education.Degree)</span> degree in <span class="font-weight-little-bold">@education.FieldOfStudy.Title</span> (from @education.StartDate.Year to @education.EndDate.Value.Year)
                                             </div>
                                         }
                                         else
                                         {
                                             <div class="details-container">
-                                                Is studying <span class="font-weight-little-bold">@education.FieldOfStudy.Title</span> in <span class="font-weight-little-bold">@education.School.Name</span> (@education.School.City.Name) to get <span class="font-weight-little-bold">@((EducationDegree)education.Degree)</span> (started from @education.StartDate.Year)
+                                                Is studying <span class="font-weight-little-bold">@education.FieldOfStudy.Title</span> in <span class="font-weight-little-bold">@education.School.Name</span> to get <span class="font-weight-little-bold">@((EducationDegree)education.Degree)</span> (started from @education.StartDate.Year)
                                             </div>
                                         }
                                     </div>

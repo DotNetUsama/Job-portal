@@ -11,15 +11,15 @@
   <ItemGroup>
     <PackageReference Include="Accord" Version="3.8.2-alpha" />
     <PackageReference Include="Accord.MachineLearning.GPL" Version="3.8.0" />
-    <PackageReference Include="DinkToPdf" Version="1.0.8" />
+    <PackageReference Include="DinkToPdfIncludesDependencies" Version="1.0.8" />
     <PackageReference Include="dotNetRDF" Version="2.2.0" />
-    <PackageReference Include="Font.Awesome" Version="5.8.1" />
+    <PackageReference Include="Font.Awesome" Version="5.8.2" />
     <PackageReference Include="GeoCoordinate.NetCore" Version="1.0.0.1" />
     <PackageReference Include="JW.Pager" Version="1.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
-    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client.Core" Version="1.0.3" />
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client.Core" Version="1.1.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.3" />
   </ItemGroup>
 
 

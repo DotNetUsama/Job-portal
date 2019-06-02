@@ -12,5 +12,9 @@ namespace Job_Portal_System.Data
         {
             return predicate != null ? dbSet.SingleOrDefault(predicate) ?? dbSet.Add(entity).Entity : null;
         }
+        public static void RemoveAll<T>(this DbSet<T> dbSet) where T : class, new()
+        {
+            dbSet.RemoveRange(dbSet);
+        }
     }
 }

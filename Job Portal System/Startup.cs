@@ -50,10 +50,6 @@ namespace Job_Portal_System
                 .AddDefaultTokenProviders()
                 .AddDefaultUI(UIFramework.Bootstrap4)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
-            //services.AddDefaultIdentity<User>()
-            //    .AddRoles<IdentityRole>()
-            //    .AddDefaultUI(UIFramework.Bootstrap4)
-            //    .AddEntityFrameworkStores<ApplicationDbContext>();
 
             services.AddSignalR(options =>
             {
@@ -92,25 +88,6 @@ namespace Job_Portal_System
             {
                 routes.MapHub<SignalRHub>("/signalRHub");
             });
-
-            DatabaseSeeder.SeedData(env, context, userManager, roleManager);
-            //DatabaseSeeder.SeedCompanies(context);
-            //DatabaseSeeder.SeedSchools(context);
-            //DatabaseSeeder.SeedSkills(context);
-            //DatabaseSeeder.SeedJobSeekers(context, userManager, roleManager, 1000);
-            {
-                //DatabaseSeeder.SeedCities(env, context);
-                //DatabaseSeeder.ClearDatabase(context);
-                //var list = context.States.Select(s => s.Name).Distinct().ToList();
-            }
-            //DatabaseSeeder.ClearDatabase(context);
-
-            //{
-            //    var evaluations = context.Applicants
-            //        .Where(a => a.JobVacancyId == "a0c7d5ee-1d02-4e21-8efa-f122e10baea9")
-            //        .Select(a => FilesManager.Read<Evaluation>(env, "Evaluations", a.Id))
-            //        .ToList();
-            //}
 
             app.UseMvc();
         }
