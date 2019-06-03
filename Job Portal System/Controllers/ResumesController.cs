@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using DinkToPdf;
 using DinkToPdf.Contracts;
 using Job_Portal_System.Data;
 using Job_Portal_System.Models;
-using Job_Portal_System.ResumePdfBuilder;
 using Job_Portal_System.ViewModels;
 using JW;
 using Microsoft.AspNetCore.Hosting;
@@ -82,28 +82,14 @@ namespace Job_Portal_System.Controllers
         [Route("ExportAsPdf")]
         public IActionResult ExportAsPdf(string id)
         {
+            if (id == null) return NotFound();
+
             var resume = _context.Resumes
-                .Include(r => r.Educations).ThenInclude(e => e.FieldOfStudy)
-                .Include(r => r.Educations).ThenInclude(e => e.School)
-                .Include(r => r.WorkExperiences).ThenInclude(w => w.JobTitle)
-                .Include(r => r.WorkExperiences).ThenInclude(w => w.Company)
-                .Include(r => r.OwnedSkills).ThenInclude(s => s.Skill)
-                .Include(r => r.SeekedJobTitles).ThenInclude(j => j.JobTitle)
                 .Include(r => r.User)
-                .Include(r => r.JobTypes)
                 .SingleOrDefault(r => r.Id == id);
 
             if (resume == null) return NotFound();
 
-            var pdfFile = ResumeBuilder.GetResumeAsPdf(_env, _converter, resume);
-            
-            return File(pdfFile, "application/pdf", $"{resume.User.LastName}_Resume.pdf");
-        }
-
-        [HttpGet]
-        [Route("Test")]
-        public IActionResult Test(string id)
-        {
             var doc = new HtmlToPdfDocument()
             {
                 GlobalSettings = {
@@ -121,10 +107,9 @@ namespace Job_Portal_System.Controllers
                 }
             };
 
-            byte[] pdf = _converter.Convert(doc);
+            var pdf = _converter.Convert(doc);
 
-
-            return new FileContentResult(pdf, "application/pdf");
+            return File(pdf, "application/pdf", $"{resume.User.LastName}_Resume.pdf");
         }
     }
 }

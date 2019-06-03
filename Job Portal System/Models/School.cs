@@ -7,8 +7,14 @@ namespace Job_Portal_System.Models
         public string Id { get; set; }
 
         [Required]
-        [StringLength(50)]
+        [StringLength(150)]
         [DataType(DataType.Text)]
         public string Name { get; set; }
+
+        [Required]
+        [StringLength(50)]
+        [DataType(DataType.Text)]
+        public string Country { get; set; }
+
     }
 }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using GeoCoordinatePortable;
@@ -8,6 +7,7 @@ using Job_Portal_System.Enums;
 using Job_Portal_System.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
 
 namespace Job_Portal_System.Data
 {
@@ -20,11 +20,11 @@ namespace Job_Portal_System.Data
             SeedUsers(userManager);
             SeedJobTitles(env, context);
             SeedFieldsOfStudy(env, context);
-            SeedSkills(context);
+            SeedSkills(env, context);
             SeedStates(env, context);
             SeedCities(env, context);
-            SeedCompanies(context);
-            SeedSchools(context);
+            SeedCompanies(env, context);
+            SeedSchools(env, context);
         }
 
         public static void SeedJobSeekers(ApplicationDbContext context,
@@ -93,19 +93,22 @@ namespace Job_Portal_System.Data
             context.JobVacancyJobTypes.RemoveAll();
             context.Applicants.RemoveAll();
             context.UserNotifications.RemoveAll();
-            context.SaveChanges();
+            if (context.HasUnsavedChanges()) context.SaveChanges();
 
             context.JobVacancies.RemoveAll();
             context.Resumes.RemoveAll();
             context.Notifications.RemoveAll();
-            context.SaveChanges();
+            if (context.HasUnsavedChanges()) context.SaveChanges();
 
             context.JobSeekers.RemoveAll();
             context.Recruiters.RemoveAll();
-            context.SaveChanges();
+            if (context.HasUnsavedChanges()) context.SaveChanges();
 
             context.Users.RemoveAll();
-            context.SaveChanges();
+            if (context.HasUnsavedChanges()) context.SaveChanges();
+
+            context.Roles.RemoveAll();
+            if (context.HasUnsavedChanges()) context.SaveChanges();
         }
 
         private static void SeedUsers(UserManager<User> userManager)
@@ -185,12 +188,15 @@ namespace Job_Portal_System.Data
             context.SaveChanges();
         }
 
-        private static void SeedSkills(ApplicationDbContext context)
+        private static void SeedSkills(IHostingEnvironment env, ApplicationDbContext context)
         {
-            var skills = new[] { "SQL", "Oracle", "Laravel", "Photoshop", "Microsoft office", "Nodejs" };
-            foreach (var skill in skills)
+            var path = Path.Combine(env.ContentRootPath, "Queries", "skills.txt");
+            string line;
+            var file = new StreamReader(path);
+            while ((line = file.ReadLine()) != null)
             {
-                context.Skills.FindOrAdd(new Skill { Title = skill }, c => c.Title == skill);
+                var skill = context.Skills.SingleOrDefault(s => s.Title == line) ??
+                            context.Skills.Add(new Skill { Title = line }).Entity;
             }
 
             context.SaveChanges();
@@ -253,32 +259,50 @@ namespace Job_Portal_System.Data
             }
         }
 
-        private static void SeedCompanies(ApplicationDbContext context)
+        private static void SeedCompanies(IHostingEnvironment env, ApplicationDbContext context)
         {
-            var companies = new[] { "MTN", "Elixer", "LG" };
-            foreach (var company in companies)
+            var path = Path.Combine(env.ContentRootPath, "Queries", "Syrian-Companies.txt");
+            string line;
+            var file = new StreamReader(path);
+            while ((line = file.ReadLine()) != null)
             {
-                context.Companies.FindOrAdd(new Company { Name = company }, c => c.Name == company);
+                var companyInfo = line.Split("><><><|^");
+                var name = companyInfo[0];
+                var website = companyInfo[1];
+                var description = companyInfo[2];
+                var logo = companyInfo[3];
+                var employeesNum = companyInfo[4];
+                var email = companyInfo[5];
+                
+                context.Companies.Add(new Company
+                {
+                    Name = name,
+                    Website = website == "null" ? null : website,
+                    Description = description == "null" ? null : description,
+                    Logo = logo == "null" ? null : logo,
+                    EmployeesNum = employeesNum == "null" ? null : (int?) Convert.ToInt32(employeesNum),
+                    Email = email == "null" ? null : email,
+                });
             }
 
             context.SaveChanges();
         }
 
-        private static void SeedSchools(ApplicationDbContext context)
+        private static void SeedSchools(IHostingEnvironment env, ApplicationDbContext context)
         {
-            var schools = new Dictionary<string, string>
+            var path = Path.Combine(env.ContentRootPath, "Queries", "universities.txt");
+            string line;
+            var file = new StreamReader(path);
+            while ((line = file.ReadLine()) != null)
             {
-                { "Al-Basel", "Qutaifah" },
-                { "Al-Awael", "Damascus" },
-                { "Aleppo university", "Aleppo" },
-                { "SVU", "Damascus" },
-            };
-            foreach (var school in schools)
-            {
-                context.Schools.FindOrAdd(new School
+                var schoolName = line;
+                var country = file.ReadLine();
+
+                context.Schools.Add(new School
                 {
-                    Name = school.Key,
-                }, s => s.Name == school.Key);
+                    Name = schoolName,
+                    Country = country,
+                });
             }
 
             context.SaveChanges();

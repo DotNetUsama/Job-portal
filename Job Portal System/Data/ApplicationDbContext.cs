@@ -97,6 +97,13 @@ namespace Job_Portal_System.Data
             return UserNotifications
                 .Count(userNotification => userNotification.UserId == user.Id && !userNotification.IsRead);
         }
-    }
 
+        public bool HasUnsavedChanges()
+        {
+            return ChangeTracker.Entries()
+                .Any(e => e.State == EntityState.Added
+                     || e.State == EntityState.Modified
+                     || e.State == EntityState.Deleted);
+        }
+    }
 }

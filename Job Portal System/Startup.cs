@@ -1,4 +1,3 @@
-using System.Linq;
 using DinkToPdf;
 using DinkToPdf.Contracts;
 using Microsoft.AspNetCore.Builder;
@@ -89,6 +88,8 @@ namespace Job_Portal_System
                 routes.MapHub<SignalRHub>("/signalRHub");
             });
 
+            //DatabaseSeeder.SeedData(env, context, userManager, roleManager);
+            //DatabaseSeeder.ClearDatabase(context);
             app.UseMvc();
         }
     }

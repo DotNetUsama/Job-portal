@@ -8,7 +8,6 @@ namespace Job_Portal_System.Models
         public string Id { get; set; }
 
         [Required]
-        [StringLength(100)]
         public string Name { get; set; }
 
         [Display(Name = "Employees number")]
@@ -22,8 +21,10 @@ namespace Job_Portal_System.Models
 
         [DataType(DataType.MultilineText)]
         public string Description { get; set; }
+        
+        public string Logo { get; set; }
 
-        public bool Approved { get; set; }
+        public bool Approved { get; set; } = false;
 
         public ICollection<CompanyDepartment> Departments { get; set; }
     }
