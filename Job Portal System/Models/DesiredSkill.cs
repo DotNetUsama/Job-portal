@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Job_Portal_System.Enums;
-using Job_Portal_System.RankingSystem.Interfaces;
+using Job_Portal_System.Utilities.RankingSystem.Interfaces;
 
 namespace Job_Portal_System.Models
 {

@@ -21,14 +21,13 @@ $(document).ready(() => {
         allowNewEntry: false,
         delay: 800
     });
+
     autoComplete({
         inputFieldSelector: "#job-title-input",
         idSelector: "#job-title-id",
         dataUrl: "/AutoComplete/JobTitles",
-        similaritiesUrl: "/AutoComplete/SimilarJobTitles",
-        nameSelector: "#job-title-name",
-        allowNewEntry: false,
-        delay: 800
+        allowNewEntry: true,
+        delay: 300
     });
 
     autoComplete({

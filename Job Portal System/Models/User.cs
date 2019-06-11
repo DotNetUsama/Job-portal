@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Job_Portal_System.Models
 {
@@ -29,6 +30,11 @@ namespace Job_Portal_System.Models
         [StringLength(255)]
         [Display(Name = "Detailed address")]
         public string DetailedAddress { get; set; }
+
+        [HiddenInput]
+        [Display(Name = "Profile picture")]
+        [DataType(DataType.ImageUrl)]
+        public string Image { get; set; }
 
         public City City { get; set; }
 

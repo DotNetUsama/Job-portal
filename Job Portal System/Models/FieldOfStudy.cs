@@ -12,6 +12,9 @@ namespace Job_Portal_System.Models
         [DataType(DataType.Text)]
         public string Title { get; set; }
 
-        public ICollection<FieldOfStudySimilarity> Similarities { get; set; }
+        [Required]
+        [StringLength(70)]
+        [DataType(DataType.Text)]
+        public string NormalizedTitle { get; set; }
     }
 }

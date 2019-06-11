@@ -6,7 +6,7 @@
     change,
     allowNewEntry,
     delay
-    }) => {
+}) => {
     $.ajax({
         url: dataUrl,
         method: "post",
@@ -50,7 +50,7 @@
                             $this.focus();
                         }
                         $(idSelector).val(null);
-                            if (nameSelector) $(nameSelector).val(null);
+                        if (nameSelector) $(nameSelector).val(null);
                     }
                 }
             };

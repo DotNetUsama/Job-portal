@@ -1,0 +1,510 @@
+Mathematical Sciences
+Physics and Astronomy
+Chemical Sciences
+Earth Sciences
+Biological Sciences
+Other Natural & Phys. Sciences
+Computer Science
+Information Systems
+Other Information Technology
+Manufact. Eng. & Technology
+Process & Resources Eng.
+Automotive Eng. & Technology
+Mechn. & Ind. Eng. &amp; Technology
+Civil Engineering
+Geomatic Engineering
+Electrical & Electronic Eng &amp; Techn
+Aerospace Eng. & Technology
+Maritime Eng. & Technology
+Other Eng. & Related Techn.
+Architecture & Urban Environment
+Building
+Agriculture
+Horticulture and Viticulture
+Forestry Sciences
+Fisheries Sciences
+Environmental Studies
+Other Agriculture, Environmental and Related Studies
+Medical Studies
+Nursing
+Pharmacy
+Dental Studies
+Optical Science
+Veterinary Studies
+Public Health
+Radiography
+Rehabilitation Therapies
+Complementary Therapies
+Other Health
+Teacher Education
+Curriculum & Education Studies
+Other Education
+Accounting
+Business & Management
+Sales & Marketing
+Tourism
+Office Studies
+Banking
+Other Mangt. & Commerce
+Political Sci. & Policy Studies
+Studies in Human Society
+Human Welfare Studies & Serv
+Behavioural Science
+Law
+Justice & Law Enforcement
+Librar. Info. Mang. & Curat. Stud
+Language & Literature
+Philosophy & Religious Studies
+Economics & Econometrics
+Sport & Recreation
+Other Society & Culture
+Performing Arts
+Visual Arts & Crafts
+Graphic & Design Studies
+Communication & Media Studies
+Other Creative Arts
+Food & Hospitality
+Personal Services
+General Education Programs
+Social Skills Programs
+Employment Skills Programs
+Other Mixed Field Programs
+Mathematical Sciences
+Physics and Astronomy
+Chemical Sciences
+Earth Sciences
+Biological Sciences
+Other Natural and Physical Sciences
+Natural and Physical Sciences
+Mathematics
+Statistics
+Mathematical Sciences
+Physics
+Astronomy
+Organic Chemistry
+Inorganic Chemistry
+Chemical Sciences
+Atmospheric Sciences
+Geology
+Geophysics
+Geochemistry
+Soil Science
+Hydrology
+Oceanography
+Earth Sciences
+Biochemistry and Cell Biology
+Botany
+Ecology and Evolution
+Marine Science
+Genetics
+Microbiology
+Human Biology
+Zoology
+Biological Sciences
+Medical Science
+Forensic Science
+Food Science and Biotechnology
+Pharmacology
+Laboratory Technology
+Natural & Phys. Sciences
+Computer Science
+Information Systems
+Other information technology
+Information Technology
+Formal Language Theory
+Programming
+Computational Theory
+Compiler Construction
+Algorithms
+Data Structures
+Networks and Communications
+Computer Graphics
+Operating Systems
+Artificial Intelligence
+Computer Science
+Conceptual Modelling
+Database Management
+Systems Analysis and Design
+Decision Support Systems
+Information Systems
+Security Science
+Information Technology
+Manufacturing Engineering and Technology
+Process and Resources Engineering
+Automotive Engineering and Technology
+Mechanical and Industrial Engineering and Technology
+Civil Engineering
+Geomatic Engineering
+Electrical and Electronic Engineering and Technology
+Aerospace Engineering and Technology
+Maritime Engineering and Technology
+Other Engineering and Related Technologies
+Engineering and Related Technologies
+Manufacturing Engineering
+Printing
+Textile Making
+Garment Making
+Footwear Making
+Wood Machining and Turning
+Cabinet Making
+Furniture Upholstery/Renovation
+Furniture Polishing
+Manufact. Eng. & Technology
+Chemical Engineering
+Mining Engineering
+Materials Engineering
+Food Processing Technology
+Process & Resources Eng.
+Automotive Engineering
+Vehicle Mechanics
+Automotive Electrics & Electronic
+Automotive Vehicle Refinishing
+Automotive Body Construction
+Panel Beating
+Upholstery & Vehicle Trimming
+Automotive Vehicle Operations
+Automotive Eng.& Technology
+Mechanical Engineering
+Industrial Engineering
+Toolmaking
+Metal Fitting
+Sheetmetal Working
+Boilermaking and Welding
+Metal Casting & Patternmaking
+Precision Metalworking
+Plant and Machine Operations
+Mechn. Ind. Eng.&Technology
+Construction Engineering
+Structural Engineering
+Building Services Engineering
+Water & Sanitary Engineering
+Transport Engineering
+Geotechnical Engineering
+Ocean Engineering
+Civil Engineering
+Surveying
+Mapping Science
+Geomatic Engineering
+Electrical Engineering
+Electronic Engineering
+Computer Engineering
+Communications Technologies
+Comm. Equipment Install.&Maint.
+Powerline Installation & Maint.
+Electrical Fitting
+Refrigeration&Air Cond. Mechn.
+Electronic Equipment Servicing
+Elect&Electronic Eng&amp;Techn
+Aerospace Engineering
+Aircraft Maintenance Eng.
+Aircraft Operation
+Air Traffic Control
+Aerospace Eng. & Technology
+Maritime Engineering
+Maritime Construction
+Marine Craft Operation
+Maritime Eng. & Technology
+Environmental Engineering
+Biomedical Engineering
+Fire Technology
+Rail Operations
+Cleaning
+Other Eng. & Related Techn.
+Architecture and urban environment
+Building
+Architecture and Building
+Architecture
+Urban Design & Reg. Planning
+Landscape Architecture
+Interior & Environ. Design
+Architecture&Urban Environ
+Building Science and Technology
+Building Constr. Management
+Building Surveying
+Building Construction Economics
+Bricklaying and Stonemasonary
+Carpentry and Joinery
+Ceiling
+Roof Fixing
+Plastering
+Furnishing Installation
+Floor Covering
+Glazing
+Painting
+Plumbing
+Scaffolding & Rigging
+Building
+Agriculture
+Horticulture and Viticulture
+Forestry Studies
+Fisheries Studies
+Environmental Studies
+Other Agriculture, Environmental and Related Studies
+Agriculture, Environmental and Related Studies
+Agricultural Sciences
+Wool Sciences
+Animal Husbandry
+Agriculture
+Horticulture
+Viticulture
+Forestry Studies
+Aquaculture
+Fisheries Studies
+Land
+Environmental Studies
+Pest & Weed Control
+Agriculture, Environmental and Related Studies
+Medical Studies
+Nursing
+Pharmacy
+Dental Studies
+Optical Science
+Veterinary Studies
+Public Health
+Radiography
+Rehabilitation Therapies
+Complementary Therapies
+Other Health
+Health
+General Medicine
+Surgery
+Psychiatry
+Obstetrics & Gynaecology
+Paediatrics
+Anaesthesiology
+Pathology
+Radiology
+Internal Medicine
+General Practice
+Medical Studies
+General Nursing
+Midwifery
+Mental Health Nursing
+Community Nursing
+Critical Care Nursing
+Aged Care Nursing
+Palliative Care Nursing
+Mother.Nur&Fam&amp;ChildHealthNurs
+Nursing
+Pharmacy
+Dentistry
+Dental Assisting
+Dental Technology
+Dental Studies
+Optometry
+Optical Technology
+Optical Sciences
+Veterinary Science
+Veterinary Assisting
+Veterinary Studies
+Occupational Health & Safety
+Environmental Health
+Indigenous Health
+Health Promotion
+Community Health
+Epidemiology
+Public Health
+Radiography
+Physiotherapy
+Occupational Therapy
+Chiropractic & Osteopathy
+Speech Pathology
+Audiology
+Massage Therapy
+Podiatry
+Rehabilitation Therapies
+Naturopathy
+Acupuncture
+Traditional Chinese Medicine
+Complementary Therapies
+Nutrition & Dietetics
+Human Movement
+Paramedical Studies
+First Aid
+Health
+Teacher Education
+Curriculum and Education Studies
+Other Education
+Education
+Teacher Ed.: Early Childhood
+Teacher Education: Primary
+Teacher Education: Secondary
+Teacher‑Librarianship
+Teacher Ed.: Voc. Ed.&Training
+Teacher Ed.: Higher Education
+Teacher Ed.: Special Education
+English as a Second Lang.Teach.
+Nursing Ed. Teacher Training
+Teacher Education
+Curriculum Studies
+Education Studies
+Education
+Accounting
+Business and Management
+Sales and Marketing
+Tourism
+Office Studies
+Banking, Finance and Related Fields
+Other Management and Commerce
+Management and Commerce
+Accounting
+Business Management
+Human Resource Management
+Personal Management Training
+Organisation Management
+Industrial Relations
+International Business
+Public&Health Care Admin.
+Project Management
+Quality Management
+Hospitality Management
+Farm Management & Abribus.
+Tourism Management
+Business & Management
+Sales
+Real Estate
+Marketing
+Advertising
+Public Relations
+Sales & Marketing
+Tourism
+Secretarial & Clerical Studies
+Keyboard Skills
+Practical Computing Skills
+Office Studies
+Banking & Finance
+Insurance & Actuarial Studies
+Investment & Securities
+Bank. Finance & Rel. Fields
+Pur.
+Valuation
+Management & Commerce
+Political Science and Policy Studies
+Studies in Human Society
+Human Welfare Studies and Services
+Behavioural Science
+Law
+Justice and Law Enforcement
+Librarianship, Information Management and Curatorial Studies
+Language and Literature
+Philosophy and Religious Studies
+Economics and Econometrics
+Sport and Recreation
+Other Society and Culture
+Society and Culture
+Political Science
+Policy Studies
+Sociology
+Anthroplogy
+History
+Archaeology
+Human Geography
+Indigenous Studies
+Gender Specific Studies
+Studies in Human Society
+Social Work
+Children's Services
+Youth Work
+Care for the Aged
+Care for the Disabled
+Residential Client Care
+Counselling
+Welfare Studies
+Human Welfare Stud. & Serv.
+Psychology
+Behavioural Science
+Business & Commercial Law
+Constitutional Law
+Criminal Law
+Family Law
+International Law
+Taxation Law
+Legal Practice
+Law
+Justice Administration
+Legal Studies
+Police Studies
+Justice & Law Enforcement
+Librarianship &. Info. Mangment
+Curatorial Studies
+English Language
+Northern European Languages
+Southern European Languages
+Eastern European Languages
+SW Asian & North. African Langs
+Southern Asian Languages
+Southeast Asian Languages
+Eastern Asian Languages
+Australian Indigenous Langs.
+Translating & Interpreting
+Linguistics
+Literature
+Language & Literature
+Philosophy
+Religious Studies
+Economics
+Econometrics
+Sport & Recreation Activities
+Sports Coaching
+Sport & Recreation
+Family & Consumer Studies
+Criminology
+Security Services
+Society & Culture
+Performing Arts
+Visual Arts and Crafts
+Graphic and Design Studies
+Communication and Media Studies
+Other Creative Arts
+Creative Arts
+Music
+Drama & Theatre Studies
+Dance
+Performing Arts
+Fine Arts
+Photography
+Crafts
+Jewellery Making
+Floristry
+Visual Arts & Crafts
+Graphic Arts & Design Studies
+Textile Design
+Fashion Design
+Graphic & Design Studies
+Audio Visual Studies
+Journalism
+Written Communication
+Verbal Communication
+Communication & Media St
+Creative Arts
+Food and Hospitality
+Personal Services
+Food, Hospitality and Personal Services
+Hospitality
+Food and Beverage Services
+Butchery
+Baking & Pastrymaking
+Cookery
+Food Hygiene
+Food & Hospitality
+Beauty Therapy
+Hairdressing
+Personal Services
+General Education Programs
+Social Skills Programs
+Employment Skills Programs
+Other Mixed Field Programs
+Mixed Field Programs
+General Primary and secondary education programs
+Literacy and Numeracy Programs
+Learning Skills Programs
+General Education Programs
+Social and Interpersonal Skills Programs
+Survival Skills Programs
+Parental Education Programs
+Social Skills Programs,
+Career Development Programs
+Job Search Skills Programs
+Work Practices Programs
+Employment Skills Programs,
+Mixed Field Programs

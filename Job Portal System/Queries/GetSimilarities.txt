@@ -1,0 +1,10 @@
+﻿PREFIX  wn20schema: <http://www.w3.org/2006/03/wn/wn20/schema/>
+
+SELECT DISTINCT ?word WHERE { 
+  ?aWord wn20schema:lexicalForm @query@en-US .
+  ?aWordSense wn20schema:word ?aWord .
+  ?bSynset wn20schema:containsWordSense ?aWordSense .
+  ?bSynset wn20schema:containsWordSense ?bWordSense .
+  ?bWordSense wn20schema:word ?bWord .
+  ?bWord wn20schema:lexicalForm ?word .
+} LIMIT 20

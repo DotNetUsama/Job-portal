@@ -16,7 +16,10 @@
                 <span class="form-head-details">By @Model.AutherName</span>
             </div>
             <div class="form-body">
-                @Html.Raw(Model.Announcement.Content)
+                <div class="marker">
+                    <div class="content d-none">@Model.Announcement.Content</div>
+                    <div class="view"></div>
+                </div>
                 <hr />
                 <div class="d-flex">
                     <a asp-page="Edit"
@@ -29,3 +32,9 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <partial name="_EditorScriptPartial" />
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="~/js/marker.js"></script>
+}

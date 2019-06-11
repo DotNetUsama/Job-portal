@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Job_Portal_System.Models
 {
@@ -18,6 +19,7 @@ namespace Job_Portal_System.Models
         public uint MovingDistanceLimit { get; set; } = 0;
 
         [DataType(DataType.MultilineText)]
+        [Column(TypeName = "text")]
         [Display(Name = "Biography")]
         public string Biography { get; set; }
 

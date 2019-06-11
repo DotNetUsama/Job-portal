@@ -18,14 +18,12 @@
                 <form method="post">
                     <div class="form-group">
                         <label asp-for="Announcement.Content"></label>
-                        <textarea asp-for="Announcement.Content" class="form-control" id="content">
-                            @Model.Announcement.Content
-                        </textarea>
+                        <textarea asp-for="Announcement.Content" class="form-control" id="editor"></textarea>
                         <span asp-validation-for="Announcement.Content" class="text-danger"></span>
                     </div>
                     <div class="d-flex">
                         <button asp-route-id="@Model.Announcement.Id"
-                                class="btn btn-submit ml-auto cancel">
+                                class="btn btn-submit ml-auto">
                             Update
                         </button>
                     </div>

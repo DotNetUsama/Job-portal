@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-using Job_Portal_System.RankingSystem.Interfaces;
+using System.ComponentModel.DataAnnotations.Schema;
+using Job_Portal_System.Utilities.RankingSystem.Interfaces;
 
 namespace Job_Portal_System.Models
 {
@@ -16,6 +17,7 @@ namespace Job_Portal_System.Models
         public DateTime? EndDate { get; set; }
 
         [DataType(DataType.MultilineText)]
+        [Column(TypeName = "text")]
         public string Description { get; set; }
 
         public Resume Resume { get; set; }

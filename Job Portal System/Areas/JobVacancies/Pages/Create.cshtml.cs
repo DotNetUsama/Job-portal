@@ -103,7 +103,6 @@ namespace Job_Portal_System.Areas.JobVacancies.Pages
         public class JobVacancyInputModel
         {
             [Required]
-            [HiddenInput]
             [Display(Name = "Job title")]
             public string JobTitle { get; set; }
 
@@ -238,12 +237,12 @@ namespace Job_Portal_System.Areas.JobVacancies.Pages
 
         private void AddJobTypes(JobVacancy jobVacancy)
         {
-            foreach (var jobVacancyInfoJobType in JobVacancyInfo.JobTypes)
+            foreach (var (key, value) in JobVacancyInfo.JobTypes)
             {
-                if (jobVacancyInfoJobType.Value)
+                if (value)
                     jobVacancy.JobTypes.Add(new JobVacancyJobType
                     {
-                        JobType = (int)jobVacancyInfoJobType.Key,
+                        JobType = (int)key,
                     });
             }
         }
@@ -251,20 +250,12 @@ namespace Job_Portal_System.Areas.JobVacancies.Pages
         private void AddJobTitle(JobVacancy jobVacancy)
         {
             var jobTitle =
-                _context.JobTitles.SingleOrDefault(jobTitleInDb => jobTitleInDb.Id == JobVacancyInfo.JobTitleId);
-            if (jobTitle != null && jobTitle.Title != JobVacancyInfo.JobTitle)
-            {
-                _context.JobTitleSimilarities.FindOrAdd(new JobTitleSimilarity
+                _context.JobTitles.SingleOrDefault(jobTitleInDb => jobTitleInDb.Id == JobVacancyInfo.JobTitleId) ??
+                new JobTitle
                 {
-                    JobTitle = jobTitle,
-                    SimilarTitle = new SimilarJobTitle
-                    {
-                        Title = JobVacancyInfo.JobTitle,
-                    },
-                }, similarityInDb =>
-                    similarityInDb.JobTitle.Id == JobVacancyInfo.JobTitleId &&
-                    similarityInDb.SimilarTitle.Title == JobVacancyInfo.JobTitle);
-            }
+                    Title = JobVacancyInfo.JobTitle,
+                    NormalizedTitle = JobVacancyInfo.JobTitle.ToLower(),
+                };
 
             jobVacancy.JobTitle = jobTitle;
         }
@@ -278,20 +269,12 @@ namespace Job_Portal_System.Areas.JobVacancies.Pages
         private void AddEducation(JobVacancy jobVacancy, EducationInputModel education)
         {
             var fieldOfStudy =
-                _context.FieldOfStudies.SingleOrDefault(fieldInDb => fieldInDb.Id == education.FieldOfStudyId);
-            if (fieldOfStudy != null && fieldOfStudy.Title != education.FieldOfStudyName)
-            {
-                _context.FieldOfStudySimilarities.FindOrAdd(new FieldOfStudySimilarity
+                _context.FieldOfStudies.SingleOrDefault(fieldInDb => fieldInDb.Id == education.FieldOfStudyId) ??
+                new FieldOfStudy
                 {
-                    FieldOfStudy = fieldOfStudy,
-                    SimilarTitle = new SimilarFieldOfStudyTitle
-                    {
-                        Title = education.FieldOfStudyName,
-                    },
-                }, similarityInDb =>
-                    similarityInDb.FieldOfStudy.Id == education.FieldOfStudyId &&
-                    similarityInDb.SimilarTitle.Title == education.FieldOfStudyName);
-            }
+                    Title = education.FieldOfStudyName,
+                    NormalizedTitle = education.FieldOfStudyName.ToLower(),
+                };
 
             jobVacancy.EducationQualifications.Add(new EducationQualification
             {
@@ -305,20 +288,12 @@ namespace Job_Portal_System.Areas.JobVacancies.Pages
         private void AddWorkExperience(JobVacancy jobVacancy, WorkExperienceInputModel workExperience)
         {
             var jobTitle =
-                _context.JobTitles.SingleOrDefault(jobTitleInDb => jobTitleInDb.Id == workExperience.JobTitleId);
-            if (jobTitle != null && jobTitle.Title != workExperience.JobTitle)
-            {
-                _context.JobTitleSimilarities.FindOrAdd(new JobTitleSimilarity
+                _context.JobTitles.SingleOrDefault(jobTitleInDb => jobTitleInDb.Id == workExperience.JobTitleId) ??
+                new JobTitle
                 {
-                    JobTitle = jobTitle,
-                    SimilarTitle = new SimilarJobTitle
-                    {
-                        Title = workExperience.JobTitle,
-                    },
-                }, similarityInDb =>
-                    similarityInDb.JobTitle.Id == workExperience.JobTitleId &&
-                    similarityInDb.SimilarTitle.Title == workExperience.JobTitle);
-            }
+                    Title = workExperience.JobTitle,
+                    NormalizedTitle = workExperience.JobTitle.ToLower(),
+                };
 
             jobVacancy.WorkExperienceQualifications.Add(new WorkExperienceQualification()
             {
@@ -330,9 +305,12 @@ namespace Job_Portal_System.Areas.JobVacancies.Pages
 
         private void AddSkill(JobVacancy jobVacancy, SkillInputModel skillModel)
         {
-            var skill = skillModel.SkillId == null
-                ? new Skill { Title = skillModel.Skill }
-                : _context.Skills.SingleOrDefault(skillInDb => skillInDb.Id == skillModel.SkillId);
+            var skill =
+                _context.Skills.SingleOrDefault(skillInDb => skillInDb.Id == skillModel.SkillId) ??
+                new Skill
+                {
+                    Title = skillModel.Skill,
+                };
 
             jobVacancy.DesiredSkills.Add(new DesiredSkill
             {

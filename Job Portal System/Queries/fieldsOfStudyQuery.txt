@@ -1,8 +1,0 @@
-SELECT DISTINCT ?title ?id WHERE {
-	[] dbo:academicDiscipline ?education .
-	?education rdfs:label ?label .
-	FILTER (langmatches(lang(?label),"en")) .
-	BIND (str(?label) AS ?title)
-	?education dbo:wikiPageID ?wikiId .
-	BIND (str(?wikiId) AS ?id) .
-}

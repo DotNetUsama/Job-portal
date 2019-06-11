@@ -1,4 +1,5 @@
-﻿@model Areas.Announcements.Pages.IndexModel
+﻿@page
+@model Areas.Announcements.Pages.IndexModel
 
 @{
     ViewData["Title"] = "Announcements";
@@ -39,8 +40,6 @@
             </div>
         }
     </div>
-
-    <partial name="_SearchPartial" model="@Model" />
 }
 else
 {

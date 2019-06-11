@@ -1,6 +1,4 @@
-﻿using System.IO;
-using System.Linq;
-using Job_Portal_System.Client;
+﻿using System.Linq;
 using Job_Portal_System.Data;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -106,14 +104,6 @@ namespace Job_Portal_System.Controllers
         }
 
         [HttpPost]
-        [Route("SimilarFieldsOfStudy")]
-        public IActionResult SimilarFieldsOfStudy(string query)
-        {
-            var path = Path.Combine(_env.ContentRootPath, "Queries", "SimilarFieldsOfStudyQuery.txt");
-            return Json(NamedEntity.GetNamedEntities(query, path));
-        }
-
-        [HttpPost]
         [Route("JobTitles")]
         public IActionResult JobTitles()
         {
@@ -123,30 +113,6 @@ namespace Job_Portal_System.Controllers
                     jobTitle.Id,
                     Label = jobTitle.Title,
                 }));
-        }
-
-        [HttpPost]
-        [Route("JobTitlesWithSimilarities")]
-        public IActionResult JobTitlesWithSimilarities()
-        {
-            return Json(_context.JobTitles
-                .Select(jobTitle => new
-                {
-                    Label = jobTitle.Title,
-                })
-                .Union(_context.JobTitleSimilarities
-                    .Select(s => new
-                    {
-                        Label = s.SimilarTitle.Title,
-                    })));
-        }
-
-        [HttpPost]
-        [Route("SimilarJobTitles")]
-        public IActionResult SimilarJobTitles(string query)
-        {
-            var path = Path.Combine(_env.ContentRootPath, "Queries", "SimilarJobTitlesQuery.txt");
-            return Json(NamedEntity.GetNamedEntities(query, path));
         }
     }
 }

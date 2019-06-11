@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Job_Portal_System.Data;
@@ -6,6 +7,7 @@ using Job_Portal_System.Enums;
 using Job_Portal_System.Handlers;
 using Job_Portal_System.Models;
 using Job_Portal_System.SignalR;
+using Job_Portal_System.Utilities.Semantic;
 using Job_Portal_System.ViewModels;
 using JW;
 using Microsoft.AspNetCore.Authorization;
@@ -182,32 +184,21 @@ namespace Job_Portal_System.Controllers
         [Route("Search")]
         public IActionResult Search(string query, int p = 1)
         {
-            var queries = query.Split(",");
-            var jobTitles = new List<JobTitle>();
-            foreach (var j in queries)
-            {
-                var queryJob = j.Trim();
-                var jobInDb = _context.JobTitles.SingleOrDefault(jobTitle => jobTitle.Title == queryJob);
-                if (jobInDb != null)
-                {
-                    jobTitles.Add(jobInDb);
-                    break;
-                }
-
-                var similar = _context.JobTitleSimilarities
-                    .Include(s => s.JobTitle)
-                    .SingleOrDefault(s => s.SimilarTitle.Title == queryJob);
-                if (similar == null) break;
-                jobTitles.Add(similar.JobTitle);
-            }
+            var similaritiesQueryPath = Path.Combine(_env.ContentRootPath, "Queries", "GetSimilarities.txt");
+            query = query.ToLower().Trim();
+            var similarities = SimilaritiesOperator.GetSimilarities(query, similaritiesQueryPath);
+            var jobTitles = similarities
+                .Select(similarity => _context.JobTitles.SingleOrDefault(j => j.Title == similarity))
+                .Where(jobTitle => jobTitle != null)
+                .ToList();
 
             var jobVacancies = new List<JobVacancy>();
-            foreach (var job in jobTitles)
+            foreach (var jobTitle in jobTitles)
             {
                 jobVacancies.AddRange(_context.JobVacancies
                     .Include(j => j.JobTitle)
                     .Include(j => j.CompanyDepartment).ThenInclude(c => c.Company)
-                    .Where(r => r.JobTitleId == job.Id));
+                    .Where(r => r.JobTitleId == jobTitle.Id));
             }
 
             var pager = new Pager(jobVacancies.Count, p);
@@ -216,6 +207,7 @@ namespace Job_Portal_System.Controllers
                 .Distinct()
                 .Skip((pager.CurrentPage - 1) * pager.PageSize)
                 .Take(pager.PageSize);
+
             return View("JobVacanciesSearchResult", new JobVacanciesSearchResult
             {
                 JobVacancies = viewedJobVacancies,

@@ -108,12 +108,12 @@ namespace Job_Portal_System.Areas.Resumes.Pages
 
         private void AddJobTypes(Resume resume)
         {
-            foreach (var resumeInfoJobType in ResumeInfo.JobTypes)
+            foreach (var (key, value) in ResumeInfo.JobTypes)
             {
-                if (resumeInfoJobType.Value)
+                if (value)
                     resume.JobTypes.Add(new ResumeJobType
                     {
-                        JobType = (int)resumeInfoJobType.Key,
+                        JobType = (int)key,
                     });
             }
         }
@@ -125,20 +125,12 @@ namespace Job_Portal_System.Areas.Resumes.Pages
                 : _context.Schools.SingleOrDefault(schoolInDb => schoolInDb.Name == education.School);
 
             var fieldOfStudy =
-                _context.FieldOfStudies.SingleOrDefault(fieldInDb => fieldInDb.Id == education.FieldOfStudyId);
-            if (fieldOfStudy != null && fieldOfStudy.Title != education.FieldOfStudyName)
-            {
-                _context.FieldOfStudySimilarities.FindOrAdd(new FieldOfStudySimilarity
+                _context.FieldOfStudies.SingleOrDefault(fieldInDb => fieldInDb.Id == education.FieldOfStudyId) ??
+                new FieldOfStudy
                 {
-                    FieldOfStudy = fieldOfStudy,
-                    SimilarTitle = new SimilarFieldOfStudyTitle
-                    {
-                        Title = education.FieldOfStudyName,
-                    },
-                }, similarityInDb =>
-                    similarityInDb.FieldOfStudy.Id == education.FieldOfStudyId &&
-                    similarityInDb.SimilarTitle.Title == education.FieldOfStudyName);
-            }
+                    Title = education.FieldOfStudyName,
+                    NormalizedTitle = education.FieldOfStudyName.ToLower(),
+                };
 
             resume.Educations.Add(new Education
             {
@@ -152,25 +144,20 @@ namespace Job_Portal_System.Areas.Resumes.Pages
 
         private void AddWorkExperience(Resume resume, WorkExperienceInputModel workExperience)
         {
-            var company = workExperience.CompanyId == null
-                ? new Company { Name = workExperience.Company }
-                : _context.Companies.SingleOrDefault(companyInDb => companyInDb.Id == workExperience.CompanyId);
+            var company = 
+                _context.Companies.SingleOrDefault(companyInDb => companyInDb.Id == workExperience.CompanyId) ??
+                new Company
+                {
+                    Name = workExperience.Company,
+                };
 
             var jobTitle =
-                _context.JobTitles.SingleOrDefault(jobTitleInDb => jobTitleInDb.Id == workExperience.JobTitleId);
-            if (jobTitle != null && jobTitle.Title != workExperience.JobTitle)
-            {
-                _context.JobTitleSimilarities.FindOrAdd(new JobTitleSimilarity
+                _context.JobTitles.SingleOrDefault(jobTitleInDb => jobTitleInDb.Id == workExperience.JobTitleId) ??
+                new JobTitle
                 {
-                    JobTitle = jobTitle,
-                    SimilarTitle = new SimilarJobTitle
-                    {
-                        Title = workExperience.JobTitle,
-                    },
-                }, similarityInDb =>
-                    similarityInDb.JobTitle.Id == workExperience.JobTitleId &&
-                    similarityInDb.SimilarTitle.Title == workExperience.JobTitle);
-            }
+                    Title = workExperience.JobTitle,
+                    NormalizedTitle = workExperience.JobTitle.ToLower(),
+                };
 
             resume.WorkExperiences.Add(new WorkExperience()
             {
@@ -184,9 +171,12 @@ namespace Job_Portal_System.Areas.Resumes.Pages
 
         private void AddSkill(Resume resume, SkillInputModel skillModel)
         {
-            var skill = skillModel.SkillId == null
-                ? new Skill { Title = skillModel.Skill }
-                : _context.Skills.SingleOrDefault(skillInDb => skillInDb.Id == skillModel.SkillId);
+            var skill = 
+                _context.Skills.SingleOrDefault(skillInDb => skillInDb.Id == skillModel.SkillId) ??
+                new Skill
+                {
+                    Title = skillModel.Skill,
+                };
 
             resume.OwnedSkills.Add(new OwnedSkill
             {
@@ -198,20 +188,12 @@ namespace Job_Portal_System.Areas.Resumes.Pages
         private void AddSeekedJobTitle(Resume resume, JobTitleInputModel jobTitleModel)
         {
             var jobTitle =
-                _context.JobTitles.SingleOrDefault(jobTitleInDb => jobTitleInDb.Id == jobTitleModel.JobTitleId);
-            if (jobTitle != null && jobTitle.Title != jobTitleModel.JobTitle)
-            {
-                _context.JobTitleSimilarities.FindOrAdd(new JobTitleSimilarity
+                _context.JobTitles.SingleOrDefault(jobTitleInDb => jobTitleInDb.Id == jobTitleModel.JobTitleId) ??
+                new JobTitle
                 {
-                    JobTitle = jobTitle,
-                    SimilarTitle = new SimilarJobTitle
-                    {
-                        Title = jobTitleModel.JobTitle,
-                    },
-                }, similarityInDb =>
-                    similarityInDb.JobTitle.Id == jobTitleModel.JobTitleId &&
-                    similarityInDb.SimilarTitle.Title == jobTitleModel.JobTitle);
-            }
+                    Title = jobTitleModel.JobTitle,
+                    NormalizedTitle = jobTitleModel.JobTitle.ToLower(),
+                };
 
             resume.SeekedJobTitles.Add(new SeekedJobTitle
             {

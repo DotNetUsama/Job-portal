@@ -5,7 +5,7 @@ using Job_Portal_System.Enums;
 using Job_Portal_System.Handlers;
 using Job_Portal_System.Managers;
 using Job_Portal_System.Models;
-using Job_Portal_System.RankingSystem;
+using Job_Portal_System.Utilities.RankingSystem;
 using Job_Portal_System.SignalR;
 using Job_Portal_System.ViewModels;
 using Microsoft.AspNetCore.Authorization;

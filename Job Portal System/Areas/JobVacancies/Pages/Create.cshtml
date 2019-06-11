@@ -23,9 +23,8 @@
                         <h2 class="form-body-title"><i class="fa fa-question-circle"></i> General information</h2>
                         <div class="form-group">
                             <label asp-for="JobVacancyInfo.JobTitle"></label>
-                            <input type="text" id="job-title-input" class="form-control" />
-                            <input asp-for="JobVacancyInfo.JobTitle" id="job-title-name" />
-                            <span asp-validation-for="JobVacancyInfo.JobTitle" class="validation-label text-danger"></span>
+                            <input asp-for="JobVacancyInfo.JobTitle" id="job-title-input" class="form-control" />
+                            <span asp-validation-for="JobVacancyInfo.JobTitle" class="text-danger"></span>
                         </div>
                         <input asp-for="JobVacancyInfo.JobTitleId" id="job-title-id" />
                         <div class="form-group">

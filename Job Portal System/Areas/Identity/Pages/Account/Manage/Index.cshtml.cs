@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Job_Portal_System.Data;
 using Job_Portal_System.Enums;
 using Job_Portal_System.Models;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -20,21 +17,19 @@ namespace Job_Portal_System.Areas.Identity.Pages.Account.Manage
         private readonly ApplicationDbContext _context;
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
-        private readonly IEmailSender _emailSender;
 
         public IndexModel(
             ApplicationDbContext context,
             UserManager<User> userManager,
-            SignInManager<User> signInManager,
-            IEmailSender emailSender)
+            SignInManager<User> signInManager)
         {
             _context = context;
             _userManager = userManager;
             _signInManager = signInManager;
-            _emailSender = emailSender;
         }
 
         public string Username { get; set; }
+        public string ImageUrl { get; set; }
 
         public UserType UserType { get; set; }
 
@@ -49,6 +44,11 @@ namespace Job_Portal_System.Areas.Identity.Pages.Account.Manage
 
         public class InputModel
         {
+            [HiddenInput]
+            [Display(Name = "Profile picture")]
+            [DataType(DataType.ImageUrl)]
+            public string Image { get; set; }
+
             [Phone]
             [Display(Name = "Phone number")]
             public string PhoneNumber { get; set; }
@@ -87,6 +87,7 @@ namespace Job_Portal_System.Areas.Identity.Pages.Account.Manage
                 UserType.Other;
 
             Username = userName;
+            ImageUrl = user.Image ?? "https://i.imgur.com/uJ3eXxp.png";
 
             States = new SelectList(_context.States.ToDictionary(s => s.Id, s => s.Name), "Key", "Value");
             if (city != null)
@@ -133,6 +134,7 @@ namespace Job_Portal_System.Areas.Identity.Pages.Account.Manage
 
             if (Input.City != user.CityId || Input.DetailedAddress != user.DetailedAddress)
             {
+                user.Image = Input.Image;
                 user.CityId = Input.City;
                 user.DetailedAddress = Input.DetailedAddress;
                 var updateResult = await _userManager.UpdateAsync(user);
@@ -145,37 +147,6 @@ namespace Job_Portal_System.Areas.Identity.Pages.Account.Manage
 
             await _signInManager.RefreshSignInAsync(user);
             StatusMessage = "Your profile has been updated";
-            return RedirectToPage();
-        }
-
-        public async Task<IActionResult> OnPostSendVerificationEmailAsync()
-        {
-            if (!ModelState.IsValid)
-            {
-                return Page();
-            }
-
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
-            {
-                return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
-            }
-
-
-            var userId = await _userManager.GetUserIdAsync(user);
-            var email = await _userManager.GetEmailAsync(user);
-            var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-            var callbackUrl = Url.Page(
-                "/Account/ConfirmEmail",
-                pageHandler: null,
-                values: new { userId, code },
-                protocol: Request.Scheme);
-            await _emailSender.SendEmailAsync(
-                email,
-                "Confirm your email",
-                $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
-
-            StatusMessage = "Verification email sent. Please check your email.";
             return RedirectToPage();
         }
     }

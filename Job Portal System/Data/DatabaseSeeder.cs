@@ -2,12 +2,10 @@
 using System.IO;
 using System.Linq;
 using GeoCoordinatePortable;
-using Job_Portal_System.Client;
 using Job_Portal_System.Enums;
 using Job_Portal_System.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Logging;
 
 namespace Job_Portal_System.Data
 {
@@ -155,48 +153,64 @@ namespace Job_Portal_System.Data
             {
                 Name = roleName
             };
-            var roleResult = roleManager.CreateAsync(role).Result;
+            roleManager.CreateAsync(role).Wait();
         }
 
         private static void SeedJobTitles(IHostingEnvironment env, ApplicationDbContext context)
         {
-            var path = Path.Combine(env.ContentRootPath, "Queries", "JobTitlesQuery.txt");
-            var jobTitles = NamedEntity.GetNamedEntities(path)
-                .Select(entity => new JobTitle
+            var path = Path.Combine(env.ContentRootPath, "Queries", "JobTitles.txt");
+            string title;
+            var file = new StreamReader(path);
+            while ((title = file.ReadLine()) != null)
+            {
+                if (context.JobTitles.SingleOrDefault(s => s.Title == title) == null)
                 {
-                    Id = entity.Id,
-                    Title = entity.Label,
-                })
-                .Where(entity => !context.JobTitles.Any(jobTitle => jobTitle.Title == entity.Title))
-                .ToList();
-            context.JobTitles.AddRange(jobTitles);
+                    context.JobTitles.Add(new JobTitle
+                    {
+                        Title = title,
+                        NormalizedTitle = title.ToLower(),
+                    });
+                }
+            }
+
             context.SaveChanges();
         }
 
         private static void SeedFieldsOfStudy(IHostingEnvironment env, ApplicationDbContext context)
         {
-            var path = Path.Combine(env.ContentRootPath, "Queries", "FieldsOfStudyQuery.txt");
-            var fieldsOfStudy = NamedEntity.GetNamedEntities(path)
-                .Select(entity => new FieldOfStudy
+            var path = Path.Combine(env.ContentRootPath, "Queries", "FieldsOfStudy.txt");
+            string fieldTitle;
+            var file = new StreamReader(path);
+            while ((fieldTitle = file.ReadLine()) != null)
+            {
+                if (context.FieldOfStudies.SingleOrDefault(s => s.Title == fieldTitle) == null)
                 {
-                    Id = entity.Id,
-                    Title = entity.Label,
-                })
-                .Where(entity => !context.FieldOfStudies.Any(fieldOfStudy => fieldOfStudy.Title == entity.Title))
-                .ToList();
-            context.FieldOfStudies.AddRange(fieldsOfStudy);
+                    context.FieldOfStudies.Add(new FieldOfStudy
+                    {
+                        Title = fieldTitle,
+                        NormalizedTitle = fieldTitle.ToLower(),
+                    });
+                }
+            }
+
             context.SaveChanges();
         }
 
         private static void SeedSkills(IHostingEnvironment env, ApplicationDbContext context)
         {
-            var path = Path.Combine(env.ContentRootPath, "Queries", "skills.txt");
-            string line;
+            var path = Path.Combine(env.ContentRootPath, "Queries", "Skills.txt");
+            string title;
             var file = new StreamReader(path);
-            while ((line = file.ReadLine()) != null)
+            while ((title = file.ReadLine()) != null)
             {
-                var skill = context.Skills.SingleOrDefault(s => s.Title == line) ??
-                            context.Skills.Add(new Skill { Title = line }).Entity;
+                if (context.Skills.SingleOrDefault(s => s.Title == title) == null)
+                {
+                    context.Skills.Add(new Skill
+                    {
+                        Title = title,
+                        NormalizedTitle = title.ToLower(),
+                    });
+                }
             }
 
             context.SaveChanges();
@@ -209,8 +223,10 @@ namespace Job_Portal_System.Data
             var file = new StreamReader(path);
             while ((line = file.ReadLine()) != null)
             {
-                var state = context.States.SingleOrDefault(s => s.Name == line) ??
-                            context.States.Add(new State { Name = line }).Entity;
+                if (context.States.SingleOrDefault(s => s.Name == line) == null)
+                {
+                    context.States.Add(new State { Name = line });
+                }
             }
 
             context.SaveChanges();
@@ -262,26 +278,36 @@ namespace Job_Portal_System.Data
         private static void SeedCompanies(IHostingEnvironment env, ApplicationDbContext context)
         {
             var path = Path.Combine(env.ContentRootPath, "Queries", "Syrian-Companies.txt");
+
             string line;
             var file = new StreamReader(path);
+            const string separator = ">$.$>";
+
             while ((line = file.ReadLine()) != null)
             {
-                var companyInfo = line.Split("><><><|^");
+                var companyInfo = line.Split(separator);
                 var name = companyInfo[0];
                 var website = companyInfo[1];
                 var description = companyInfo[2];
                 var logo = companyInfo[3];
-                var employeesNum = companyInfo[4];
-                var email = companyInfo[5];
-                
+                var type = companyInfo[4];
+                var foundedYear = companyInfo[5];
+                var employeesNum = companyInfo[6];
+                var email = companyInfo[7];
+                var phone = companyInfo[8];
+
                 context.Companies.Add(new Company
                 {
                     Name = name,
-                    Website = website == "null" ? null : website,
-                    Description = description == "null" ? null : description,
-                    Logo = logo == "null" ? null : logo,
-                    EmployeesNum = employeesNum == "null" ? null : (int?) Convert.ToInt32(employeesNum),
-                    Email = email == "null" ? null : email,
+                    Website = website,
+                    Description = description,
+                    Logo = logo,
+                    Type = type,
+                    FoundedYear = string.IsNullOrEmpty(foundedYear) ? null : (int?)int.Parse(foundedYear),
+                    EmployeesNum = string.IsNullOrEmpty(employeesNum) ? null : (int?)int.Parse(employeesNum),
+                    Email = email,
+                    PhoneNumber = phone,
+                    Approved = true,
                 });
             }
 
@@ -290,7 +316,7 @@ namespace Job_Portal_System.Data
 
         private static void SeedSchools(IHostingEnvironment env, ApplicationDbContext context)
         {
-            var path = Path.Combine(env.ContentRootPath, "Queries", "universities.txt");
+            var path = Path.Combine(env.ContentRootPath, "Queries", "Universities.txt");
             string line;
             var file = new StreamReader(path);
             while ((line = file.ReadLine()) != null)

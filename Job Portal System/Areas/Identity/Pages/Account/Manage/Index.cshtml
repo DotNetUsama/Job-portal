@@ -16,6 +16,23 @@
                 <input asp-for="Username" class="form-control" disabled />
             </div>
             <div class="form-group">
+                <label asp-for="Input.Image"></label>
+                <div>
+                    <label for="file-input" class="position-relative upload-image">
+                        <div id="shader" class="shader hidden"></div>
+                        <div id="loader" class="center hidden">
+                            <div class="loader"></div>
+                        </div>
+                        <img id="image-viewer" src="@Model.ImageUrl"
+                             alt="" class="img-thumbnail">
+                    </label>
+                </div>
+
+                <input id="file-input" accept="image/*" class="d-none" type="file">
+                <span asp-validation-for="Input.Image" id="error-message" class="text-danger"></span>
+            </div>
+            <input asp-for="Input.Image" id="url-input" />
+            <div class="form-group">
                 <label asp-for="Input.PhoneNumber"></label>
                 <input asp-for="Input.PhoneNumber" class="form-control" />
                 <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
@@ -67,4 +84,5 @@
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <partial name="_CitiesSelectorScriptPartial" />
+    <partial name="_ManageScriptsPartial" />
 }

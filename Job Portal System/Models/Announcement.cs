@@ -1,5 +1,8 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Data;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Job_Portal_System.Models
 {
@@ -14,8 +17,11 @@ namespace Job_Portal_System.Models
 
         [Required]
         [DataType(DataType.Text)]
+        [Column(TypeName = "text")]
         public string Content { get; set; }
 
+        [HiddenInput]
+        [Display(Name = "Display image")]
         [DataType(DataType.ImageUrl)]
         public string Image { get; set; }
         

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using Job_Portal_System.Models;
-using Job_Portal_System.RankingSystem;
+using Job_Portal_System.Utilities.RankingSystem;
 
 namespace Job_Portal_System.ViewModels
 {

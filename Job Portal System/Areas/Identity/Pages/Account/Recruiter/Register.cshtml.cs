@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text.Encodings.Web;
@@ -15,7 +14,6 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace Job_Portal_System.Areas.Identity.Pages.Account.Recruiter
@@ -113,7 +111,7 @@ namespace Job_Portal_System.Areas.Identity.Pages.Account.Recruiter
             [Display(Name = "Company name")]
             [DataType(DataType.Text)]
             public string CompanyName { get; set; }
-            
+
             [HiddenInput]
             public string CompanyId { get; set; }
         }
@@ -158,7 +156,7 @@ namespace Job_Portal_System.Areas.Identity.Pages.Account.Recruiter
                     var callbackUrl = Url.Page(
                         "/Account/ConfirmEmail",
                         pageHandler: null,
-                        values: new { userId = user.Id, code = code },
+                        values: new { userId = user.Id, code },
                         protocol: Request.Scheme);
 
                     await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
@@ -179,25 +177,23 @@ namespace Job_Portal_System.Areas.Identity.Pages.Account.Recruiter
 
         private Models.Recruiter CreateRecruiter(User user)
         {
-            var companyId = GetCompanyId();
-
             var recruiter = _context.Recruiters.Add(new Models.Recruiter
             {
                 UserId = user.Id,
-                CompanyId = companyId,
+                Company = GetCompany(),
             });
             return recruiter.Entity;
         }
 
-        private string GetCompanyId()
+        private Company GetCompany()
         {
-            var companyId = Input.CompanyId ?? _context.Companies.Add(new Company
-            {
-                Name = Input.CompanyName,
-                Approved = false,
-            }).Entity.Id;
-
-            return companyId;
+            return
+                _context.Companies.SingleOrDefault(company => company.Id == Input.CompanyId) ??
+                new Company
+                {
+                    Name = Input.CompanyName,
+                    Approved = false,
+                };
         }
     }
 }
