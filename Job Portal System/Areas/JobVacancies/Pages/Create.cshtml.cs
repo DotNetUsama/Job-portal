@@ -7,6 +7,7 @@ using Job_Portal_System.Enums;
 using Job_Portal_System.Handlers;
 using Job_Portal_System.Models;
 using Job_Portal_System.SignalR;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -19,14 +20,17 @@ namespace Job_Portal_System.Areas.JobVacancies.Pages
     {
         private readonly ApplicationDbContext _context;
         private readonly IHubContext<SignalRHub> _hubContext;
+        private readonly IHostingEnvironment _env;
         private readonly UserManager<User> _userManager;
 
         public CreateModel(ApplicationDbContext context,
             IHubContext<SignalRHub> hubContext,
+            IHostingEnvironment env,
             UserManager<User> userManager)
         {
             _context = context;
             _hubContext = hubContext;
+            _env = env;
             _userManager = userManager;
         }
 
@@ -220,7 +224,7 @@ namespace Job_Portal_System.Areas.JobVacancies.Pages
             _context.JobVacancies.Add(jobVacancy);
             if (JobVacancyInfo.Method == (int) JobVacancyMethod.Recommendation)
             {
-                await AsyncHandler.Recommend(_context, _hubContext, jobVacancy);
+                await AsyncHandler.Recommend(_context, _env, _hubContext, jobVacancy);
                 return Redirect("./Index");
             }
 

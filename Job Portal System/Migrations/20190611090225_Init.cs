@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Job_Portal_System.Migrations
 {
-    public partial class init : Migration
+    public partial class Init : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -20,6 +20,152 @@ namespace Job_Portal_System.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetRoles", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Companies",
+                columns: table => new
+                {
+                    Id = table.Column<string>(nullable: false),
+                    Name = table.Column<string>(nullable: false),
+                    EmployeesNum = table.Column<int>(nullable: true),
+                    Email = table.Column<string>(nullable: true),
+                    Website = table.Column<string>(nullable: true),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    Logo = table.Column<string>(nullable: true),
+                    PhoneNumber = table.Column<string>(nullable: true),
+                    Type = table.Column<string>(nullable: true),
+                    FoundedYear = table.Column<int>(nullable: true),
+                    Approved = table.Column<bool>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Companies", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "FieldOfStudies",
+                columns: table => new
+                {
+                    Id = table.Column<long>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Title = table.Column<string>(maxLength: 70, nullable: false),
+                    NormalizedTitle = table.Column<string>(maxLength: 70, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_FieldOfStudies", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "JobTitles",
+                columns: table => new
+                {
+                    Id = table.Column<long>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Title = table.Column<string>(maxLength: 70, nullable: false),
+                    NormalizedTitle = table.Column<string>(maxLength: 70, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_JobTitles", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Notifications",
+                columns: table => new
+                {
+                    Id = table.Column<string>(nullable: false),
+                    Type = table.Column<int>(nullable: false),
+                    EntityId = table.Column<string>(nullable: true),
+                    Peer1 = table.Column<string>(nullable: true),
+                    Peer2 = table.Column<string>(nullable: true),
+                    CreatedAt = table.Column<DateTime>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Notifications", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Schools",
+                columns: table => new
+                {
+                    Id = table.Column<string>(nullable: false),
+                    Name = table.Column<string>(maxLength: 150, nullable: false),
+                    Country = table.Column<string>(maxLength: 50, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Schools", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Skills",
+                columns: table => new
+                {
+                    Id = table.Column<long>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Title = table.Column<string>(maxLength: 255, nullable: false),
+                    NormalizedTitle = table.Column<string>(maxLength: 255, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Skills", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "States",
+                columns: table => new
+                {
+                    Id = table.Column<string>(nullable: false),
+                    Name = table.Column<string>(maxLength: 50, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_States", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AspNetRoleClaims",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    RoleId = table.Column<string>(nullable: false),
+                    ClaimType = table.Column<string>(nullable: true),
+                    ClaimValue = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetRoleClaims", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AspNetRoleClaims_AspNetRoles_RoleId",
+                        column: x => x.RoleId,
+                        principalTable: "AspNetRoles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Cities",
+                columns: table => new
+                {
+                    Id = table.Column<string>(nullable: false),
+                    Name = table.Column<string>(maxLength: 50, nullable: false),
+                    Longitude = table.Column<double>(nullable: false),
+                    Latitude = table.Column<double>(nullable: false),
+                    StateId = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Cities", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Cities_States_StateId",
+                        column: x => x.StateId,
+                        principalTable: "States",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -46,142 +192,72 @@ namespace Job_Portal_System.Migrations
                     LastName = table.Column<string>(maxLength: 25, nullable: true),
                     Gender = table.Column<byte>(nullable: true),
                     BirthDate = table.Column<DateTime>(nullable: true),
-                    CreatedAt = table.Column<DateTime>(nullable: true)
+                    CreatedAt = table.Column<DateTime>(nullable: true),
+                    DetailedAddress = table.Column<string>(maxLength: 255, nullable: true),
+                    Image = table.Column<string>(nullable: true),
+                    CityId = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Cities",
-                columns: table => new
-                {
-                    Id = table.Column<string>(nullable: false),
-                    Name = table.Column<string>(maxLength: 50, nullable: false),
-                    Longitude = table.Column<double>(nullable: true),
-                    Latitude = table.Column<double>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Cities", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Companies",
-                columns: table => new
-                {
-                    Id = table.Column<string>(nullable: false),
-                    Name = table.Column<string>(maxLength: 100, nullable: false),
-                    EmployeesNum = table.Column<int>(nullable: true),
-                    Email = table.Column<string>(nullable: true),
-                    Website = table.Column<string>(nullable: true),
-                    Description = table.Column<string>(nullable: true),
-                    Approved = table.Column<bool>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Companies", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "FieldOfStudies",
-                columns: table => new
-                {
-                    Id = table.Column<long>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    Title = table.Column<string>(maxLength: 70, nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_FieldOfStudies", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "JobTitles",
-                columns: table => new
-                {
-                    Id = table.Column<long>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    Title = table.Column<string>(maxLength: 70, nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_JobTitles", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Notifications",
-                columns: table => new
-                {
-                    Id = table.Column<string>(nullable: false),
-                    Type = table.Column<int>(nullable: false),
-                    EntityId = table.Column<string>(nullable: true),
-                    Peer1 = table.Column<string>(nullable: true),
-                    Peer2 = table.Column<string>(nullable: true),
-                    CreatedAt = table.Column<DateTime>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Notifications", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "SimilarFieldOfStudyTitles",
-                columns: table => new
-                {
-                    Id = table.Column<string>(nullable: false),
-                    Title = table.Column<string>(maxLength: 50, nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_SimilarFieldOfStudyTitles", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "SimilarJobTitles",
-                columns: table => new
-                {
-                    Id = table.Column<string>(nullable: false),
-                    Title = table.Column<string>(maxLength: 50, nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_SimilarJobTitles", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Skills",
-                columns: table => new
-                {
-                    Id = table.Column<long>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    Title = table.Column<string>(maxLength: 50, nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Skills", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "AspNetRoleClaims",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    RoleId = table.Column<string>(nullable: false),
-                    ClaimType = table.Column<string>(nullable: true),
-                    ClaimValue = table.Column<string>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AspNetRoleClaims", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_AspNetRoleClaims_AspNetRoles_RoleId",
-                        column: x => x.RoleId,
-                        principalTable: "AspNetRoles",
+                        name: "FK_AspNetUsers_Cities_CityId",
+                        column: x => x.CityId,
+                        principalTable: "Cities",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CompanyDepartments",
+                columns: table => new
+                {
+                    Id = table.Column<string>(nullable: false),
+                    DetailedAddress = table.Column<string>(maxLength: 255, nullable: false),
+                    CityId = table.Column<string>(nullable: true),
+                    CompanyId = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CompanyDepartments", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_CompanyDepartments_Cities_CityId",
+                        column: x => x.CityId,
+                        principalTable: "Cities",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_CompanyDepartments_Companies_CompanyId",
+                        column: x => x.CompanyId,
+                        principalTable: "Companies",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "GeoDistances",
+                columns: table => new
+                {
+                    Id = table.Column<string>(nullable: false),
+                    Distance = table.Column<long>(nullable: false),
+                    City1Id = table.Column<string>(nullable: true),
+                    City2Id = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_GeoDistances", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_GeoDistances_Cities_City1Id",
+                        column: x => x.City1Id,
+                        principalTable: "Cities",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_GeoDistances_Cities_City2Id",
+                        column: x => x.City2Id,
+                        principalTable: "Cities",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -190,7 +266,7 @@ namespace Job_Portal_System.Migrations
                 {
                     Id = table.Column<string>(nullable: false),
                     Headline = table.Column<string>(maxLength: 255, nullable: false),
-                    Content = table.Column<string>(nullable: false),
+                    Content = table.Column<string>(type: "text", nullable: false),
                     Image = table.Column<string>(nullable: true),
                     CreatedAt = table.Column<DateTime>(nullable: false),
                     UpdatedAt = table.Column<DateTime>(nullable: true),
@@ -232,8 +308,8 @@ namespace Job_Portal_System.Migrations
                 name: "AspNetUserLogins",
                 columns: table => new
                 {
-                    LoginProvider = table.Column<string>(maxLength: 128, nullable: false),
-                    ProviderKey = table.Column<string>(maxLength: 128, nullable: false),
+                    LoginProvider = table.Column<string>(nullable: false),
+                    ProviderKey = table.Column<string>(nullable: false),
                     ProviderDisplayName = table.Column<string>(nullable: true),
                     UserId = table.Column<string>(nullable: false)
                 },
@@ -277,8 +353,8 @@ namespace Job_Portal_System.Migrations
                 columns: table => new
                 {
                     UserId = table.Column<string>(nullable: false),
-                    LoginProvider = table.Column<string>(maxLength: 128, nullable: false),
-                    Name = table.Column<string>(maxLength: 128, nullable: false),
+                    LoginProvider = table.Column<string>(nullable: false),
+                    Name = table.Column<string>(nullable: false),
                     Value = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
@@ -297,7 +373,6 @@ namespace Job_Portal_System.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(nullable: false),
-                    IsSeeking = table.Column<bool>(nullable: false),
                     UserId = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
@@ -307,51 +382,6 @@ namespace Job_Portal_System.Migrations
                         name: "FK_JobSeekers_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Schools",
-                columns: table => new
-                {
-                    Id = table.Column<string>(nullable: false),
-                    Name = table.Column<string>(maxLength: 50, nullable: false),
-                    CityId = table.Column<string>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Schools", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Schools_Cities_CityId",
-                        column: x => x.CityId,
-                        principalTable: "Cities",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "CompanyDepartments",
-                columns: table => new
-                {
-                    Id = table.Column<string>(nullable: false),
-                    DetailedAddress = table.Column<string>(maxLength: 255, nullable: false),
-                    CityId = table.Column<string>(nullable: true),
-                    CompanyId = table.Column<string>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_CompanyDepartments", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_CompanyDepartments_Cities_CityId",
-                        column: x => x.CityId,
-                        principalTable: "Cities",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_CompanyDepartments_Companies_CompanyId",
-                        column: x => x.CompanyId,
-                        principalTable: "Companies",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -408,62 +438,15 @@ namespace Job_Portal_System.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "FieldOfStudySimilarities",
-                columns: table => new
-                {
-                    Id = table.Column<string>(nullable: false),
-                    FieldOfStudyId = table.Column<long>(nullable: true),
-                    SimilarTitleId = table.Column<string>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_FieldOfStudySimilarities", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_FieldOfStudySimilarities_FieldOfStudies_FieldOfStudyId",
-                        column: x => x.FieldOfStudyId,
-                        principalTable: "FieldOfStudies",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_FieldOfStudySimilarities_SimilarFieldOfStudyTitles_SimilarTitleId",
-                        column: x => x.SimilarTitleId,
-                        principalTable: "SimilarFieldOfStudyTitles",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "JobTitleSimilarities",
-                columns: table => new
-                {
-                    Id = table.Column<string>(nullable: false),
-                    JobTitleId = table.Column<long>(nullable: true),
-                    SimilarTitleId = table.Column<string>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_JobTitleSimilarities", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_JobTitleSimilarities_JobTitles_JobTitleId",
-                        column: x => x.JobTitleId,
-                        principalTable: "JobTitles",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_JobTitleSimilarities_SimilarJobTitles_SimilarTitleId",
-                        column: x => x.SimilarTitleId,
-                        principalTable: "SimilarJobTitles",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Resumes",
                 columns: table => new
                 {
                     Id = table.Column<string>(nullable: false),
                     MinSalary = table.Column<double>(nullable: false),
                     IsPublic = table.Column<bool>(nullable: false),
+                    IsSeeking = table.Column<bool>(nullable: false),
+                    MovingDistanceLimit = table.Column<long>(nullable: false),
+                    Biography = table.Column<string>(type: "text", nullable: true),
                     UserId = table.Column<string>(nullable: true),
                     JobSeekerId = table.Column<string>(nullable: true)
                 },
@@ -491,6 +474,7 @@ namespace Job_Portal_System.Migrations
                     Id = table.Column<string>(nullable: false),
                     Title = table.Column<string>(maxLength: 128, nullable: false),
                     Description = table.Column<string>(nullable: false),
+                    DistanceLimit = table.Column<long>(nullable: false),
                     MinSalary = table.Column<double>(nullable: false),
                     MaxSalary = table.Column<double>(nullable: false),
                     RequiredHires = table.Column<int>(nullable: false),
@@ -501,9 +485,8 @@ namespace Job_Portal_System.Migrations
                     Range = table.Column<double>(nullable: false),
                     PublishedAt = table.Column<DateTime>(nullable: false),
                     FinishedAt = table.Column<DateTime>(nullable: true),
-                    DecisionTreeFile = table.Column<string>(maxLength: 64, nullable: true),
                     CompanyDepartmentId = table.Column<string>(nullable: true),
-                    JobTitleId = table.Column<long>(nullable: true),
+                    JobTitleId = table.Column<long>(nullable: false),
                     UserId = table.Column<string>(nullable: true),
                     RecruiterId = table.Column<string>(nullable: true)
                 },
@@ -521,7 +504,7 @@ namespace Job_Portal_System.Migrations
                         column: x => x.JobTitleId,
                         principalTable: "JobTitles",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_JobVacancies_Recruiters_RecruiterId",
                         column: x => x.RecruiterId,
@@ -622,7 +605,7 @@ namespace Job_Portal_System.Migrations
                 {
                     Id = table.Column<string>(nullable: false),
                     ResumeId = table.Column<string>(nullable: true),
-                    JobTitleId = table.Column<long>(nullable: true)
+                    JobTitleId = table.Column<long>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -632,7 +615,7 @@ namespace Job_Portal_System.Migrations
                         column: x => x.JobTitleId,
                         principalTable: "JobTitles",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_SeekedJobTitles_Resumes_ResumeId",
                         column: x => x.ResumeId,
@@ -648,7 +631,7 @@ namespace Job_Portal_System.Migrations
                     Id = table.Column<string>(nullable: false),
                     StartDate = table.Column<DateTime>(nullable: false),
                     EndDate = table.Column<DateTime>(nullable: true),
-                    Description = table.Column<string>(nullable: true),
+                    Description = table.Column<string>(type: "text", nullable: true),
                     ResumeId = table.Column<string>(nullable: true),
                     JobTitleId = table.Column<long>(nullable: false),
                     CompanyId = table.Column<string>(nullable: true)
@@ -877,6 +860,11 @@ namespace Job_Portal_System.Migrations
                 column: "RoleId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_AspNetUsers_CityId",
+                table: "AspNetUsers",
+                column: "CityId");
+
+            migrationBuilder.CreateIndex(
                 name: "EmailIndex",
                 table: "AspNetUsers",
                 column: "NormalizedEmail");
@@ -887,6 +875,11 @@ namespace Job_Portal_System.Migrations
                 column: "NormalizedUserName",
                 unique: true,
                 filter: "[NormalizedUserName] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Cities_StateId",
+                table: "Cities",
+                column: "StateId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_CompanyDepartments_CityId",
@@ -934,29 +927,19 @@ namespace Job_Portal_System.Migrations
                 column: "SchoolId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_FieldOfStudySimilarities_FieldOfStudyId",
-                table: "FieldOfStudySimilarities",
-                column: "FieldOfStudyId");
+                name: "IX_GeoDistances_City1Id",
+                table: "GeoDistances",
+                column: "City1Id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_FieldOfStudySimilarities_SimilarTitleId",
-                table: "FieldOfStudySimilarities",
-                column: "SimilarTitleId");
+                name: "IX_GeoDistances_City2Id",
+                table: "GeoDistances",
+                column: "City2Id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_JobSeekers_UserId",
                 table: "JobSeekers",
                 column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_JobTitleSimilarities_JobTitleId",
-                table: "JobTitleSimilarities",
-                column: "JobTitleId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_JobTitleSimilarities_SimilarTitleId",
-                table: "JobTitleSimilarities",
-                column: "SimilarTitleId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_JobVacancies_CompanyDepartmentId",
@@ -1017,11 +1000,6 @@ namespace Job_Portal_System.Migrations
                 name: "IX_Resumes_UserId",
                 table: "Resumes",
                 column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Schools_CityId",
-                table: "Schools",
-                column: "CityId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_SeekedJobTitles_JobTitleId",
@@ -1102,10 +1080,7 @@ namespace Job_Portal_System.Migrations
                 name: "Educations");
 
             migrationBuilder.DropTable(
-                name: "FieldOfStudySimilarities");
-
-            migrationBuilder.DropTable(
-                name: "JobTitleSimilarities");
+                name: "GeoDistances");
 
             migrationBuilder.DropTable(
                 name: "JobVacancyJobTypes");
@@ -1132,16 +1107,10 @@ namespace Job_Portal_System.Migrations
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "Schools");
-
-            migrationBuilder.DropTable(
                 name: "FieldOfStudies");
 
             migrationBuilder.DropTable(
-                name: "SimilarFieldOfStudyTitles");
-
-            migrationBuilder.DropTable(
-                name: "SimilarJobTitles");
+                name: "Schools");
 
             migrationBuilder.DropTable(
                 name: "Skills");
@@ -1168,13 +1137,16 @@ namespace Job_Portal_System.Migrations
                 name: "JobSeekers");
 
             migrationBuilder.DropTable(
-                name: "Cities");
-
-            migrationBuilder.DropTable(
                 name: "Companies");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "Cities");
+
+            migrationBuilder.DropTable(
+                name: "States");
         }
     }
 }

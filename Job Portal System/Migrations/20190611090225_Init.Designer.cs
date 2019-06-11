@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Job_Portal_System.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20190508205730_UpdateJobVacanciesTable")]
-    partial class UpdateJobVacanciesTable
+    [Migration("20190611090225_Init")]
+    partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -27,7 +27,8 @@ namespace Job_Portal_System.Migrations
                         .ValueGeneratedOnAdd();
 
                     b.Property<string>("Content")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("CreatedAt");
 
@@ -83,15 +84,19 @@ namespace Job_Portal_System.Migrations
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<double?>("Latitude");
+                    b.Property<double>("Latitude");
 
-                    b.Property<double?>("Longitude");
+                    b.Property<double>("Longitude");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50);
 
+                    b.Property<string>("StateId");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("StateId");
 
                     b.ToTable("Cities");
                 });
@@ -103,15 +108,23 @@ namespace Job_Portal_System.Migrations
 
                     b.Property<bool>("Approved");
 
-                    b.Property<string>("Description");
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
 
                     b.Property<string>("Email");
 
                     b.Property<int?>("EmployeesNum");
 
+                    b.Property<int?>("FoundedYear");
+
+                    b.Property<string>("Logo");
+
                     b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100);
+                        .IsRequired();
+
+                    b.Property<string>("PhoneNumber");
+
+                    b.Property<string>("Type");
 
                     b.Property<string>("Website");
 
@@ -230,6 +243,10 @@ namespace Job_Portal_System.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<string>("NormalizedTitle")
+                        .IsRequired()
+                        .HasMaxLength(70);
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(70);
@@ -239,30 +256,30 @@ namespace Job_Portal_System.Migrations
                     b.ToTable("FieldOfStudies");
                 });
 
-            modelBuilder.Entity("Job_Portal_System.Models.FieldOfStudySimilarity", b =>
+            modelBuilder.Entity("Job_Portal_System.Models.GeoDistance", b =>
                 {
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<long?>("FieldOfStudyId");
+                    b.Property<string>("City1Id");
 
-                    b.Property<string>("SimilarTitleId");
+                    b.Property<string>("City2Id");
+
+                    b.Property<long>("Distance");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("FieldOfStudyId");
+                    b.HasIndex("City1Id");
 
-                    b.HasIndex("SimilarTitleId");
+                    b.HasIndex("City2Id");
 
-                    b.ToTable("FieldOfStudySimilarities");
+                    b.ToTable("GeoDistances");
                 });
 
             modelBuilder.Entity("Job_Portal_System.Models.JobSeeker", b =>
                 {
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd();
-
-                    b.Property<bool>("IsSeeking");
 
                     b.Property<string>("UserId");
 
@@ -279,6 +296,10 @@ namespace Job_Portal_System.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<string>("NormalizedTitle")
+                        .IsRequired()
+                        .HasMaxLength(70);
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(70);
@@ -286,24 +307,6 @@ namespace Job_Portal_System.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("JobTitles");
-                });
-
-            modelBuilder.Entity("Job_Portal_System.Models.JobTitleSimilarity", b =>
-                {
-                    b.Property<string>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<long?>("JobTitleId");
-
-                    b.Property<string>("SimilarTitleId");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("JobTitleId");
-
-                    b.HasIndex("SimilarTitleId");
-
-                    b.ToTable("JobTitleSimilarities");
                 });
 
             modelBuilder.Entity("Job_Portal_System.Models.JobVacancy", b =>
@@ -318,9 +321,11 @@ namespace Job_Portal_System.Migrations
                     b.Property<string>("Description")
                         .IsRequired();
 
+                    b.Property<long>("DistanceLimit");
+
                     b.Property<DateTime?>("FinishedAt");
 
-                    b.Property<long?>("JobTitleId");
+                    b.Property<long>("JobTitleId");
 
                     b.Property<double>("MaxSalary");
 
@@ -438,11 +443,18 @@ namespace Job_Portal_System.Migrations
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<string>("Biography")
+                        .HasColumnType("text");
+
                     b.Property<bool>("IsPublic");
+
+                    b.Property<bool>("IsSeeking");
 
                     b.Property<string>("JobSeekerId");
 
                     b.Property<double>("MinSalary");
+
+                    b.Property<long>("MovingDistanceLimit");
 
                     b.Property<string>("UserId");
 
@@ -476,15 +488,15 @@ namespace Job_Portal_System.Migrations
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("CityId");
-
-                    b.Property<string>("Name")
+                    b.Property<string>("Country")
                         .IsRequired()
                         .HasMaxLength(50);
 
-                    b.HasKey("Id");
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(150);
 
-                    b.HasIndex("CityId");
+                    b.HasKey("Id");
 
                     b.ToTable("Schools");
                 });
@@ -494,7 +506,7 @@ namespace Job_Portal_System.Migrations
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<long?>("JobTitleId");
+                    b.Property<long>("JobTitleId");
 
                     b.Property<string>("ResumeId");
 
@@ -507,47 +519,37 @@ namespace Job_Portal_System.Migrations
                     b.ToTable("SeekedJobTitles");
                 });
 
-            modelBuilder.Entity("Job_Portal_System.Models.SimilarFieldOfStudyTitle", b =>
-                {
-                    b.Property<string>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasMaxLength(50);
-
-                    b.HasKey("Id");
-
-                    b.ToTable("SimilarFieldOfStudyTitles");
-                });
-
-            modelBuilder.Entity("Job_Portal_System.Models.SimilarJobTitle", b =>
-                {
-                    b.Property<string>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasMaxLength(50);
-
-                    b.HasKey("Id");
-
-                    b.ToTable("SimilarJobTitles");
-                });
-
             modelBuilder.Entity("Job_Portal_System.Models.Skill", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<string>("NormalizedTitle")
+                        .IsRequired()
+                        .HasMaxLength(255);
+
                     b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(255);
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Skills");
+                });
+
+            modelBuilder.Entity("Job_Portal_System.Models.State", b =>
+                {
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50);
 
                     b.HasKey("Id");
 
-                    b.ToTable("Skills");
+                    b.ToTable("States");
                 });
 
             modelBuilder.Entity("Job_Portal_System.Models.UserNotification", b =>
@@ -577,7 +579,8 @@ namespace Job_Portal_System.Migrations
 
                     b.Property<string>("CompanyId");
 
-                    b.Property<string>("Description");
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
 
                     b.Property<DateTime?>("EndDate");
 
@@ -746,11 +749,9 @@ namespace Job_Portal_System.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.Property<string>("LoginProvider")
-                        .HasMaxLength(128);
+                    b.Property<string>("LoginProvider");
 
-                    b.Property<string>("ProviderKey")
-                        .HasMaxLength(128);
+                    b.Property<string>("ProviderKey");
 
                     b.Property<string>("ProviderDisplayName");
 
@@ -781,11 +782,9 @@ namespace Job_Portal_System.Migrations
                 {
                     b.Property<string>("UserId");
 
-                    b.Property<string>("LoginProvider")
-                        .HasMaxLength(128);
+                    b.Property<string>("LoginProvider");
 
-                    b.Property<string>("Name")
-                        .HasMaxLength(128);
+                    b.Property<string>("Name");
 
                     b.Property<string>("Value");
 
@@ -800,7 +799,13 @@ namespace Job_Portal_System.Migrations
 
                     b.Property<DateTime>("BirthDate");
 
+                    b.Property<string>("CityId");
+
                     b.Property<DateTime>("CreatedAt");
+
+                    b.Property<string>("DetailedAddress")
+                        .IsRequired()
+                        .HasMaxLength(255);
 
                     b.Property<string>("FirstName")
                         .IsRequired()
@@ -808,9 +813,13 @@ namespace Job_Portal_System.Migrations
 
                     b.Property<byte>("Gender");
 
+                    b.Property<string>("Image");
+
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasMaxLength(25);
+
+                    b.HasIndex("CityId");
 
                     b.HasDiscriminator().HasValue("User");
                 });
@@ -839,6 +848,13 @@ namespace Job_Portal_System.Migrations
                     b.HasOne("Job_Portal_System.Models.Resume", "Resume")
                         .WithMany()
                         .HasForeignKey("ResumeId");
+                });
+
+            modelBuilder.Entity("Job_Portal_System.Models.City", b =>
+                {
+                    b.HasOne("Job_Portal_System.Models.State", "State")
+                        .WithMany()
+                        .HasForeignKey("StateId");
                 });
 
             modelBuilder.Entity("Job_Portal_System.Models.CompanyDepartment", b =>
@@ -892,15 +908,15 @@ namespace Job_Portal_System.Migrations
                         .HasForeignKey("JobVacancyId");
                 });
 
-            modelBuilder.Entity("Job_Portal_System.Models.FieldOfStudySimilarity", b =>
+            modelBuilder.Entity("Job_Portal_System.Models.GeoDistance", b =>
                 {
-                    b.HasOne("Job_Portal_System.Models.FieldOfStudy", "FieldOfStudy")
-                        .WithMany("Similarities")
-                        .HasForeignKey("FieldOfStudyId");
+                    b.HasOne("Job_Portal_System.Models.City", "City1")
+                        .WithMany()
+                        .HasForeignKey("City1Id");
 
-                    b.HasOne("Job_Portal_System.Models.SimilarFieldOfStudyTitle", "SimilarTitle")
-                        .WithMany("Similarities")
-                        .HasForeignKey("SimilarTitleId");
+                    b.HasOne("Job_Portal_System.Models.City", "City2")
+                        .WithMany()
+                        .HasForeignKey("City2Id");
                 });
 
             modelBuilder.Entity("Job_Portal_System.Models.JobSeeker", b =>
@@ -908,17 +924,6 @@ namespace Job_Portal_System.Migrations
                     b.HasOne("Job_Portal_System.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId");
-                });
-
-            modelBuilder.Entity("Job_Portal_System.Models.JobTitleSimilarity", b =>
-                {
-                    b.HasOne("Job_Portal_System.Models.JobTitle", "JobTitle")
-                        .WithMany("Similarities")
-                        .HasForeignKey("JobTitleId");
-
-                    b.HasOne("Job_Portal_System.Models.SimilarJobTitle", "SimilarTitle")
-                        .WithMany("Similarities")
-                        .HasForeignKey("SimilarTitleId");
                 });
 
             modelBuilder.Entity("Job_Portal_System.Models.JobVacancy", b =>
@@ -929,7 +934,8 @@ namespace Job_Portal_System.Migrations
 
                     b.HasOne("Job_Portal_System.Models.JobTitle", "JobTitle")
                         .WithMany()
-                        .HasForeignKey("JobTitleId");
+                        .HasForeignKey("JobTitleId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Job_Portal_System.Models.Recruiter", "Recruiter")
                         .WithMany()
@@ -988,18 +994,12 @@ namespace Job_Portal_System.Migrations
                         .HasForeignKey("ResumeId");
                 });
 
-            modelBuilder.Entity("Job_Portal_System.Models.School", b =>
-                {
-                    b.HasOne("Job_Portal_System.Models.City", "City")
-                        .WithMany()
-                        .HasForeignKey("CityId");
-                });
-
             modelBuilder.Entity("Job_Portal_System.Models.SeekedJobTitle", b =>
                 {
                     b.HasOne("Job_Portal_System.Models.JobTitle", "JobTitle")
                         .WithMany()
-                        .HasForeignKey("JobTitleId");
+                        .HasForeignKey("JobTitleId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Job_Portal_System.Models.Resume", "Resume")
                         .WithMany("SeekedJobTitles")
@@ -1088,6 +1088,13 @@ namespace Job_Portal_System.Migrations
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Job_Portal_System.Models.User", b =>
+                {
+                    b.HasOne("Job_Portal_System.Models.City", "City")
+                        .WithMany()
+                        .HasForeignKey("CityId");
                 });
 #pragma warning restore 612, 618
         }

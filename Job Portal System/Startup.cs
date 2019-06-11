@@ -88,8 +88,9 @@ namespace Job_Portal_System
                 routes.MapHub<SignalRHub>("/signalRHub");
             });
 
-            DatabaseSeeder.SeedData(env, context, userManager, roleManager);
+            //DatabaseSeeder.SeedData(env, context, userManager, roleManager);
             //DatabaseSeeder.ClearDatabase(context);
+            DatabaseSeeder.SeedJobSeekers(context, userManager, 10);
             app.UseMvc();
         }
     }

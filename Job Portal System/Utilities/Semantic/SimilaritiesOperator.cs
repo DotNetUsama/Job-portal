@@ -90,7 +90,7 @@ namespace Job_Portal_System.Utilities.Semantic
             for (var i = n; i > 0; i--)
             {
                 if (i > MaxTokensNum) continue;
-                if (n - i > 0)
+                if (n > i)
                 {
                     var smallerSets = GetSetsLengths(n - i);
                     foreach (var smallerSet in smallerSets)

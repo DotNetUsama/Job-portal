@@ -188,7 +188,7 @@ namespace Job_Portal_System.Controllers
             query = query.ToLower().Trim();
             var similarities = SimilaritiesOperator.GetSimilarities(query, similaritiesQueryPath);
             var jobTitles = similarities
-                .Select(similarity => _context.JobTitles.SingleOrDefault(j => j.Title == similarity))
+                .Select(similarity => _context.JobTitles.SingleOrDefault(j => j.NormalizedTitle == similarity))
                 .Where(jobTitle => jobTitle != null)
                 .ToList();
 

@@ -1,11 +1,13 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Net;
 using GeoCoordinatePortable;
 using Job_Portal_System.Enums;
 using Job_Portal_System.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Newtonsoft.Json;
 
 namespace Job_Portal_System.Data
 {
@@ -28,25 +30,9 @@ namespace Job_Portal_System.Data
         public static void SeedJobSeekers(ApplicationDbContext context,
             UserManager<User> userManager, int count)
         {
-            var genders = Enum.GetValues(typeof(GenderType));
-
-            var startBirthDates = new DateTime(1970, 1, 1);
-            var endBirthDates = new DateTime(2001, 1, 1);
             for (var i = 0; i < count; i++)
             {
-                var email = RandomGenerator.RandomEmail();
-                var birthDate = RandomGenerator.RandomDate(startBirthDates, endBirthDates, 17);
-                if (!birthDate.HasValue) continue;
-                var user = new User
-                {
-                    UserName = email,
-                    Email = email,
-                    FirstName = RandomGenerator.RandomString(5),
-                    LastName = RandomGenerator.RandomString(5),
-                    Gender = (byte)(GenderType)genders.GetValue(RandomGenerator.RandomNumber(genders.Length)),
-                    BirthDate = birthDate.Value,
-                };
-
+                var user = RandomUser();
                 var result = userManager.CreateAsync(user, "Tom&Jerry123");
 
                 if (result.Result.Succeeded)
@@ -67,8 +53,8 @@ namespace Job_Portal_System.Data
                     IsSeeking = true,
                     MovingDistanceLimit = (uint)RandomGenerator.RandomNumber(5, 60),
                     MinSalary = RandomGenerator.RandomNumber(15, 100) * 1000,
-                    Educations = RandomGenerator.RandomEducations(context, birthDate.Value),
-                    WorkExperiences = RandomGenerator.RandomWorkExperiences(context, birthDate.Value),
+                    Educations = RandomGenerator.RandomEducations(context, user.BirthDate),
+                    WorkExperiences = RandomGenerator.RandomWorkExperiences(context, user.BirthDate),
                     OwnedSkills = RandomGenerator.RandomSkills(context),
                     JobTypes = RandomGenerator.RandomJobTypes(),
                     SeekedJobTitles = RandomGenerator.RandomSeekedJobTitles(context),
@@ -332,6 +318,52 @@ namespace Job_Portal_System.Data
             }
 
             context.SaveChanges();
+        }
+
+        private static User RandomUser()
+        {
+
+            using (var client = new WebClient())
+            {
+                var json = client.DownloadString("https://randomuser.me/api");
+                var obj = JsonConvert.DeserializeAnonymousType(json, new
+                {
+                    results = new[]
+                    {
+                        new
+                        {
+                            gender = string.Empty,
+                            name = new
+                            {
+                                first = string.Empty,
+                                last = string.Empty,
+                            },
+                            email = string.Empty,
+                            dob = new
+                            {
+                                age = 0,
+                            },
+                            phone = string.Empty,
+                            picture = new
+                            {
+                                large = string.Empty,
+                            }
+                        }
+                    },
+                });
+
+                return new User
+                {
+                    FirstName = obj.results[0].name.first,
+                    LastName = obj.results[0].name.last,
+                    Email = obj.results[0].email,
+                    UserName = obj.results[0].email,
+                    PhoneNumber = obj.results[0].phone,
+                    Gender = obj.results[0].gender == "male" ? (byte) GenderType.Male : (byte) GenderType.Female,
+                    BirthDate = DateTime.Now.AddYears(-obj.results[0].dob.age),
+                    Image = obj.results[0].picture.large,
+                };
+            }
         }
     }
 }

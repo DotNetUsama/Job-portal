@@ -1,7 +1,9 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.Runtime.Serialization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace Job_Portal_System.Models
 {
@@ -9,6 +11,7 @@ namespace Job_Portal_System.Models
     {
         [Required]
         [StringLength(25)]
+        [DataMember(Name = "results[0].name.first")]
         public string FirstName { get; set; }
         
         [Required]

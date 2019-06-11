@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Job_Portal_System.Data;
@@ -9,10 +10,12 @@ using Job_Portal_System.Models;
 using Job_Portal_System.Utilities.RankingSystem;
 using Job_Portal_System.Utilities.RankingSystem.Helpers;
 using Job_Portal_System.SignalR;
+using Job_Portal_System.Utilities.Semantic;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace Job_Portal_System.Handlers
 {
@@ -134,10 +137,10 @@ namespace Job_Portal_System.Handlers
             await context.SaveChangesAsync();
         }
 
-        public static async Task Recommend(ApplicationDbContext context,
+        public static async Task Recommend(ApplicationDbContext context, IHostingEnvironment env,
             IHubContext<SignalRHub> hubContext, JobVacancy jobVacancy)
         {
-            var fetchedResumes = FetchMatchingResumes(context, jobVacancy);
+            var fetchedResumes = FetchMatchingResumes(context, env, jobVacancy);
             var recommendedResumes = Operator.GetRecommendedResumes(fetchedResumes, jobVacancy);
             recommendedResumes.ForEach(async r =>
             {
@@ -209,10 +212,20 @@ namespace Job_Portal_System.Handlers
             await context.SaveChangesAsync();
         }
 
-        private static List<EvaluatedResume> FetchMatchingResumes(ApplicationDbContext context, JobVacancy jobVacancy)
+        private static List<EvaluatedResume> FetchMatchingResumes(ApplicationDbContext context,
+                        IHostingEnvironment env, JobVacancy jobVacancy)
         {
             var jobVacancyCityId = jobVacancy.CompanyDepartment.CityId;
-            return context.Resumes
+
+            var similaritiesQueryPath = Path.Combine(env.ContentRootPath, "Queries", "GetSimilarities.txt");
+
+            var jobTitlesSimilarities = GetSimilarJobTitles(context, jobVacancy, similaritiesQueryPath);
+            
+            var fieldsOfStudySimilarities = GetSimilarFieldsOfStudy(context, jobVacancy, similaritiesQueryPath);
+
+            var skillsSimilarities = GetSimilarSkills(context, jobVacancy, similaritiesQueryPath);
+
+            var resumes = context.Resumes
                 .Include(r => r.Educations)
                 .Include(r => r.WorkExperiences)
                 .Include(r => r.OwnedSkills)
@@ -232,29 +245,134 @@ namespace Job_Portal_System.Handlers
                                 .Intersect(jobVacancy.JobTypes.Select(type => type.JobType))
                                 .Any() &&
                             r.MinSalary <= jobVacancy.MaxSalary && r.MinSalary >= jobVacancy.MinSalary &&
+                            jobVacancy.WorkExperienceQualifications
+                                .Where(workExperienceQualification =>
+                                    workExperienceQualification.Type == (int)QualificationType.Required)
+                                .All(workExperienceQualification => r.WorkExperiences
+                                    .Any(workExperience => 
+                                        jobTitlesSimilarities.ContainsKey(workExperience.JobTitleId) &&
+                                        workExperienceQualification.JobTitleId == jobTitlesSimilarities[workExperience.JobTitleId] &&
+                                        HelperFunctions.GetYears(workExperience.StartDate, (workExperience.EndDate ?? DateTime.Now)) >= workExperienceQualification.MinimumYears)) &&
                             jobVacancy.EducationQualifications
                                 .Where(educationQualification =>
                                     educationQualification.Type == (int)QualificationType.Required)
                                 .All(educationQualification => r.Educations
                                     .Any(education =>
-                                        education.FieldOfStudyId == educationQualification.FieldOfStudyId &&
+                                        fieldsOfStudySimilarities.ContainsKey(education.FieldOfStudyId) &&
+                                        educationQualification.FieldOfStudyId == fieldsOfStudySimilarities[education.FieldOfStudyId] &&
                                         HelperFunctions.GetYears(education.StartDate, (education.EndDate ?? DateTime.Now)) >= educationQualification.MinimumYears)) &&
-                            jobVacancy.WorkExperienceQualifications
-                                .Where(workExperienceQualification =>
-                                    workExperienceQualification.Type == (int)QualificationType.Required)
-                                .All(workExperienceQualification => r.WorkExperiences
-                                    .Any(workExperience =>
-                                        workExperience.JobTitleId == workExperienceQualification.JobTitleId &&
-                                        HelperFunctions.GetYears(workExperience.StartDate, (workExperience.EndDate ?? DateTime.Now)) >= workExperienceQualification.MinimumYears)) &&
                             jobVacancy.DesiredSkills
                                 .Where(desiredSkill =>
                                     desiredSkill.Type == (int)QualificationType.Required)
                                 .All(desiredSkill => r.OwnedSkills
                                     .Any(ownedSkill =>
-                                        ownedSkill.SkillId == desiredSkill.SkillId &&
-                                        ownedSkill.Years >= desiredSkill.MinimumYears)))
-                .Select(r => new EvaluatedResume { Resume = r })
-                .ToList();
+                                        skillsSimilarities.ContainsKey(ownedSkill.SkillId) &&
+                                        desiredSkill.SkillId == skillsSimilarities[ownedSkill.SkillId] &&
+                                        ownedSkill.Years >= desiredSkill.MinimumYears)));
+
+            foreach (var resume in resumes)
+            {
+                foreach (var workExperience in resume.WorkExperiences)
+                {
+                    if (jobTitlesSimilarities.ContainsKey(workExperience.JobTitleId))
+                    {
+                        workExperience.JobTitleId = jobTitlesSimilarities[workExperience.JobTitleId];
+                    }
+                }
+                foreach (var education in resume.Educations)
+                {
+                    if (jobTitlesSimilarities.ContainsKey(education.FieldOfStudyId))
+                    {
+                        education.FieldOfStudyId = jobTitlesSimilarities[education.FieldOfStudyId];
+                    }
+                }
+                foreach (var ownedSkill in resume.OwnedSkills)
+                {
+                    if (jobTitlesSimilarities.ContainsKey(ownedSkill.SkillId))
+                    {
+                        ownedSkill.SkillId = jobTitlesSimilarities[ownedSkill.SkillId];
+                    }
+                }
+
+                context.Entry(resume).State = EntityState.Unchanged;
+            }
+
+            return resumes.Select(r => new EvaluatedResume {Resume = r}).ToList();
+        }
+
+        private static Dictionary<long, long> GetSimilarJobTitles(ApplicationDbContext context, 
+            JobVacancy jobVacancy, string similaritiesQueryPath)
+        {
+            var jobTitles = jobVacancy.WorkExperienceQualifications
+                .Select(q => q.JobTitle);
+
+            var jobTitlesSimilarities = new Dictionary<long, long>();
+
+            foreach (var jobTitle in jobTitles)
+            {
+                var similarities = SimilaritiesOperator
+                    .GetSimilarities(jobTitle.NormalizedTitle, similaritiesQueryPath);
+                foreach (var similarity in similarities)
+                {
+                    var similarityInDb = context.JobTitles
+                        .SingleOrDefault(j => j.NormalizedTitle == similarity);
+                    if (similarityInDb != null &&
+                        !jobTitlesSimilarities.ContainsKey(similarityInDb.Id))
+                        jobTitlesSimilarities.Add(similarityInDb.Id, jobTitle.Id);
+                }
+            }
+
+            return jobTitlesSimilarities;
+        }
+
+        private static Dictionary<long, long> GetSimilarFieldsOfStudy(ApplicationDbContext context,
+            JobVacancy jobVacancy, string similaritiesQueryPath)
+        {
+            var fieldsOfStudy = jobVacancy.EducationQualifications
+                .Select(q => q.FieldOfStudy);
+
+            var fieldsOfStudySimilarities = new Dictionary<long, long>();
+
+            foreach (var fieldOfStudy in fieldsOfStudy)
+            {
+                var similarities = SimilaritiesOperator
+                    .GetSimilarities(fieldOfStudy.NormalizedTitle, similaritiesQueryPath);
+                foreach (var similarity in similarities)
+                {
+                    var similarityInDb = context.FieldOfStudies
+                        .SingleOrDefault(f => f.NormalizedTitle == similarity);
+                    if (similarityInDb != null &&
+                        !fieldsOfStudySimilarities.ContainsKey(similarityInDb.Id))
+                        fieldsOfStudySimilarities.Add(similarityInDb.Id, fieldOfStudy.Id);
+                }
+            }
+
+            return fieldsOfStudySimilarities;
+        }
+
+        private static Dictionary<long, long> GetSimilarSkills(ApplicationDbContext context,
+            JobVacancy jobVacancy, string similaritiesQueryPath)
+        {
+            var skills = jobVacancy.DesiredSkills
+                .Select(q => q.Skill);
+
+            var skillsSimilarities = new Dictionary<long, long>();
+
+            foreach (var skill in skills)
+            {
+                var similarities = SimilaritiesOperator
+                    .GetSimilarities(skill.NormalizedTitle, similaritiesQueryPath);
+                foreach (var similarity in similarities)
+                {
+                    var similarityInDb = context.Skills
+                        .SingleOrDefault(j => j.NormalizedTitle == similarity);
+                    if (similarityInDb != null &&
+                        !skillsSimilarities.ContainsKey(similarityInDb.Id))
+                        skillsSimilarities.Add(similarityInDb.Id, skill.Id);
+                }
+            }
+
+            return skillsSimilarities;
         }
     }
 }
