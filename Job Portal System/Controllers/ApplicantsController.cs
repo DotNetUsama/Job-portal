@@ -177,6 +177,8 @@ namespace Job_Portal_System.Controllers
         private async Task ProcessChangingStatus(Applicant applicant, int newStatus)
         {
             JobVacancy jobVacancy;
+            User recruiter;
+            User jobSeeker;
             switch ((ApplicantStatus)newStatus)
             {
                 case ApplicantStatus.DummyAccepted:
@@ -186,22 +188,41 @@ namespace Job_Portal_System.Controllers
                         .SingleOrDefaultAsync(j => j.Id == applicant.JobVacancyId);
                     jobVacancy.AwaitingApplicants--;
                     break;
-                case ApplicantStatus.WaitingRecruiterDecision:
                 case ApplicantStatus.AcceptMeeting:
                 case ApplicantStatus.RejectMeeting:
-                    var recruiter = await _userManager.FindByIdAsync(applicant.RecruiterId);
                     jobVacancy = await _context.JobVacancies
                         .SingleOrDefaultAsync(j => j.Id == applicant.JobVacancyId);
-                    var user = await _userManager.FindByIdAsync(applicant.JobSeekerId);
+                    jobVacancy.AwaitingApplicants--;
+                    if (jobVacancy.AwaitingApplicants == 0)
+                    {
+                        jobVacancy.Status = (int) JobVacancyStatus.Finished;
+                    }
+
+                    recruiter = await _userManager.FindByIdAsync(applicant.RecruiterId);
+                    jobVacancy = await _context.JobVacancies
+                        .SingleOrDefaultAsync(j => j.Id == applicant.JobVacancyId);
+                    jobSeeker = await _userManager.FindByIdAsync(applicant.JobSeekerId);
                     await _context.SendNotificationAsync(_hubContext, new Notification
                     {
                         Type = (int)((ApplicantStatus)newStatus).GetNotificationType(),
                         EntityId = applicant.Id,
-                        Peer1 = $"{user.FirstName} {user.LastName}",
+                        Peer1 = $"{jobSeeker.FirstName} {jobSeeker.LastName}",
                         Peer2 = jobVacancy.Title,
                     }, recruiter);
                     break;
-
+                case ApplicantStatus.WaitingRecruiterDecision:
+                    recruiter = await _userManager.FindByIdAsync(applicant.RecruiterId);
+                    jobVacancy = await _context.JobVacancies
+                        .SingleOrDefaultAsync(j => j.Id == applicant.JobVacancyId);
+                    jobSeeker = await _userManager.FindByIdAsync(applicant.JobSeekerId);
+                    await _context.SendNotificationAsync(_hubContext, new Notification
+                    {
+                        Type = (int)((ApplicantStatus)newStatus).GetNotificationType(),
+                        EntityId = applicant.Id,
+                        Peer1 = $"{jobSeeker.FirstName} {jobSeeker.LastName}",
+                        Peer2 = jobVacancy.Title,
+                    }, recruiter);
+                    break;
                 case ApplicantStatus.RejectedRecommendation:
                 case ApplicantStatus.AcceptedByRecruiter:
                 case ApplicantStatus.RejectedByRecruiter:

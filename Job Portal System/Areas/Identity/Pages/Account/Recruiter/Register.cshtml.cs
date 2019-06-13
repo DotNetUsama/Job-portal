@@ -110,10 +110,7 @@ namespace Job_Portal_System.Areas.Identity.Pages.Account.Recruiter
             [Required]
             [Display(Name = "Company name")]
             [DataType(DataType.Text)]
-            public string CompanyName { get; set; }
-
-            [HiddenInput]
-            public string CompanyId { get; set; }
+            public string Company { get; set; }
         }
 
         public void OnGet(string returnUrl = null)
@@ -188,10 +185,12 @@ namespace Job_Portal_System.Areas.Identity.Pages.Account.Recruiter
         private Company GetCompany()
         {
             return
-                _context.Companies.SingleOrDefault(company => company.Id == Input.CompanyId) ??
+                _context.Companies
+                    .SingleOrDefault(companyInDb => string.Equals(companyInDb.Name,
+                        Input.Company, StringComparison.OrdinalIgnoreCase)) ??
                 new Company
                 {
-                    Name = Input.CompanyName,
+                    Name = Input.Company,
                     Approved = false,
                 };
         }

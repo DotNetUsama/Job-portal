@@ -1,9 +1,10 @@
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using Job_Portal_System.Areas.Companies.InputModels;
 using Job_Portal_System.Data;
 using Job_Portal_System.Models;
+using Job_Portal_System.Validation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -21,41 +22,11 @@ namespace Job_Portal_System.Areas.Companies.Pages
             _context = context;
         }
 
-        public class DepartmentInputModel
-        {
-            [Required]
-            [Display(Name = "State")]
-            public string State { get; set; }
-            
-            [Required]
-            [Display(Name = "City")]
-            public string City { get; set; }
-
-            [Required]
-            [DataType(DataType.Text)]
-            [StringLength(255)]
-            [Display(Name = "Detailed address")]
-            public string DetailedAddress { get; set; }
-        }
-
-        public class DepartmentEditModel
-        {
-            [Required]
-            [HiddenInput]
-            public string Id { get; set; }
-
-            [Required]
-            [DataType(DataType.Text)]
-            [StringLength(255)]
-            [Display(Name = "Address")]
-            public string DetailedAddress { get; set; }
-        }
-
         [BindProperty]
-        public List<DepartmentInputModel> Departments { get; set; } = new List<DepartmentInputModel>
-        {
-            new DepartmentInputModel()
-        };
+        [MinimumCount(3, ErrorMessage = "At least three departments are required")]
+        public List<DepartmentInputModel> Departments { get; set; }
+
+        public DepartmentInputModel Department { get; set; }
 
         [BindProperty]
         public List<DepartmentEditModel> DepartmentsEdits { get; set; }
@@ -93,6 +64,8 @@ namespace Job_Portal_System.Areas.Companies.Pages
 
         public async Task<IActionResult> OnPostAsync(string id)
         {
+            if (!ModelState.IsValid) return Page();
+
             var company = _context.Companies
                 .Include(c => c.Departments)
                 .SingleOrDefault(c => c.Id == id);
@@ -100,8 +73,7 @@ namespace Job_Portal_System.Areas.Companies.Pages
             if (company == null) return BadRequest();
 
             DepartmentsEdits.ForEach(EditDepartment);
-            Departments.RemoveAt(Departments.Count - 1);
-            Departments.ForEach(education => AddDepartment(company, education));
+            Departments?.ForEach(education => AddDepartment(company, education));
             company.EmployeesNum = Company.EmployeesNum;
             company.Email = Company.Email;
             company.Website = Company.Website;

@@ -1,12 +1,6 @@
-﻿const uploadImage = ({ fileInputSelector, urlInputSelector, errorMessageSelector,
-    imageViewerSelector, loaderSelector, shaderSelector }) => {
+﻿const uploadImage = ({ fileInput, urlInput, errorMessage,
+    imageViewer, loader, shader }) => {
     const url = window.URL || window.webkitURL;
-    const fileInput = $(fileInputSelector);
-    const urlInput = $(urlInputSelector);
-    const imageViewer = $(imageViewerSelector);
-    const errorMessage = $(errorMessageSelector);
-    const loader = $(loaderSelector);
-    const shader = $(shaderSelector);
 
     fileInput.on("change", function () {
         const file = fileInput[0].files[0];

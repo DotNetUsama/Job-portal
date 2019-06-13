@@ -15,7 +15,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 
 namespace Job_Portal_System.Handlers
 {
@@ -123,6 +122,8 @@ namespace Job_Portal_System.Handlers
             evaluatedResumes.ForEach(r => FilesManager.Store(env, "Evaluations", r.Applicant.Id, r.Evaluation));
 
             jobVacancy.Status = (int) JobVacancyStatus.InAction;
+            jobVacancy.AwaitingApplicants = 
+                applicants.Count(a => a.Status == (int) ApplicantStatus.AcceptedByRecruiter);
 
             evaluatedResumes.ForEach(async evaluatedResume =>
                 await context.SendNotificationAsync(hubContext, new Notification

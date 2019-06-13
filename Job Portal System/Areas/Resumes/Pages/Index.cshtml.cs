@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -23,30 +24,29 @@ namespace Job_Portal_System.Areas.Resumes.Pages
         }
 
         [BindProperty]
-        public List<EducationInputModel> Educations { get; set; } = new List<EducationInputModel>
-        {
-            new EducationInputModel()
-        };
-
-        [BindProperty] public List<QualificationEditModel> EducationsEdits { get; set; }
+        public List<EducationInputModel> Educations { get; set; }
+        public EducationInputModel Education { get; set; }
 
         [BindProperty]
-        public List<WorkExperienceInputModel> WorkExperiences { get; set; } = new List<WorkExperienceInputModel>
-        {
-            new WorkExperienceInputModel()
-        };
-
-        [BindProperty] public List<QualificationEditModel> WorkExpereincesEdits { get; set; }
+        public List<QualificationEditModel> EducationsEdits { get; set; }
 
         [BindProperty]
-        public List<SkillInputModel> OwnedSkills { get; set; } = new List<SkillInputModel>
-        {
-            new SkillInputModel()
-        };
+        public List<WorkExperienceInputModel> WorkExperiences { get; set; }
+        public WorkExperienceInputModel WorkExperience { get; set; }
 
-        [BindProperty] public List<SkillEditModel> SkillsEdits { get; set; }
+        [BindProperty]
+        public List<QualificationEditModel> WorkExperiencesEdits { get; set; }
 
-        [BindProperty] public List<JobTitleInputModel> SeekedJobTitles { get; set; } = new List<JobTitleInputModel>();
+        [BindProperty]
+        public List<SkillInputModel> OwnedSkills { get; set; }
+        public SkillInputModel OwnedSkill { get; set; }
+
+        [BindProperty]
+        public List<SkillEditModel> SkillsEdits { get; set; }
+
+        [BindProperty]
+        public List<JobTitleInputModel> SeekedJobTitles { get; set; }
+        public JobTitleInputModel SeekedJobTitle { get; set; }
 
         [BindProperty]
         public ResumeInputModel ResumeInfo { get; set; }
@@ -63,7 +63,6 @@ namespace Job_Portal_System.Areas.Resumes.Pages
                 .Include(r => r.OwnedSkills).ThenInclude(s => s.Skill)
                 .Include(r => r.SeekedJobTitles).ThenInclude(j => j.JobTitle)
                 .Include(r => r.JobTypes)
-                //.SingleOrDefault(r => r.Id == "7a4883a3-5f23-4234-994e-e086e6057307"/*"8de3fe3e-0e6f-4b04-91f1-a4139260da9c"*/);
                 .SingleOrDefault(resume => resume.User.UserName == User.Identity.Name);
 
             if (resumeInDb == null) return Redirect("./Create");
@@ -90,18 +89,17 @@ namespace Job_Portal_System.Areas.Resumes.Pages
                 .Include(r => r.Educations)
                 .Include(r => r.WorkExperiences)
                 .Include(r => r.OwnedSkills)
-                .Include(r => r.SeekedJobTitles)
+                .Include(r => r.SeekedJobTitles).ThenInclude(s => s.JobTitle)
                 .Include(r => r.JobTypes)
                 .SingleOrDefault(r => r.User.UserName == User.Identity.Name);
             if (resume == null) return BadRequest();
             EducationsEdits.ForEach(EditEducation);
-            WorkExpereincesEdits.ForEach(EditWorkExperience);
+            WorkExperiencesEdits.ForEach(EditWorkExperience);
             SkillsEdits.ForEach(EditSkill);
-            PrepareLists();
-            Educations.ForEach(education => AddEducation(resume, education));
-            WorkExperiences.ForEach(workExperience => AddWorkExperience(resume, workExperience));
-            OwnedSkills.ForEach(skill => AddSkill(resume, skill));
-            SeekedJobTitles.ForEach(jobTitle => AddSeekedJobTitle(resume, jobTitle));
+            Educations?.ForEach(education => AddEducation(resume, education));
+            WorkExperiences?.ForEach(workExperience => AddWorkExperience(resume, workExperience));
+            OwnedSkills?.ForEach(skill => AddSkill(resume, skill));
+            UpdateSeekedJobTitles(resume);
             AddJobTypes(resume);
             resume.MinSalary = ResumeInfo.MinSalary;
             resume.MovingDistanceLimit = ResumeInfo.MovingDistanceLimit;
@@ -110,14 +108,6 @@ namespace Job_Portal_System.Areas.Resumes.Pages
             resume.Biography = ResumeInfo.Biography;
             await _context.SaveChangesAsync();
             return Redirect("./Index");
-        }
-
-        public void PrepareLists()
-        {
-            Educations.RemoveAt(Educations.Count - 1);
-            WorkExperiences.RemoveAt(WorkExperiences.Count - 1);
-            OwnedSkills.RemoveAt(OwnedSkills.Count - 1);
-            SeekedJobTitles.RemoveAt(SeekedJobTitles.Count - 1);
         }
 
         private void AddJobTypes(Resume resume)
@@ -134,18 +124,22 @@ namespace Job_Portal_System.Areas.Resumes.Pages
 
         private void AddEducation(Resume resume, EducationInputModel education)
         {
-            var school = _context.Schools.SingleOrDefault(schoolInDb => schoolInDb.Name == education.School) ??
+            var school = 
+                _context.Schools
+                    .SingleOrDefault(schoolInDb => string.Equals(schoolInDb.Name, 
+                        education.School, StringComparison.OrdinalIgnoreCase)) ??
                 new School
                 {
                     Name = education.School,
                 };
 
             var fieldOfStudy =
-                _context.FieldOfStudies.SingleOrDefault(fieldInDb => fieldInDb.Id == education.FieldOfStudyId) ??
+                _context.FieldOfStudies.SingleOrDefault(fieldInDb => 
+                        fieldInDb.NormalizedTitle == education.FieldOfStudy.ToLower()) ??
                 new FieldOfStudy
                 {
-                    Title = education.FieldOfStudyName,
-                    NormalizedTitle = education.FieldOfStudyName.ToLower(),
+                    Title = education.FieldOfStudy,
+                    NormalizedTitle = education.FieldOfStudy.ToLower(),
                 };
 
             resume.Educations.Add(new Education
@@ -161,14 +155,18 @@ namespace Job_Portal_System.Areas.Resumes.Pages
         private void AddWorkExperience(Resume resume, WorkExperienceInputModel workExperience)
         {
             var company =
-                _context.Companies.SingleOrDefault(companyInDb => companyInDb.Id == workExperience.CompanyId) ??
+                _context.Companies
+                    .SingleOrDefault(companyInDb => string.Equals(companyInDb.Name, 
+                        workExperience.Company, StringComparison.OrdinalIgnoreCase)) ??
                 new Company
                 {
-                    Name = workExperience.Company
+                    Name = workExperience.Company,
+                    Approved = false,
                 };
 
             var jobTitle =
-                _context.JobTitles.SingleOrDefault(jobTitleInDb => jobTitleInDb.Id == workExperience.JobTitleId) ??
+                _context.JobTitles.SingleOrDefault(jobTitleInDb => 
+                        jobTitleInDb.NormalizedTitle == workExperience.JobTitle.ToLower()) ??
                 new JobTitle
                 {
                     Title = workExperience.JobTitle,
@@ -188,10 +186,12 @@ namespace Job_Portal_System.Areas.Resumes.Pages
         private void AddSkill(Resume resume, SkillInputModel skillModel)
         {
             var skill = 
-                _context.Skills.SingleOrDefault(skillInDb => skillInDb.Id == skillModel.SkillId) ?? 
+                _context.Skills.SingleOrDefault(skillInDb => 
+                        skillInDb.NormalizedTitle == skillModel.Skill.ToLower()) ?? 
                 new Skill
                 {
                     Title = skillModel.Skill,
+                    NormalizedTitle = skillModel.Skill.ToLower(),
                 };
 
             resume.OwnedSkills.Add(new OwnedSkill
@@ -201,11 +201,24 @@ namespace Job_Portal_System.Areas.Resumes.Pages
             });
         }
 
+        private void UpdateSeekedJobTitles(Resume resume)
+        {
+            if (SeekedJobTitles == null) return;
+            resume.SeekedJobTitles
+                .RemoveAll(j => SeekedJobTitles
+                    .All(jm => jm.JobTitle.ToLower() != j.JobTitle.NormalizedTitle));
+            SeekedJobTitles.ForEach(jobTitle => AddSeekedJobTitle(resume, jobTitle));
+        }
+
         private void AddSeekedJobTitle(Resume resume, JobTitleInputModel jobTitleModel)
         {
-            if (resume.SeekedJobTitles.Any(j => j.JobTitle.Id == jobTitleModel.JobTitleId)) return;
+            if (resume.SeekedJobTitles.Any(j => j.JobTitle.NormalizedTitle == jobTitleModel.JobTitle.ToLower()))
+            {
+                return;
+            }
             var jobTitle =
-                _context.JobTitles.SingleOrDefault(jobTitleInDb => jobTitleInDb.Id == jobTitleModel.JobTitleId) ??
+                _context.JobTitles.SingleOrDefault(jobTitleInDb => 
+                        jobTitleInDb.NormalizedTitle == jobTitleModel.JobTitle.ToLower()) ??
                 new JobTitle
                 {
                     Title = jobTitleModel.JobTitle,
@@ -252,7 +265,6 @@ namespace Job_Portal_System.Areas.Resumes.Pages
             SeekedJobTitles.Add(new JobTitleInputModel
             {
                 JobTitle = seekedJobTitle.JobTitle.Title,
-                JobTitleId = seekedJobTitle.JobTitle.Id,
             });
         }
     }

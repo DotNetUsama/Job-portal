@@ -3,51 +3,17 @@
 });
 
 $(document).ready(() => {
-    autoComplete({
-        inputFieldSelector: "#field-of-study-input",
-        idSelector: "#field-of-study-id",
-        dataUrl: "/AutoComplete/FieldsOfStudy",
-        similaritiesUrl: "/AutoComplete/SimilarFieldsOfStudy",
-        nameSelector: "#field-of-study-name",
-        allowNewEntry: false,
-        delay: 800
-    });
-    autoComplete({
-        inputFieldSelector: "#work-experience-job-title-input",
-        idSelector: "#work-experience-job-title-id",
-        dataUrl: "/AutoComplete/JobTitles",
-        similaritiesUrl: "/AutoComplete/SimilarJobTitles",
-        nameSelector: "#work-experience-job-title-name",
-        allowNewEntry: false,
-        delay: 800
-    });
-    autoComplete({
-        inputFieldSelector: "#seeked-job-title-input",
-        idSelector: "#seeked-job-title-id",
-        dataUrl: "/AutoComplete/JobTitles",
-        similaritiesUrl: "/AutoComplete/SimilarJobTitles",
-        nameSelector: "#seeked-job-title-name",
-        allowNewEntry: false,
-        delay: 800
-    });
-    autoComplete({
-        inputFieldSelector: "#company-input",
-        idSelector: "#company-id",
-        dataUrl: "/AutoComplete/Companies",
-        allowNewEntry: true,
-        delay: 300
-    });
-    autoComplete({
-        inputFieldSelector: "#skill-input",
-        idSelector: "#skill-id",
-        dataUrl: "/AutoComplete/Skills",
-        allowNewEntry: true,
-        delay: 300
-    });
+
+    $("#field-of-study-input").autocomplete({ source: "/AutoComplete/FieldsOfStudy" });
+    $("#work-experience-job-title-input").autocomplete({ source: "/AutoComplete/JobTitles" });
+    $("#seeked-job-title-input").autocomplete({ source: "/AutoComplete/JobTitles" });
+    $("#company-input").autocomplete({ source: "/AutoComplete/Companies" });
+    $("#skill-input").autocomplete({ source: "/AutoComplete/Skills" });
+    $("#school-input").autocomplete({ source: "/AutoComplete/Schools" });
 
     $("#seeked-job-titles-sub-form").subform(() => {
         const nameSpan = $("<span class=\"font-weight-bold\"></span>");
-        nameSpan.html($("#seeked-job-title-name").val());
+        nameSpan.html($("#seeked-job-title-input").val());
         return nameSpan;
     });
     $("#owned-skills-sub-form").subform(() => {

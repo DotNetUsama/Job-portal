@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -28,11 +29,20 @@ namespace Job_Portal_System.Data
         }
 
         public static void SeedJobSeekers(ApplicationDbContext context,
-            UserManager<User> userManager, int count)
+            UserManager<User> userManager, int count, 
+            int maxRandomUsersNum = 5000)
         {
+            var randomUsers = new List<User>();
+            var j = 0;
+
             for (var i = 0; i < count; i++)
             {
-                var user = RandomUser();
+                if (j == randomUsers.Count)
+                {
+                    randomUsers = RandomUsers(context, Math.Min(maxRandomUsersNum, count - i));
+                    j = 0;
+                }
+                var user = randomUsers[j++];
                 var result = userManager.CreateAsync(user, "Tom&Jerry123");
 
                 if (result.Result.Succeeded)
@@ -320,12 +330,14 @@ namespace Job_Portal_System.Data
             context.SaveChanges();
         }
 
-        private static User RandomUser()
+        private static List<User> RandomUsers(ApplicationDbContext context, int count)
         {
+            var citiesIds = context.Cities.Select(c => c.Id);
+            var citiesCount = citiesIds.Count();
 
             using (var client = new WebClient())
             {
-                var json = client.DownloadString("https://randomuser.me/api");
+                var json = client.DownloadString($"https://randomuser.me/api/?results={count}&inc=gender,name,email,dob,picture,phone");
                 var obj = JsonConvert.DeserializeAnonymousType(json, new
                 {
                     results = new[]
@@ -352,17 +364,18 @@ namespace Job_Portal_System.Data
                     },
                 });
 
-                return new User
+                return obj.results.Select(user => new User
                 {
-                    FirstName = obj.results[0].name.first,
-                    LastName = obj.results[0].name.last,
-                    Email = obj.results[0].email,
-                    UserName = obj.results[0].email,
-                    PhoneNumber = obj.results[0].phone,
-                    Gender = obj.results[0].gender == "male" ? (byte) GenderType.Male : (byte) GenderType.Female,
-                    BirthDate = DateTime.Now.AddYears(-obj.results[0].dob.age),
-                    Image = obj.results[0].picture.large,
-                };
+                    FirstName = user.name.first,
+                    LastName = user.name.last,
+                    Email = user.email,
+                    UserName = user.email,
+                    PhoneNumber = user.phone,
+                    Gender = user.gender == "male" ? (byte) GenderType.Male : (byte) GenderType.Female,
+                    BirthDate = DateTime.Now.AddYears(-user.dob.age),
+                    Image = user.picture.large,
+                    CityId = citiesIds.Random(citiesCount),
+                }).ToList();
             }
         }
     }

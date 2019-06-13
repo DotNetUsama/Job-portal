@@ -38,6 +38,6 @@ namespace Job_Portal_System.Models
 
         public bool Approved { get; set; } = false;
 
-        public ICollection<CompanyDepartment> Departments { get; set; }
+        public IList<CompanyDepartment> Departments { get; set; }
     }
 }

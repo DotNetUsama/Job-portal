@@ -17,22 +17,24 @@
             </div>
             <div class="form-body">
                 <form method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                     <fieldset id="general-info-partial">
                         <legend><i class="fa fa-question-circle"></i> Company general information</legend>
-                        <input type="hidden" asp-for="Company.Id" />
+                        <input type="hidden" asp-for="Company.Id"/>
+                        <input type="hidden" asp-for="Company.Name"/>
                         <div class="form-group">
                             <label asp-for="Company.EmployeesNum"></label>
-                            <input asp-for="Company.EmployeesNum" class="form-control" />
+                            <input asp-for="Company.EmployeesNum" class="form-control"/>
                             <span asp-validation-for="Company.EmployeesNum" class="text-danger"></span>
                         </div>
                         <div class="form-group">
                             <label asp-for="Company.Email"></label>
-                            <input asp-for="Company.Email" class="form-control" />
+                            <input asp-for="Company.Email" class="form-control"/>
                             <span asp-validation-for="Company.Email" class="text-danger"></span>
                         </div>
                         <div class="form-group">
                             <label asp-for="Company.Website"></label>
-                            <input asp-for="Company.Website" class="form-control" />
+                            <input asp-for="Company.Website" class="form-control"/>
                             <span asp-validation-for="Company.Website" class="text-danger"></span>
                         </div>
                         <div class="form-group">
@@ -41,7 +43,7 @@
                             <span asp-validation-for="Company.Description" class="text-danger"></span>
                         </div>
                     </fieldset>
-                    <hr />
+                    <hr/>
                     <fieldset class="sub-form" id="departments-partial" data-count="0" data-for="Departments">
                         <legend><i class="fa fa-building"></i> Departments</legend>
 
@@ -80,7 +82,11 @@
                                 </li>
                             }
                         </ul>
-
+                        @for (var i = 0; i < Model.Company.Departments.Count; i++)
+                        {
+                            <input type="hidden" asp-for="Company.Departments[i].City.Name" />
+                            <input type="hidden" asp-for="Company.Departments[i].DetailedAddress" />
+                        }
                         <div class="collapse-container">
 
                             <div class="row info-item bg-form-light-main-hover">
@@ -102,7 +108,7 @@
                                     <div class="form-group city-select-container">
                                         <div class="d-flex">
                                             <div style="flex: 1">
-                                                <select asp-for="Departments[0].State"
+                                                <select asp-for="Department.State"
                                                         id="state-input"
                                                         class="form-control state-select">
                                                     <option value="">Select state</option>
@@ -110,7 +116,7 @@
                                             </div>
                                             <div style="flex: 0 0 25px"></div>
                                             <div style="flex: 1">
-                                                <select asp-for="Departments[0].City"
+                                                <select asp-for="Department.City"
                                                         disabled="disabled"
                                                         id="city-input"
                                                         class="form-control city-select">
@@ -120,20 +126,20 @@
                                         </div>
                                         <div class="d-flex">
                                             <div style="flex: 1">
-                                                <span asp-validation-for="Departments[0].State"
+                                                <span asp-validation-for="Department.State"
                                                       class="validation-label text-danger"></span>
                                             </div>
                                             <div class="flex: 0 0 25px"></div>
                                             <div style="flex: 1">
-                                                <span asp-validation-for="Departments[0].City"
+                                                <span asp-validation-for="Department.City"
                                                       class="validation-label text-danger"></span>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="form-group">
-                                        <label asp-for="Departments[0].DetailedAddress"></label>
-                                        <input asp-for="Departments[0].DetailedAddress" id="detailed-address-input" class="form-control" />
-                                        <span asp-validation-for="Departments[0].DetailedAddress" class="validation-label text-danger"></span>
+                                        <label asp-for="Department.DetailedAddress"></label>
+                                        <input asp-for="Department.DetailedAddress" id="detailed-address-input" class="form-control" />
+                                        <span asp-validation-for="Department.DetailedAddress" class="validation-label text-danger"></span>
                                     </div>
                                 </div>
                                 <button type="button"
@@ -143,7 +149,7 @@
                             </div>
                         </div>
                     </fieldset>
-                    <hr />
+                    <hr/>
                     <div class="d-flex">
                         <button asp-page-handler="saveChanges"
                                 asp-route-id="@Model.Company.Id"
@@ -163,5 +169,5 @@
     <partial name="_EditorScriptPartial" />
     <partial name="_CollapseScriptsPartial" />
     <partial name="_CompaniesScriptsPartial" />
-    <partial name="_CitiesSelectorScriptPartial" />
+    <script src="~/js/cities-selector.js"></script>
 }

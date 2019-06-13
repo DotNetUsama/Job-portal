@@ -90,19 +90,16 @@
         list.append(item);
     };
 
-    const addToHiddenContainer = (container, inputs, count) => {
+    const addToHiddenContainer = (container, inputs, count, name) => {
         const formObjectDiv = $(`<div class="form-object" data-index=${count}></div>`);
-        const nextIndex = count + 1;
         for (let i = 0; i < inputs.length; i++) {
             const input = $(inputs[i]);
+            const inputName = input.attr("name");
             if (input.attr("name")) {
-                const editor = typeof tinyMCE !== "undefined" && tinyMCE.get(input.attr("id"));
-                const hiddenInput = input.prop("tagName") === "TEXTAREA" && editor ?
-                    $("<input>").attr("name", input.attr("name")).attr("value", editor.getContent()) :
-                    $("<input>").attr("name", input.attr("name")).attr("value", input.val());
+                const hiddenInputName = inputName.replace(/.*\./, `${name}[${count}].`);
+                console.log(hiddenInputName);
+                const hiddenInput = $("<input>").attr("name", hiddenInputName).attr("value", input.val());
                 formObjectDiv.append(hiddenInput);
-                const modifiedName = input.attr("name").replace(/\[\d+\]/, `[${nextIndex}]`);
-                input.attr("name", modifiedName);
             }
             input.val(null);
         }
@@ -119,8 +116,11 @@
 
     $.fn.subform = function (displayFunction) {
         const submitButton = this.find(".btn-sub-submit");
-        const subform = this.find(".form-inputs");
-        const inputs = subform.find("input, select, textarea");
+        const inputsContainer = this.find(".form-inputs");
+        const inputs = inputsContainer.find("input, select, textarea");
+        const name = this.attr("data-for");
+        console.log(name);
+
         $(submitButton).click(() => {
             if (validateInputs(inputs)) {
                 const displayedList = $(this.find(".displayed-objects-list")[0]);
@@ -129,18 +129,19 @@
                 const count = parseInt(this.attr("data-count"));
 
                 addToDisplayList(displayedList, displayFunction, count);
-                addToHiddenContainer(hiddenContainer, inputs, count);
+                addToHiddenContainer(hiddenContainer, inputs, count, name);
                 
-                const validationLabels = this.find(".validation-label");
+                //const validationLabels = this.find(".validation-label");
                 const newCount = count + 1;
-                setValidationSpansIndex(validationLabels, newCount);
+                //setValidationSpansIndex(validationLabels, newCount);
 
-                const rulePrefix = this.attr("data-for");
-                const form = this.closest("form");
-                changeValidationRules(form, rulePrefix, count, newCount);
+                //const rulePrefix = this.attr("data-for");
+                //const form = this.closest("form");
+                //changeValidationRules(form, rulePrefix, count, newCount);
                 this.attr("data-count", newCount);
             }
         });
+        this.find(".btn-sub-remove").click(removeBtnHandler);
         return this;
     };
 }(jQuery));

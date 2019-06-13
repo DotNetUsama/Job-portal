@@ -30,7 +30,7 @@ var showNotifications = notifications => {
 
 var clickNotification = (url, id) => {
     $.post({
-        url: "/Notifications/ReadNotification?id=" + id,
+        url: `/Notifications/ReadNotification?id=${id}`,
         success: function(data) {
             console.log(data);
             window.location.href = url;
@@ -52,16 +52,16 @@ var appendNotificationToList = (list, notification) => {
     header.addClass("notification-header");
     header.append(type);
     header.append(time);
-    var anchore = $("<a></a>");
-    anchore.attr("href", "javascript:;");
-    anchore.addClass("notification-anchore");
-    anchore.html(notification["message"]);
-    anchore.on("click", () => {
+    var anchor = $("<a></a>");
+    anchor.attr("href", "javascript:;");
+    anchor.addClass("notification-anchor");
+    anchor.html(notification["message"]);
+    anchor.on("click", () => {
         clickNotification(notification["url"], notification["id"]);
     });
     var content = $("<div></div>");
     content.addClass("notification-content");
-    content.append(anchore);
+    content.append(anchor);
     var listItem = $("<li></li>");
     listItem.addClass("notification-area");
     if (!notification["isRead"]) {
@@ -73,13 +73,13 @@ var appendNotificationToList = (list, notification) => {
 };
 
 var appendFooterToNotificationList = (list) => {
-    var anchore = $("<a></a>");
-    anchore.attr("href", "/");
-    anchore.html("See all your inbox");
+    var anchor = $("<a></a>");
+    anchor.attr("href", "/");
+    anchor.html("See all your inbox");
     var listItem = $("<li></li>");
     listItem.addClass("notification-area");
     listItem.addClass("dialog-footer");
-    listItem.append(anchore);
+    listItem.append(anchor);
     list.append(listItem);
 };
 

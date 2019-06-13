@@ -29,7 +29,5 @@ namespace Job_Portal_System.Areas.Resumes.Pages.InputModels
 
         [Display(Name = "Make my resume public")]
         public bool IsPublic { get; set; } = true;
-
-
     }
 }

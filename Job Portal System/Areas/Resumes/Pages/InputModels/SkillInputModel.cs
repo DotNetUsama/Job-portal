@@ -10,9 +10,6 @@ namespace Job_Portal_System.Areas.Resumes.Pages.InputModels
         [Display(Name = "Skill")]
         public string Skill { get; set; }
 
-        [HiddenInput]
-        public long? SkillId { get; set; }
-
         [Required]
         [Display(Name = "Years")]
         [Range(1, 25)]

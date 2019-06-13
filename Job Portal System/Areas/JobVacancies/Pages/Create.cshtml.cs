@@ -1,7 +1,7 @@
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using Job_Portal_System.Areas.JobVacancies.Pages.InputModels;
 using Job_Portal_System.Data;
 using Job_Portal_System.Enums;
 using Job_Portal_System.Handlers;
@@ -34,146 +34,19 @@ namespace Job_Portal_System.Areas.JobVacancies.Pages
             _userManager = userManager;
         }
 
-        public class EducationInputModel
-        {
-            [Required]
-            [EnumDataType(typeof(EducationDegree))]
-            [Display(Name = "Degree")]
-            public int Degree { get; set; }
-
-            [Required]
-            [EnumDataType(typeof(QualificationType))]
-            [Display(Name = "Type")]
-            public int Type { get; set; }
-
-            [Required]
-            [Display(Name = "Minimum years")]
-            [Range(1, 10)]
-            public int MinimumYears { get; set; }
-
-            [Required]
-            [HiddenInput]
-            [Display(Name = "Field of study")]
-            public string FieldOfStudyName { get; set; }
-
-            [Required]
-            [HiddenInput]
-            public long FieldOfStudyId { get; set; }
-        }
-
-        public class WorkExperienceInputModel
-        {
-            [Required]
-            [EnumDataType(typeof(QualificationType))]
-            [Display(Name = "Type")]
-            public int Type { get; set; }
-
-            [Required]
-            [Display(Name = "Minimum years")]
-            [Range(1, 10)]
-            public int MinimumYears { get; set; }
-
-            [Required]
-            [HiddenInput]
-            [Display(Name = "Job title")]
-            public string JobTitle { get; set; }
-
-            [Required]
-            [HiddenInput]
-            public long JobTitleId { get; set; }
-        }
-
-        public class SkillInputModel
-        {
-            [Required]
-            [EnumDataType(typeof(QualificationType))]
-            [Display(Name = "Type")]
-            public int Type { get; set; }
-
-            [Required]
-            [DataType(DataType.Text)]
-            [Display(Name = "Skill")]
-            public string Skill { get; set; }
-
-            [HiddenInput]
-            public long? SkillId { get; set; }
-
-            [Required]
-            [Display(Name = "Minimum years")]
-            [Range(1, 25)]
-            public int MinimumYears { get; set; }
-        }
-
-        public class JobVacancyInputModel
-        {
-            [Required]
-            [Display(Name = "Job title")]
-            public string JobTitle { get; set; }
-
-            [HiddenInput]
-            public long JobTitleId { get; set; }
-
-            [Required]
-            [Display(Name = "Title")]
-            public string Title { get; set; }
-
-            [Required]
-            [Display(Name = "Description")]
-            [DataType(DataType.MultilineText)]
-            public string Description { get; set; }
-
-            [Required]
-            [Display(Name = "Distance limit")]
-            [Range(0, 60)]
-            public uint DistanceLimit { get; set; } = 0;
-
-            [Required]
-            [Display(Name = "Minimum salary")]
-            [Range(100, 999999.99)]
-            public double MinSalary { get; set; }
-
-            [Required]
-            [Display(Name = "Maximum salary")]
-            [Range(100, 999999.99)]
-            public double MaxSalary { get; set; }
-
-            [Required]
-            [Display(Name = "Required hires")]
-            [Range(1, 50)]
-            public int RequiredHires { get; set; }
-
-            [Required]
-            [EnumDataType(typeof(JobVacancyMethod))]
-            [Display(Name = "Method")]
-            public int Method { get; set; }
-
-            public Dictionary<JobType, bool> JobTypes { get; set; }
-
-            [HiddenInput]
-            public string CompanyDepartmentId { get; set; }
-        }
-
         public string CompanyId { get; set; }
 
         [BindProperty]
-        public List<EducationInputModel> Educations { get; set; } =
-            new List<EducationInputModel>
-        {
-            new EducationInputModel()
-        };
+        public List<EducationInputModel> Educations { get; set; }
+        public EducationInputModel Education { get; set; }
 
         [BindProperty]
-        public List<WorkExperienceInputModel> WorkExperiences { get; set; } =
-            new List<WorkExperienceInputModel>
-        {
-            new WorkExperienceInputModel()
-        };
+        public List<WorkExperienceInputModel> WorkExperiences { get; set; }
+        public WorkExperienceInputModel WorkExperience { get; set; }
 
         [BindProperty]
-        public List<SkillInputModel> DesiredSkills { get; set; } = new List<SkillInputModel>
-        {
-            new SkillInputModel()
-        };
+        public List<SkillInputModel> DesiredSkills { get; set; }
+        public SkillInputModel DesiredSkill { get; set; }
 
         [BindProperty]
         public JobVacancyInputModel JobVacancyInfo { get; set; } = new JobVacancyInputModel
@@ -214,10 +87,9 @@ namespace Job_Portal_System.Areas.JobVacancies.Pages
                 User = user,
                 Recruiter = recruiter,
             };
-            PrepareLists();
-            Educations.ForEach(education => AddEducation(jobVacancy, education));
-            WorkExperiences.ForEach(workExperience => AddWorkExperience(jobVacancy, workExperience));
-            DesiredSkills.ForEach(skill => AddSkill(jobVacancy, skill));
+            Educations?.ForEach(education => AddEducation(jobVacancy, education));
+            WorkExperiences?.ForEach(workExperience => AddWorkExperience(jobVacancy, workExperience));
+            DesiredSkills?.ForEach(skill => AddSkill(jobVacancy, skill));
             AddJobTitle(jobVacancy);
             AddCompanyDepartment(jobVacancy);
             AddJobTypes(jobVacancy);
@@ -230,13 +102,6 @@ namespace Job_Portal_System.Areas.JobVacancies.Pages
 
             await _context.SaveChangesAsync();
             return Redirect("./Index");
-        }
-
-        public void PrepareLists()
-        {
-            Educations.RemoveAt(Educations.Count - 1);
-            WorkExperiences.RemoveAt(WorkExperiences.Count - 1);
-            DesiredSkills.RemoveAt(DesiredSkills.Count - 1);
         }
 
         private void AddJobTypes(JobVacancy jobVacancy)
@@ -253,8 +118,9 @@ namespace Job_Portal_System.Areas.JobVacancies.Pages
 
         private void AddJobTitle(JobVacancy jobVacancy)
         {
-            var jobTitle =
-                _context.JobTitles.SingleOrDefault(jobTitleInDb => jobTitleInDb.Id == JobVacancyInfo.JobTitleId) ??
+            var jobTitle = 
+                _context.JobTitles.SingleOrDefault(jobTitleInDb => 
+                    jobTitleInDb.NormalizedTitle == JobVacancyInfo.JobTitle.ToLower()) ??
                 new JobTitle
                 {
                     Title = JobVacancyInfo.JobTitle,
@@ -273,11 +139,12 @@ namespace Job_Portal_System.Areas.JobVacancies.Pages
         private void AddEducation(JobVacancy jobVacancy, EducationInputModel education)
         {
             var fieldOfStudy =
-                _context.FieldOfStudies.SingleOrDefault(fieldInDb => fieldInDb.Id == education.FieldOfStudyId) ??
+                _context.FieldOfStudies.SingleOrDefault(fieldInDb => 
+                    fieldInDb.NormalizedTitle == education.FieldOfStudy) ??
                 new FieldOfStudy
                 {
-                    Title = education.FieldOfStudyName,
-                    NormalizedTitle = education.FieldOfStudyName.ToLower(),
+                    Title = education.FieldOfStudy,
+                    NormalizedTitle = education.FieldOfStudy.ToLower(),
                 };
 
             jobVacancy.EducationQualifications.Add(new EducationQualification
@@ -292,7 +159,8 @@ namespace Job_Portal_System.Areas.JobVacancies.Pages
         private void AddWorkExperience(JobVacancy jobVacancy, WorkExperienceInputModel workExperience)
         {
             var jobTitle =
-                _context.JobTitles.SingleOrDefault(jobTitleInDb => jobTitleInDb.Id == workExperience.JobTitleId) ??
+                _context.JobTitles.SingleOrDefault(jobTitleInDb => 
+                    jobTitleInDb.NormalizedTitle == workExperience.JobTitle.ToLower()) ??
                 new JobTitle
                 {
                     Title = workExperience.JobTitle,
@@ -310,10 +178,12 @@ namespace Job_Portal_System.Areas.JobVacancies.Pages
         private void AddSkill(JobVacancy jobVacancy, SkillInputModel skillModel)
         {
             var skill =
-                _context.Skills.SingleOrDefault(skillInDb => skillInDb.Id == skillModel.SkillId) ??
+                _context.Skills.SingleOrDefault(skillInDb => 
+                    skillInDb.NormalizedTitle == skillModel.Skill) ??
                 new Skill
                 {
                     Title = skillModel.Skill,
+                    NormalizedTitle = skillModel.Skill.ToLower(),
                 };
 
             jobVacancy.DesiredSkills.Add(new DesiredSkill

@@ -23,10 +23,10 @@
                         <h2 class="form-body-title"><i class="fa fa-question-circle"></i> General information</h2>
                         <div class="form-group">
                             <label asp-for="JobVacancyInfo.JobTitle"></label>
-                            <input asp-for="JobVacancyInfo.JobTitle" id="job-title-input" class="form-control" />
+                            <input asp-for="JobVacancyInfo.JobTitle"
+                                   id="job-title-input" class="form-control" />
                             <span asp-validation-for="JobVacancyInfo.JobTitle" class="text-danger"></span>
                         </div>
-                        <input asp-for="JobVacancyInfo.JobTitleId" id="job-title-id" />
                         <div class="form-group">
                             <label asp-for="JobVacancyInfo.Title"></label>
                             <input asp-for="JobVacancyInfo.Title" class="form-control" />
@@ -98,33 +98,32 @@
 
                         <div class="form-inputs">
                             <div class="form-group">
-                                <label asp-for="Educations[0].FieldOfStudyName"></label>
-                                <input type="text" id="field-of-study-input" class="form-control" />
-                                <input asp-for="Educations[0].FieldOfStudyName" id="field-of-study-name" />
-                                <span asp-validation-for="Educations[0].FieldOfStudyName" class="validation-label text-danger"></span>
+                                <label asp-for="Education.FieldOfStudy"></label>
+                                <input asp-for="Education.FieldOfStudy"
+                                       id="field-of-study-input" class="form-control" />
+                                <span asp-validation-for="Education.FieldOfStudy" class="validation-label text-danger"></span>
                             </div>
-                            <input asp-for="Educations[0].FieldOfStudyId" id="field-of-study-id" />
                             <div class="form-group">
-                                <label asp-for="Educations[0].Degree"></label>
-                                <select asp-for="Educations[0].Degree"
+                                <label asp-for="Education.Degree"></label>
+                                <select asp-for="Education.Degree"
                                         asp-items="Html.GetEnumSelectList<EducationDegree>()"
                                         class="form-control">
                                     <option value="">Please select</option>
                                 </select>
-                                <span asp-validation-for="Educations[0].Degree" class="validation-label text-danger"></span>
+                                <span asp-validation-for="Education.Degree" class="validation-label text-danger"></span>
                             </div>
                             <div class="form-row">
                                 <div class="form-group col-md-5">
-                                    <label asp-for="Educations[0].Type"></label>
-                                    <select asp-for="Educations[0].Type"
+                                    <label asp-for="Education.Type"></label>
+                                    <select asp-for="Education.Type"
                                             asp-items="Html.GetEnumSelectList<QualificationType>()"
                                             class="form-control">
                                         <option value="">Please select</option>
                                     </select>
                                 </div>
                                 <div class="form-group col-md-5">
-                                    <label asp-for="Educations[0].MinimumYears"></label>
-                                    <input asp-for="Educations[0].MinimumYears" class="form-control" />
+                                    <label asp-for="Education.MinimumYears"></label>
+                                    <input asp-for="Education.MinimumYears" class="form-control" />
                                 </div>
                                 <div class="form-group col-md-2 d-flex">
                                     <button type="button"
@@ -135,10 +134,10 @@
                             </div>
                             <div class="form-row">
                                 <div class="col-md-5">
-                                    <span asp-validation-for="Educations[0].Type" class="validation-label text-danger"></span>
+                                    <span asp-validation-for="Education.Type" class="validation-label text-danger"></span>
                                 </div>
                                 <div class="col-md-5">
-                                    <span asp-validation-for="Educations[0].MinimumYears" class="validation-label text-danger"></span>
+                                    <span asp-validation-for="Education.MinimumYears" class="validation-label text-danger"></span>
                                 </div>
                             </div>
                         </div>
@@ -152,24 +151,23 @@
 
                         <div class="form-inputs">
                             <div class="form-group">
-                                <label asp-for="WorkExperiences[0].JobTitle"></label>
-                                <input type="text" id="work-experience-job-title-input" class="form-control" />
-                                <input asp-for="WorkExperiences[0].JobTitle" id="work-experience-job-title-name" />
-                                <span asp-validation-for="WorkExperiences[0].JobTitle" class="validation-label text-danger"></span>
+                                <label asp-for="WorkExperience.JobTitle"></label>
+                                <input asp-for="WorkExperience.JobTitle"
+                                       id="work-experience-job-title-input" class="form-control" />
+                                <span asp-validation-for="WorkExperience.JobTitle" class="validation-label text-danger"></span>
                             </div>
-                            <input asp-for="WorkExperiences[0].JobTitleId" id="work-experience-job-title-id" />
                             <div class="form-row">
                                 <div class="form-group col-md-5">
-                                    <label asp-for="WorkExperiences[0].Type"></label>
-                                    <select asp-for="WorkExperiences[0].Type"
+                                    <label asp-for="WorkExperience.Type"></label>
+                                    <select asp-for="WorkExperience.Type"
                                             asp-items="Html.GetEnumSelectList<QualificationType>()"
                                             class="form-control">
                                         <option value="">Please select</option>
                                     </select>
                                 </div>
                                 <div class="form-group col-md-5">
-                                    <label asp-for="WorkExperiences[0].MinimumYears"></label>
-                                    <input asp-for="WorkExperiences[0].MinimumYears" class="form-control" />
+                                    <label asp-for="WorkExperience.MinimumYears"></label>
+                                    <input asp-for="WorkExperience.MinimumYears" class="form-control" />
                                 </div>
                                 <div class="form-group col-md-2 d-flex">
                                     <button type="button"
@@ -180,10 +178,10 @@
                             </div>
                             <div class="form-row">
                                 <div class="col-md-5">
-                                    <span asp-validation-for="WorkExperiences[0].Type" class="validation-label text-danger"></span>
+                                    <span asp-validation-for="WorkExperience.Type" class="validation-label text-danger"></span>
                                 </div>
                                 <div class="col-md-5">
-                                    <span asp-validation-for="WorkExperiences[0].MinimumYears" class="validation-label text-danger"></span>
+                                    <span asp-validation-for="WorkExperience.MinimumYears" class="validation-label text-danger"></span>
                                 </div>
                             </div>
                         </div>
@@ -198,24 +196,23 @@
 
                         <div class="form-inputs">
                             <div class="form-group">
-                                <label asp-for="DesiredSkills[0].Skill"></label>
-                                <input asp-for="DesiredSkills[0].Skill" id="skill-input" class="form-control" />
-                                <span asp-validation-for="DesiredSkills[0].Skill" class="validation-label text-danger"></span>
+                                <label asp-for="DesiredSkill.Skill"></label>
+                                <input asp-for="DesiredSkill.Skill" id="skill-input" class="form-control" />
+                                <span asp-validation-for="DesiredSkill.Skill" class="validation-label text-danger"></span>
                             </div>
-                            <input asp-for="DesiredSkills[0].SkillId" id="skill-id" />
 
                             <div class="form-row">
                                 <div class="form-group col-md-5">
-                                    <label asp-for="DesiredSkills[0].Type"></label>
-                                    <select asp-for="DesiredSkills[0].Type"
+                                    <label asp-for="DesiredSkill.Type"></label>
+                                    <select asp-for="DesiredSkill.Type"
                                             asp-items="Html.GetEnumSelectList<QualificationType>()"
                                             class="form-control">
                                         <option value="">Please select</option>
                                     </select>
                                 </div>
                                 <div class="form-group col-md-5">
-                                    <label asp-for="DesiredSkills[0].MinimumYears"></label>
-                                    <input asp-for="DesiredSkills[0].MinimumYears" id="skill-years" class="form-control" />
+                                    <label asp-for="DesiredSkill.MinimumYears"></label>
+                                    <input asp-for="DesiredSkill.MinimumYears" id="skill-years" class="form-control" />
                                 </div>
                                 <div class="form-group col-md-2 d-flex">
                                     <button type="button"
@@ -226,10 +223,10 @@
                             </div>
                             <div class="form-row">
                                 <div class="col-md-5">
-                                    <span asp-validation-for="DesiredSkills[0].Type" class="validation-label text-danger"></span>
+                                    <span asp-validation-for="DesiredSkill.Type" class="validation-label text-danger"></span>
                                 </div>
                                 <div class="col-md-5">
-                                    <span asp-validation-for="DesiredSkills[0].MinimumYears" class="validation-label text-danger"></span>
+                                    <span asp-validation-for="DesiredSkill.MinimumYears" class="validation-label text-danger"></span>
                                 </div>
                             </div>
                         </div>

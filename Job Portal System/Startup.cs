@@ -90,7 +90,7 @@ namespace Job_Portal_System
 
             //DatabaseSeeder.SeedData(env, context, userManager, roleManager);
             //DatabaseSeeder.ClearDatabase(context);
-            DatabaseSeeder.SeedJobSeekers(context, userManager, 10);
+            //DatabaseSeeder.SeedJobSeekers(context, userManager, 10);
             app.UseMvc();
         }
     }
