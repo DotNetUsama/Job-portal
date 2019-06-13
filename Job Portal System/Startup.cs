@@ -1,3 +1,7 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using DinkToPdf;
 using DinkToPdf.Contracts;
 using Microsoft.AspNetCore.Builder;
@@ -90,8 +94,50 @@ namespace Job_Portal_System
 
             //DatabaseSeeder.SeedData(env, context, userManager, roleManager);
             //DatabaseSeeder.ClearDatabase(context);
-            //DatabaseSeeder.SeedJobSeekers(context, userManager, 10);
+            //DatabaseSeeder.SeedJobSeekers(context, userManager, 1000);
+            //var i = context.JobSeekers.Count();
+            var ed = new[] {"Data Structures", "Business & Commercial Law", "Law" };
+            var wo = new string[0];
+            var sk = new string[0];
+            var watch = System.Diagnostics.Stopwatch.StartNew();
+            // the code that you want to measure comes here
+            var lengths = new[] {ed.Length, wo.Length, sk.Length};
+            var maxCount = lengths.Max();
+            var wob = wo.Length > 0;
+            var edb = ed.Length > 0;
+            var skb = sk.Length > 0;
+            var resumes = context.Resumes
+                .Include(r => r.WorkExperiences).ThenInclude(w => w.JobTitle)
+                .Include(r => r.Educations).ThenInclude(e => e.FieldOfStudy)
+                .Include(r => r.OwnedSkills).ThenInclude(s => s.Skill)
+                .Where(r =>
+                    r.WorkExperiences.Any(w => !wob || wo[0] == w.JobTitle.Title) &&
+                    r.Educations.Any(w => !edb || ed[0] == w.FieldOfStudy.Title) &&
+                    r.OwnedSkills.Any(w => !skb || sk[0] == w.Skill.Title))
+                .ToList();
+
+            for (var i = 1; i < maxCount; i++)
+            {
+                resumes = Filter(resumes, wo, ed, sk, i);
+            }
+            watch.Stop();
+            var elapsedMs = watch.ElapsedMilliseconds;
+
             app.UseMvc();
+        }
+
+        private static List<Resume> Filter(IEnumerable<Resume> resumes, IReadOnlyList<string> wo, 
+            IReadOnlyList<string> ed, IReadOnlyList<string> sk, int i)
+        {
+            var wob = wo.Count > i;
+            var edb = ed.Count > i;
+            var skb = sk.Count > i;
+            return resumes
+                .Where(r =>
+                    r.WorkExperiences.Any(w => !wob || wo[i] == w.JobTitle.Title) &&
+                    r.Educations.Any(e => !edb || ed[i] == e.FieldOfStudy.Title) &&
+                    r.OwnedSkills.Any(s => !skb || sk[i] == s.Skill.Title))
+                .ToList();
         }
     }
 }

@@ -21,6 +21,7 @@ namespace Job_Portal_System.Models
         public string Description { get; set; }
 
         public Resume Resume { get; set; }
+        public string ResumeId { get; set; }
         public JobTitle JobTitle { get; set; }
         public long JobTitleId { get; set; }
         public Company Company { get; set; }

@@ -216,7 +216,9 @@ namespace Job_Portal_System.Handlers
         private static List<EvaluatedResume> FetchMatchingResumes(ApplicationDbContext context,
                         IHostingEnvironment env, JobVacancy jobVacancy)
         {
-            var jobVacancyCityId = jobVacancy.CompanyDepartment.CityId;
+            var jobVacancyCityId = context.CompanyDepartments
+                .SingleOrDefault(d => d.Id == jobVacancy.CompanyDepartmentId)?
+                .CityId;
 
             var similaritiesQueryPath = Path.Combine(env.ContentRootPath, "Queries", "GetSimilarities.txt");
 
