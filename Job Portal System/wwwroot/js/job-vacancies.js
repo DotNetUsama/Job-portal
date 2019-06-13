@@ -6,9 +6,35 @@ $(document).ready(() => {
     $("#field-of-study-input").autocomplete({ source: "/AutoComplete/FieldsOfStudy" });
     $("#work-experience-job-title-input").autocomplete({ source: "/AutoComplete/JobTitles" });
     $("#job-title-input").autocomplete({ source: "/AutoComplete/JobTitles" });
-    $("#company-department-input").autocomplete({
-        source: `/AutoComplete/CompanyDepartments?companyId=${$("#company-id").val()}`
+    $.ajax({
+        url: `/AutoComplete/CompanyDepartments?companyId=${$("#company-id").val()}`,
+        method: "get",
+        success: departments => {
+            $("#company-department-input").autocomplete({
+                source: departments,
+                change: (event, ui) => {
+                    const $idInput = $("#company-department-id");
+                    if (ui.item) {
+                        $idInput.val(ui.item.id);
+                    } else {
+                        const $this = $(event.currentTarget);
+                        const enteredValue = $this.val();
+                        const itemInData = departments.find(department =>
+                            department.label.trim().toLowerCase() === enteredValue.trim().toLowerCase());
+                        if (itemInData) {
+                            $idInput.val(itemInData.id);
+                        } else {
+                            $idInput.val(null);
+                            $this.val(null);
+                            $this.focus();
+                        }
+                    }
+                }
+            });
+        },
+        error: err => console.log(err)
     });
+
     $("#skill-input").autocomplete({ source: "/AutoComplete/Skills" });
     
     $("#desired-skills-sub-form").subform(() => {

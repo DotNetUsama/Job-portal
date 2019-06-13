@@ -30,11 +30,10 @@ namespace Job_Portal_System.Controllers
 
         [HttpGet]
         [Route("CompanyDepartments")]
-        public IActionResult CompanyDepartments(string companyId, string term)
+        public IActionResult CompanyDepartments(string companyId)
         {
             return Json(_context.CompanyDepartments
-                .Where(department => department.CompanyId == companyId &&
-                                     $"{department.City.Name} {department.DetailedAddress}".Contains(term))
+                .Where(department => department.CompanyId == companyId)
                 .Select(department => new
                 {
                     department.Id,

@@ -17,10 +17,12 @@
                 <span class="form-head-details">Step <span id="step-num"></span> of <span id="steps-count"></span></span>
             </div>
             <div class="form-body">
-                <input type="hidden" value="@Model.CompanyId" id="company-id" />
                 <form method="post">
+                    <input type="hidden" value="@Model.CompanyId" id="company-id" />
+                    <div asp-validation-summary="All" class="text-danger"></div>
                     <fieldset id="general-info-partial" class="tab">
                         <h2 class="form-body-title"><i class="fa fa-question-circle"></i> General information</h2>
+                        <input type="hidden" asp-for="CompanyId" />
                         <div class="form-group">
                             <label asp-for="JobVacancyInfo.JobTitle"></label>
                             <input asp-for="JobVacancyInfo.JobTitle"
@@ -92,6 +94,7 @@
                     </fieldset>
                     <fieldset id="educations-partial" class="sub-form tab" data-count="0" data-for="Educations">
                         <h2 class="form-body-title"><i class="fa fa-graduation-cap"></i> Education qualifications</h2>
+                        <span asp-validation-for="Educations" class="text-danger"></span>
                         <ul class="displayed-objects-list list-unstyled"></ul>
 
                         <div class="hidden-objects-container d-none"></div>
@@ -145,6 +148,7 @@
 
                     <fieldset id="work-experiences-partial" class="sub-form tab" data-count="0" data-for="WorkExperiences">
                         <h2 class="form-body-title"><i class="fa fa-briefcase"></i> Work experience qualifications</h2>
+                        <span asp-validation-for="WorkExperiences" class="text-danger"></span>
                         <ul class="displayed-objects-list list-unstyled"></ul>
 
                         <div class="hidden-objects-container d-none"></div>
@@ -189,6 +193,7 @@
 
                     <fieldset class="sub-form tab" data-count="0" data-for="DesiredSkills" id="desired-skills-sub-form">
                         <h2 class="form-body-title"><i class="fa fa-star"></i> Desired Skills</h2>
+                        <span asp-validation-for="DesiredSkills" class="text-danger"></span>
 
                         <ul class="displayed-objects-list list-unstyled"></ul>
 

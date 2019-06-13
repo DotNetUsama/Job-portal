@@ -44,8 +44,7 @@ namespace Job_Portal_System.Areas.Resumes.Pages
         [BindProperty]
         public List<SkillEditModel> SkillsEdits { get; set; }
 
-        [BindProperty]
-        public List<JobTitleInputModel> SeekedJobTitles { get; set; }
+        [BindProperty] public List<JobTitleInputModel> SeekedJobTitles { get; set; } = new List<JobTitleInputModel>();
         public JobTitleInputModel SeekedJobTitle { get; set; }
 
         [BindProperty]
@@ -55,36 +54,33 @@ namespace Job_Portal_System.Areas.Resumes.Pages
 
         public IActionResult OnGet()
         {
-            var resumeInDb = _context.Resumes
-                .Include(r => r.Educations).ThenInclude(e => e.FieldOfStudy)
-                .Include(r => r.Educations).ThenInclude(e => e.School)
-                .Include(r => r.WorkExperiences).ThenInclude(w => w.JobTitle)
-                .Include(r => r.WorkExperiences).ThenInclude(w => w.Company)
-                .Include(r => r.OwnedSkills).ThenInclude(s => s.Skill)
-                .Include(r => r.SeekedJobTitles).ThenInclude(j => j.JobTitle)
-                .Include(r => r.JobTypes)
-                .SingleOrDefault(resume => resume.User.UserName == User.Identity.Name);
+            GetResumeFromDb();
 
-            if (resumeInDb == null) return Redirect("./Create");
+            if (Resume == null) return Redirect("./Create");
 
-            resumeInDb.SeekedJobTitles.ForEach(AddToSeekedJobTitles);
+            Resume.SeekedJobTitles.ForEach(AddToSeekedJobTitles);
             SeekedJobTitles.Add(new JobTitleInputModel());
             ResumeInfo = new ResumeInputModel
             {
-                IsPublic = resumeInDb.IsPublic,
-                IsSeeking = resumeInDb.IsSeeking,
-                MinSalary = resumeInDb.MinSalary,
-                MovingDistanceLimit = resumeInDb.MovingDistanceLimit,
-                Biography = resumeInDb.Biography,
+                IsPublic = Resume.IsPublic,
+                IsSeeking = Resume.IsSeeking,
+                MinSalary = Resume.MinSalary,
+                MovingDistanceLimit = Resume.MovingDistanceLimit,
+                Biography = Resume.Biography,
                 JobTypes =
-                    JobTypeMethods.GetDictionary(resumeInDb.JobTypes.Select(jobType => jobType.JobType).ToList()),
+                    JobTypeMethods.GetDictionary(Resume.JobTypes.Select(jobType => jobType.JobType).ToList()),
             };
-            Resume = resumeInDb;
             return Page();
         }
 
         public async Task<IActionResult> OnPostSaveChangesAsync()
         {
+            if (!ModelState.IsValid)
+            {
+                GetResumeFromDb();
+                return Page();
+            }
+
             var resume = _context.Resumes
                 .Include(r => r.Educations)
                 .Include(r => r.WorkExperiences)
@@ -266,6 +262,19 @@ namespace Job_Portal_System.Areas.Resumes.Pages
             {
                 JobTitle = seekedJobTitle.JobTitle.Title,
             });
+        }
+
+        private void GetResumeFromDb()
+        {
+            Resume = _context.Resumes
+                .Include(r => r.Educations).ThenInclude(e => e.FieldOfStudy)
+                .Include(r => r.Educations).ThenInclude(e => e.School)
+                .Include(r => r.WorkExperiences).ThenInclude(w => w.JobTitle)
+                .Include(r => r.WorkExperiences).ThenInclude(w => w.Company)
+                .Include(r => r.OwnedSkills).ThenInclude(s => s.Skill)
+                .Include(r => r.SeekedJobTitles).ThenInclude(j => j.JobTitle)
+                .Include(r => r.JobTypes)
+                .SingleOrDefault(resume => resume.User.UserName == User.Identity.Name);
         }
     }
 }

@@ -17,11 +17,10 @@
             </div>
             <div class="form-body">
                 <form method="post">
-                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                     <fieldset id="general-info-partial">
                         <legend><i class="fa fa-question-circle"></i> Company general information</legend>
-                        <input type="hidden" asp-for="Company.Id"/>
-                        <input type="hidden" asp-for="Company.Name"/>
+                        <input type="hidden" asp-for="Company.Id" />
+                        <input type="hidden" asp-for="Company.Name" />
                         <div class="form-group">
                             <label asp-for="Company.EmployeesNum"></label>
                             <input asp-for="Company.EmployeesNum" class="form-control"/>
@@ -48,45 +47,53 @@
                         <legend><i class="fa fa-building"></i> Departments</legend>
 
                         <ul class="list-unstyled">
-                            @foreach (var department in Model.Company.Departments)
+                            @if (Model.Company.Departments != null)
                             {
-                                <li class="collapse-container">
-                                    <div class="row info-item bg-form-light-main-hover">
-                                        <div class="col-md-10">
-                                            <span>
-                                                <span class="font-weight-bold">@department.City.Name - @department.DetailedAddress</span>
-                                            </span>
+                                foreach (var department in Model.Company.Departments)
+                                {
+                                    <li class="collapse-container">
+                                        <div class="row info-item bg-form-light-main-hover">
+                                            <div class="col-md-10">
+                                                <span>
+                                                    <span class="font-weight-bold">@department.City.Name - @department.DetailedAddress</span>
+                                                </span>
+                                            </div>
+                                            <div class="col-md-2 d-flex">
+                                                <button type="button" class="ml-auto btn btn-icon extend">
+                                                    <i class="fa fa-angle-down"></i>
+                                                </button>
+                                            </div>
                                         </div>
-                                        <div class="col-md-2 d-flex">
-                                            <button type="button" class="ml-auto btn btn-icon extend">
-                                                <i class="fa fa-angle-down"></i>
-                                            </button>
+                                        <div class="item-details collapse-content">
+                                            <div class="d-flex pl-2 pr-2">
+                                                <label class="font-weight-bold"
+                                                       asp-for="DepartmentsEdits[companyDepartmentsEditsIndexer].DetailedAddress"
+                                                       style="flex: 1; align-self: center"></label>
+                                                <input class="form-control"
+                                                       asp-for="DepartmentsEdits[companyDepartmentsEditsIndexer].DetailedAddress"
+                                                       value="@department.DetailedAddress"
+                                                       style="flex: 3;" />
+                                                <input asp-for="DepartmentsEdits[companyDepartmentsEditsIndexer].Id"
+                                                       value="@department.Id" />
+                                            </div>
+                                            <span asp-validation-for="DepartmentsEdits[companyDepartmentsEditsIndexer].DetailedAddress"
+                                                  class="text-danger"></span>
+                                            @{ companyDepartmentsEditsIndexer++; }
                                         </div>
-                                    </div>
-                                    <div class="item-details collapse-content">
-                                        <div class="d-flex pl-2 pr-2">
-                                            <label class="font-weight-bold"
-                                                   asp-for="DepartmentsEdits[companyDepartmentsEditsIndexer].DetailedAddress"
-                                                   style="flex: 1; align-self: center"></label>
-                                            <input class="form-control"
-                                                   asp-for="DepartmentsEdits[companyDepartmentsEditsIndexer].DetailedAddress"
-                                                   value="@department.DetailedAddress"
-                                                   style="flex: 3;" />
-                                            <input asp-for="DepartmentsEdits[companyDepartmentsEditsIndexer].Id"
-                                                   value="@department.Id" />
-                                        </div>
-                                        <span asp-validation-for="DepartmentsEdits[companyDepartmentsEditsIndexer].DetailedAddress"
-                                              class="text-danger"></span>
-                                        @{ companyDepartmentsEditsIndexer++; }
-                                    </div>
-                                </li>
+                                    </li>
+                                }
                             }
                         </ul>
-                        @for (var i = 0; i < Model.Company.Departments.Count; i++)
-                        {
-                            <input type="hidden" asp-for="Company.Departments[i].City.Name" />
-                            <input type="hidden" asp-for="Company.Departments[i].DetailedAddress" />
-                        }
+                        <div>
+                            @if (Model.Company.Departments != null)
+                            {
+                                @for (var i = 0; i < Model.Company.Departments.Count; i++)
+                                 {
+                                     <input type="hidden" asp-for="Company.Departments[i].City.Name"/>
+                                     <input type="hidden" asp-for="Company.Departments[i].DetailedAddress"/>
+                                 }
+                            }
+                        </div>
                         <div class="collapse-container">
 
                             <div class="row info-item bg-form-light-main-hover">

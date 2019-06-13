@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Job_Portal_System.Areas.Companies.InputModels;
 using Job_Portal_System.Data;
 using Job_Portal_System.Models;
-using Job_Portal_System.Validation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -23,9 +22,7 @@ namespace Job_Portal_System.Areas.Companies.Pages
         }
 
         [BindProperty]
-        [MinimumCount(3, ErrorMessage = "At least three departments are required")]
         public List<DepartmentInputModel> Departments { get; set; }
-
         public DepartmentInputModel Department { get; set; }
 
         [BindProperty]
@@ -43,7 +40,7 @@ namespace Job_Portal_System.Areas.Companies.Pages
 
             Company = await _context.Companies
                 .Include(c => c.Departments).ThenInclude(d => d.City)
-                .FirstOrDefaultAsync(company => company.Id == id);
+                .FirstOrDefaultAsync(c => c.Id == id);
 
             if (Company == null)
             {
@@ -67,7 +64,6 @@ namespace Job_Portal_System.Areas.Companies.Pages
             if (!ModelState.IsValid) return Page();
 
             var company = _context.Companies
-                .Include(c => c.Departments)
                 .SingleOrDefault(c => c.Id == id);
 
             if (company == null) return BadRequest();

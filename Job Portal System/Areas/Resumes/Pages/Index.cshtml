@@ -140,8 +140,8 @@
                                 <div class="form-inputs">
                                     <div class="form-group">
                                         <label asp-for="Education.FieldOfStudy"></label>
-                                        <input asp-for="Education.FieldOfStudy" 
-                                               id="field-of-study-input" class="form-control"/>
+                                        <input asp-for="Education.FieldOfStudy"
+                                               id="field-of-study-input" class="form-control" />
                                         <span asp-validation-for="Education.FieldOfStudy" class="validation-label text-danger"></span>
                                     </div>
                                     <div class="form-group">
@@ -179,9 +179,9 @@
                                     <div class="form-group">
                                         <label asp-for="Education.School"></label>
                                         <input asp-for="Education.School" id="school-input"
-                                                class="form-control" />
+                                               class="form-control" />
                                         <span asp-validation-for="Education.School"
-                                                class="validation-label text-danger"></span>
+                                              class="validation-label text-danger"></span>
                                     </div>
                                 </div>
                                 <button type="button"
@@ -333,9 +333,8 @@
                         <legend><i class="fa fa-star"></i> Owned Skills</legend>
 
                         <ul class="list-unstyled">
-                            @for (var i = 0; i < Model.Resume.OwnedSkills.Count; i++)
+                            @foreach (var skill in Model.Resume.OwnedSkills)
                             {
-                                var skill = Model.Resume.OwnedSkills[i];
                                 <li class="show-item collapse-container">
                                     <div class="row info-item bg-form-light-main-hover">
                                         <div class="col-md-10">
@@ -359,13 +358,15 @@
                                                    style="flex: 1; align-self: center"></label>
                                             <input class="form-control"
                                                    asp-for="SkillsEdits[skillsEditsIndexer].Years"
-                                                   style="flex: 3;" />
+                                                   value="@skill.Years" style="flex: 3;" />
                                             <input asp-for="SkillsEdits[skillsEditsIndexer].Id"
                                                    value="@skill.Id" />
                                         </div>
                                         <span asp-validation-for="SkillsEdits[skillsEditsIndexer].Years"
                                               class="validation-label text-danger"></span>
-                                        @{ skillsEditsIndexer++; }
+                                        @{
+                                            skillsEditsIndexer++;
+                                        }
                                     </div>
                                 </li>
                             }
@@ -416,8 +417,8 @@
                         </div>
                     </fieldset>
                     <hr />
-                <fieldset class="sub-form" data-count="@(Model.SeekedJobTitles.Count - 1)" 
-                          data-for="SeekedJobTitles" id="seeked-job-titles-sub-form">
+                    <fieldset class="sub-form" data-count="@(Model.SeekedJobTitles.Count - 1)"
+                              data-for="SeekedJobTitles" id="seeked-job-titles-sub-form">
                         <legend>Seeked job titles <span class="font-weight-light">(Optional)</span></legend>
 
                         <ul class="displayed-objects-list list-unstyled">
@@ -449,9 +450,9 @@
 
                         <div class="form-inputs form-row">
                             <div class="form-group col-md-10">
-                                <label asp-for="SeekedJobTitles[Model.SeekedJobTitles.Count - 1].JobTitle"></label>
-                                <input asp-for="SeekedJobTitles[Model.SeekedJobTitles.Count - 1].JobTitle" 
-                                       id="seeked-job-title-input" class="form-control"/>
+                                <label asp-for="SeekedJobTitle.JobTitle"></label>
+                                <input asp-for="SeekedJobTitle.JobTitle"
+                                       id="seeked-job-title-input" class="form-control" />
                             </div>
                             <div class="form-group col-md-2 d-flex">
                                 <button type="button" class="btn btn-submit btn-sub-submit mt-auto ml-auto">
@@ -462,7 +463,7 @@
 
                         <div class="form-row">
                             <div class="form-group col-md-10">
-                                <span asp-validation-for="SeekedJobTitles[Model.SeekedJobTitles.Count - 1].JobTitle" class="validation-label text-danger"></span>
+                                <span asp-validation-for="SeekedJobTitle.JobTitle" class="validation-label text-danger"></span>
                             </div>
                         </div>
                     </fieldset>

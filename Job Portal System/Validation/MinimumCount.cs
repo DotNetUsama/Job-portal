@@ -1,27 +1,30 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace Job_Portal_System.Validation
 {
-    public class MinimumCount : ValidationAttribute
+    public class MinimumCountAttribute : Attribute, IModelValidator
     {
+        public string ErrorMessage { get; set; }
         private readonly int _minElements;
-        public MinimumCount(int minElements)
+        public MinimumCountAttribute(int minElements)
         {
             _minElements = minElements;
         }
 
-        public override bool IsValid(object value)
+        public IEnumerable<ModelValidationResult> Validate(ModelValidationContext context)
         {
-            if (value is IList list)
-            {
-                return list.Count >= _minElements;
+            if (context.Model is IList list && list.Count >= _minElements)
+            { 
+                return Enumerable.Empty<ModelValidationResult>();
             }
-            return false;
+            return new List<ModelValidationResult>
+            {
+                new ModelValidationResult(context.ModelMetadata.PropertyName, ErrorMessage)
+            };
         }
     }
 }

@@ -7,6 +7,8 @@ using Job_Portal_System.Enums;
 using Job_Portal_System.Handlers;
 using Job_Portal_System.Models;
 using Job_Portal_System.SignalR;
+using Job_Portal_System.Validation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -15,7 +17,7 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace Job_Portal_System.Areas.JobVacancies.Pages
 {
-    //[Authorize(Roles = "Recruiter")]
+    [Authorize(Roles = "Recruiter")]
     public class CreateModel : PageModel
     {
         private readonly ApplicationDbContext _context;
@@ -34,17 +36,21 @@ namespace Job_Portal_System.Areas.JobVacancies.Pages
             _userManager = userManager;
         }
 
+        [BindProperty]
         public string CompanyId { get; set; }
 
         [BindProperty]
+        [MinimumCount(1, ErrorMessage = "You should specify at least one education qualification")]
         public List<EducationInputModel> Educations { get; set; }
         public EducationInputModel Education { get; set; }
 
         [BindProperty]
+        [MinimumCount(1, ErrorMessage = "You should specify at least one work experience qualification")]
         public List<WorkExperienceInputModel> WorkExperiences { get; set; }
         public WorkExperienceInputModel WorkExperience { get; set; }
 
         [BindProperty]
+        [MinimumCount(1, ErrorMessage = "You should specify at least one desired skill")]
         public List<SkillInputModel> DesiredSkills { get; set; }
         public SkillInputModel DesiredSkill { get; set; }
 
@@ -69,8 +75,11 @@ namespace Job_Portal_System.Areas.JobVacancies.Pages
 
         public async Task<IActionResult> OnPostCreateJobVacancyAsync()
         {
+            if (!ModelState.IsValid) return Page();
+
             var user = await _userManager.FindByNameAsync(User.Identity.Name);
-            var recruiter = _context.Recruiters.SingleOrDefault(recruiterInDb => recruiterInDb.UserId == user.Id);
+            var recruiter = _context.Recruiters
+                .SingleOrDefault(recruiterInDb => recruiterInDb.UserId == user.Id);
             var jobVacancy = new JobVacancy
             {
                 Title = JobVacancyInfo.Title,
@@ -84,6 +93,7 @@ namespace Job_Portal_System.Areas.JobVacancies.Pages
                 EducationQualifications = new List<EducationQualification>(),
                 WorkExperienceQualifications = new List<WorkExperienceQualification>(),
                 DesiredSkills = new List<DesiredSkill>(),
+                CompanyDepartmentId = JobVacancyInfo.CompanyDepartmentId,
                 User = user,
                 Recruiter = recruiter,
             };
@@ -91,7 +101,6 @@ namespace Job_Portal_System.Areas.JobVacancies.Pages
             WorkExperiences?.ForEach(workExperience => AddWorkExperience(jobVacancy, workExperience));
             DesiredSkills?.ForEach(skill => AddSkill(jobVacancy, skill));
             AddJobTitle(jobVacancy);
-            AddCompanyDepartment(jobVacancy);
             AddJobTypes(jobVacancy);
             _context.JobVacancies.Add(jobVacancy);
             if (JobVacancyInfo.Method == (int) JobVacancyMethod.Recommendation)
@@ -128,12 +137,6 @@ namespace Job_Portal_System.Areas.JobVacancies.Pages
                 };
 
             jobVacancy.JobTitle = jobTitle;
-        }
-
-        private void AddCompanyDepartment(JobVacancy jobVacancy)
-        {
-            jobVacancy.CompanyDepartment = _context.CompanyDepartments
-                .SingleOrDefault(d => d.Id == JobVacancyInfo.CompanyDepartmentId);
         }
 
         private void AddEducation(JobVacancy jobVacancy, EducationInputModel education)

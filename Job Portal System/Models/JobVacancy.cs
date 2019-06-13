@@ -55,6 +55,7 @@ namespace Job_Portal_System.Models
 
         [Display(Name = "Department")]
         public CompanyDepartment CompanyDepartment { get; set; }
+        public string CompanyDepartmentId { get; set; }
 
         [Display(Name = "Job title")]
         public JobTitle JobTitle { get; set; }

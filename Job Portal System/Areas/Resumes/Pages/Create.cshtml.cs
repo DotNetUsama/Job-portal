@@ -6,6 +6,7 @@ using Job_Portal_System.Areas.Resumes.Pages.InputModels;
 using Job_Portal_System.Data;
 using Job_Portal_System.Enums;
 using Job_Portal_System.Models;
+using Job_Portal_System.Validation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -27,14 +28,17 @@ namespace Job_Portal_System.Areas.Resumes.Pages
         }
 
         [BindProperty]
+        [MinimumCount(1, ErrorMessage = "You should specify at least one education")]
         public List<EducationInputModel> Educations { get; set; }
         public EducationInputModel Education { get; set; }
 
         [BindProperty]
+        [MinimumCount(1, ErrorMessage = "You should specify at least one work experience")]
         public List<WorkExperienceInputModel> WorkExperiences { get; set; }
         public WorkExperienceInputModel WorkExperience { get; set; }
 
         [BindProperty]
+        [MinimumCount(1, ErrorMessage = "You should specify at least one skill")]
         public List<SkillInputModel> OwnedSkills { get; set; }
         public SkillInputModel OwnedSkill { get; set; }
 
@@ -62,6 +66,8 @@ namespace Job_Portal_System.Areas.Resumes.Pages
 
         public async Task<IActionResult> OnPostCreateResumeAsync()
         {
+            if (!ModelState.IsValid) return Page();
+
             var user = await _userManager.FindByNameAsync(User.Identity.Name);
             var jobSeeker = _context.JobSeekers.SingleOrDefault(jobSeekerInDb => jobSeekerInDb.UserId == user.Id);
             var resume = new Resume
