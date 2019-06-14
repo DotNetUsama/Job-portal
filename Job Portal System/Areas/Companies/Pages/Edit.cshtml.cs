@@ -28,7 +28,6 @@ namespace Job_Portal_System.Areas.Companies.Pages
         [BindProperty]
         public List<DepartmentEditModel> DepartmentsEdits { get; set; }
 
-        [BindProperty]
         public Company Company { get; set; }
 
         public async Task<IActionResult> OnGetAsync(string id)
@@ -38,42 +37,32 @@ namespace Job_Portal_System.Areas.Companies.Pages
                 return NotFound();
             }
 
-            Company = await _context.Companies
-                .Include(c => c.Departments).ThenInclude(d => d.City)
-                .FirstOrDefaultAsync(c => c.Id == id);
+            await GetCompany(id);
 
-            if (Company == null)
-            {
-                return NotFound();
-            }
-
+            if (Company == null) return NotFound();
             if (User.IsInRole("Administrator")) return Page();
 
             var recruiterInDb = await _context.Recruiters
                 .SingleOrDefaultAsync(recruiter => recruiter.User.UserName == User.Identity.Name);
-            if (recruiterInDb == null || Company.Id != recruiterInDb.CompanyId)
-            {
-                return BadRequest();
-            }
+
+            if (recruiterInDb == null || Company.Id != recruiterInDb.CompanyId) return BadRequest();
 
             return Page();
         }
 
         public async Task<IActionResult> OnPostAsync(string id)
         {
+            await GetCompany(id);
             if (!ModelState.IsValid) return Page();
 
-            var company = _context.Companies
-                .SingleOrDefault(c => c.Id == id);
-
-            if (company == null) return BadRequest();
+            if (Company == null) return BadRequest();
 
             DepartmentsEdits.ForEach(EditDepartment);
-            Departments?.ForEach(education => AddDepartment(company, education));
-            company.EmployeesNum = Company.EmployeesNum;
-            company.Email = Company.Email;
-            company.Website = Company.Website;
-            company.Description = Company.Description;
+            Departments?.ForEach(education => AddDepartment(Company, education));
+            Company.EmployeesNum = Company.EmployeesNum;
+            Company.Email = Company.Email;
+            Company.Website = Company.Website;
+            Company.Description = Company.Description;
 
             await _context.SaveChangesAsync();
 
@@ -87,6 +76,13 @@ namespace Job_Portal_System.Areas.Companies.Pages
             {
                 department.DetailedAddress = departmentEdit.DetailedAddress;
             }
+        }
+
+        private async Task GetCompany(string id)
+        {
+            Company = await _context.Companies
+                .Include(c => c.Departments).ThenInclude(d => d.City)
+                .FirstOrDefaultAsync(c => c.Id == id);
         }
 
         private static void AddDepartment(Company company, DepartmentInputModel department)

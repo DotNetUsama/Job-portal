@@ -2,11 +2,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Job_Portal_System.Areas.JobVacancies.Pages.InputModels;
+using Job_Portal_System.BackgroundTasking;
 using Job_Portal_System.Data;
+using Job_Portal_System.Dependencies;
 using Job_Portal_System.Enums;
 using Job_Portal_System.Handlers;
 using Job_Portal_System.Models;
 using Job_Portal_System.SignalR;
+using Job_Portal_System.Utilities.RankingSystem;
 using Job_Portal_System.Validation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
@@ -14,6 +17,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Job_Portal_System.Areas.JobVacancies.Pages
 {
@@ -21,19 +25,24 @@ namespace Job_Portal_System.Areas.JobVacancies.Pages
     public class CreateModel : PageModel
     {
         private readonly ApplicationDbContext _context;
-        private readonly IHubContext<SignalRHub> _hubContext;
-        private readonly IHostingEnvironment _env;
         private readonly UserManager<User> _userManager;
+        private readonly IBackgroundOperator _backgroundOperator;
+        //private readonly IServiceScopeFactory _serviceScopeFactory;
+        //private readonly BackgroundTaskQueue _queue;
 
         public CreateModel(ApplicationDbContext context,
-            IHubContext<SignalRHub> hubContext,
-            IHostingEnvironment env,
-            UserManager<User> userManager)
+            UserManager<User> userManager,
+            IBackgroundOperator backgroundOperator
+            //,
+            //IServiceScopeFactory serviceScopeFactory,
+            //BackgroundTaskQueue queue
+            )
         {
             _context = context;
-            _hubContext = hubContext;
-            _env = env;
             _userManager = userManager;
+            _backgroundOperator = backgroundOperator;
+            //_serviceScopeFactory = serviceScopeFactory;
+            //_queue = queue;
         }
 
         [BindProperty]
@@ -105,7 +114,19 @@ namespace Job_Portal_System.Areas.JobVacancies.Pages
             _context.JobVacancies.Add(jobVacancy);
             if (JobVacancyInfo.Method == (int) JobVacancyMethod.Recommendation)
             {
-                await AsyncHandler.Recommend(_context, _env, _hubContext, jobVacancy);
+                _backgroundOperator.Recommend(jobVacancy);
+
+                //_queue.QueueBackgroundWorkItem(async token =>
+                //{
+                //    using (var scope = _serviceScopeFactory.CreateScope())
+                //    {
+                //        var scopedServices = scope.ServiceProvider;
+                //        var context = scopedServices.GetRequiredService<ApplicationDbContext>();
+                //        var hubContext = scopedServices.GetRequiredService<IHubContext<SignalRHub>>();
+                //        var env = scopedServices.GetRequiredService<IHostingEnvironment>();
+                //        await AsyncHandler.Recommend(context, env, hubContext, jobVacancy);
+                //    }
+                //});
                 return Redirect("./Index");
             }
 

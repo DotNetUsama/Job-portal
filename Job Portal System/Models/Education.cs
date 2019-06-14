@@ -19,6 +19,8 @@ namespace Job_Portal_System.Models
         public DateTime? EndDate { get; set; }
 
         public Resume Resume { get; set; }
+        public string ResumeId { get; set; }
+
         public FieldOfStudy FieldOfStudy { get; set; }
         public long FieldOfStudyId { get; set; }
 

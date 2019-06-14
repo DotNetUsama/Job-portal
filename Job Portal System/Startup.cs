@@ -1,5 +1,7 @@
 using DinkToPdf;
 using DinkToPdf.Contracts;
+using Job_Portal_System.BackgroundTasking;
+using Job_Portal_System.BackgroundTasking.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI;
@@ -8,6 +10,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Job_Portal_System.Data;
+using Job_Portal_System.Dependencies;
 using Job_Portal_System.Models;
 using Job_Portal_System.SignalR;
 using Microsoft.Extensions.Configuration;
@@ -58,6 +61,11 @@ namespace Job_Portal_System
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
             services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new PdfTools()));
+
+            services.AddHostedService<QueuedHostedService>();
+            services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
+
+            services.AddScoped<IBackgroundOperator, BackgroundOperator>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -91,6 +99,7 @@ namespace Job_Portal_System
             //DatabaseSeeder.SeedData(env, context, userManager, roleManager);
             //DatabaseSeeder.ClearDatabase(context);
             //DatabaseSeeder.SeedJobSeekers(context, userManager, 10);
+
             app.UseMvc();
         }
     }

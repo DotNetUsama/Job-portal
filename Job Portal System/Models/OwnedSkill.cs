@@ -12,6 +12,8 @@ namespace Job_Portal_System.Models
         public int Years { get; set; }
 
         public Resume Resume { get; set; }
+        public string ResumeId { get; set; }
+
         public Skill Skill { get; set; }
         public long SkillId { get; set; }
 
