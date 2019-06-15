@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Job_Portal_System.Data;
@@ -8,9 +6,7 @@ using Job_Portal_System.Enums;
 using Job_Portal_System.Managers;
 using Job_Portal_System.Models;
 using Job_Portal_System.Utilities.RankingSystem;
-using Job_Portal_System.Utilities.RankingSystem.Helpers;
 using Job_Portal_System.SignalR;
-using Job_Portal_System.Utilities.Semantic;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
@@ -41,10 +37,11 @@ namespace Job_Portal_System.Handlers
             await userManager.RemoveFromRoleAsync(user, "PendingRecruiter");
             await userManager.AddToRoleAsync(user, "Recruiter");
 
-            if (company.Approved) { 
+            if (company.Approved)
+            {
                 await context.SendNotificationAsync(hubContext, new Notification
                 {
-                    Type = (int) NotificationType.AccountApproved,
+                    Type = (int)NotificationType.AccountApproved,
                 }, user);
             }
             else
@@ -96,14 +93,14 @@ namespace Job_Portal_System.Handlers
             await context.SaveChangesAsync();
         }
 
-        public static async Task FinalDecideOnApplicants(IHostingEnvironment env, 
+        public static async Task FinalDecideOnApplicants(IHostingEnvironment env,
             ApplicationDbContext context, IHubContext<SignalRHub> hubContext, JobVacancy jobVacancy)
         {
             var applicants = context.Applicants
                 .Where(a => a.JobVacancyId == jobVacancy.Id)
                 .ToList();
             applicants.ForEach(a => a.Status = (int)((ApplicantStatus)a.Status).GetFinal());
-            
+
             var evaluatedResumes = applicants
                 .Select(a => new EvaluatedResume
                 {
@@ -121,9 +118,9 @@ namespace Job_Portal_System.Handlers
             Operator.CalculateAndNormalizeEvaluations(evaluatedResumes, jobVacancy);
             evaluatedResumes.ForEach(r => FilesManager.Store(env, "Evaluations", r.Applicant.Id, r.Evaluation));
 
-            jobVacancy.Status = (int) JobVacancyStatus.InAction;
-            jobVacancy.AwaitingApplicants = 
-                applicants.Count(a => a.Status == (int) ApplicantStatus.AcceptedByRecruiter);
+            jobVacancy.Status = (int)JobVacancyStatus.InAction;
+            jobVacancy.AwaitingApplicants =
+                applicants.Count(a => a.Status == (int)ApplicantStatus.AcceptedByRecruiter);
 
             evaluatedResumes.ForEach(async evaluatedResume =>
                 await context.SendNotificationAsync(hubContext, new Notification
@@ -138,10 +135,10 @@ namespace Job_Portal_System.Handlers
             await context.SaveChangesAsync();
         }
 
-        public static async Task Recommend(ApplicationDbContext context, IHostingEnvironment env,
+        public static async Task Recommend(ApplicationDbContext context,
             IHubContext<SignalRHub> hubContext, JobVacancy jobVacancy)
         {
-            var fetchedResumes = FetchMatchingResumes(context, env, jobVacancy);
+            var fetchedResumes = FetchMatchingResumes(context, jobVacancy);
             var recommendedResumes = Operator.GetRecommendedResumes(fetchedResumes, jobVacancy);
             recommendedResumes.ForEach(async r =>
             {
@@ -151,7 +148,7 @@ namespace Job_Portal_System.Handlers
                     JobSeeker = r.User,
                     JobVacancy = jobVacancy,
                     Recruiter = jobVacancy.User,
-                    Status = (int) ApplicantStatus.PendingRecommendation,
+                    Status = (int)ApplicantStatus.PendingRecommendation,
                 }).Entity;
                 await context.SendNotificationAsync(hubContext, new Notification
                 {
@@ -166,7 +163,7 @@ namespace Job_Portal_System.Handlers
                 EntityId = jobVacancy.Id,
                 Peer1 = jobVacancy.Title,
             }, jobVacancy.User);
-
+            
             await context.SaveChangesAsync();
         }
 
@@ -183,10 +180,10 @@ namespace Job_Portal_System.Handlers
 
                 await context.SendNotificationAsync(hubContext, new Notification
                 {
-                    Type = (int) NotificationType.CancelledJobVacancy,
+                    Type = (int)NotificationType.CancelledJobVacancy,
                     Peer1 = jobVacancy.Title,
                 }, applicantsUsers);
-                
+
                 context.Applicants.RemoveRange(applicants);
             }
             context.JobVacancies.Remove(jobVacancy);
@@ -203,7 +200,7 @@ namespace Job_Portal_System.Handlers
             if (jobVacancy != null)
                 await context.SendNotificationAsync(hubContext, new Notification
                 {
-                    Type = (int) NotificationType.CancelledApplicant,
+                    Type = (int)NotificationType.CancelledApplicant,
                     Peer1 = $"{applicant.JobSeeker.FirstName} {applicant.JobSeeker.LastName}",
                     Peer2 = jobVacancy.Title,
                     EntityId = jobVacancy.Id,
@@ -214,168 +211,75 @@ namespace Job_Portal_System.Handlers
         }
 
         private static List<EvaluatedResume> FetchMatchingResumes(ApplicationDbContext context,
-                        IHostingEnvironment env, JobVacancy jobVacancy)
+            JobVacancy jobVacancy)
         {
             var jobVacancyCityId = context.CompanyDepartments
                 .SingleOrDefault(d => d.Id == jobVacancy.CompanyDepartmentId)?
                 .CityId;
 
-            var similaritiesQueryPath = Path.Combine(env.ContentRootPath, "Queries", "GetSimilarities.txt");
+            var requiredEducations = jobVacancy.EducationQualifications
+                .Where(q => q.Type == (int)QualificationType.Required)
+                .Select(q => q.FieldOfStudy.FieldOfStudySynsetId)
+                .ToList();
+            var requiredSkills = jobVacancy.DesiredSkills
+                .Where(q => q.Type == (int)QualificationType.Required)
+                .Select(q => q.Skill.SkillSynsetId)
+                .ToList();
+            var requiredWorks = jobVacancy.WorkExperienceQualifications
+                .Where(q => q.Type == (int)QualificationType.Required)
+                .Select(q => q.JobTitle.JobTitleSynsetId)
+                .ToList();
 
-            var jobTitlesSimilarities = GetSimilarJobTitles(context, jobVacancy, similaritiesQueryPath);
-            
-            var fieldsOfStudySimilarities = GetSimilarFieldsOfStudy(context, jobVacancy, similaritiesQueryPath);
+            var resumesIds = context.Resumes
+                .Where(r =>
+                    r.IsSeeking &&
+                    r.MinSalary <= jobVacancy.MaxSalary && r.MinSalary >= jobVacancy.MinSalary)
+                .Select(r => r.Id)
+                .ToList();
+            resumesIds = requiredEducations
+                .Aggregate(resumesIds, (current, education) => current.Intersect(context.Educations
+                    .Where(e => e.FieldOfStudy.FieldOfStudySynsetId == education)
+                    .Select(e => e.ResumeId)
+                    .ToList())
+                .ToList());
 
-            var skillsSimilarities = GetSimilarSkills(context, jobVacancy, similaritiesQueryPath);
+            resumesIds = requiredSkills
+                .Aggregate(resumesIds, (current, skill) => current.Intersect(context.OwnedSkills
+                    .Where(e => e.Skill.SkillSynsetId == skill)
+                    .Select(e => e.ResumeId)
+                    .ToList())
+                .ToList());
 
-            var resumes = context.Resumes
-                .Include(r => r.Educations)
-                .Include(r => r.WorkExperiences)
-                .Include(r => r.OwnedSkills)
-                .Include(r => r.User)
-                .Where(r => r.IsSeeking &&
-                            (
-                                // Remote
-                                jobVacancy.DistanceLimit == 0 ||
-                                // Not remote (limited by geo distance)
-                                (context.GeoDistances.SingleOrDefault(d => 
-                                    (d.City1Id == r.User.CityId && d.City2Id == jobVacancyCityId) ||
-                                    (d.City1Id == r.User.CityId && d.City2Id == jobVacancyCityId))
-                                .Distance <= jobVacancy.DistanceLimit)
-                            ) &&
-                            r.JobTypes
-                                .Select(type => type.JobType)
-                                .Intersect(jobVacancy.JobTypes.Select(type => type.JobType))
-                                .Any() &&
-                            r.MinSalary <= jobVacancy.MaxSalary && r.MinSalary >= jobVacancy.MinSalary &&
-                            jobVacancy.WorkExperienceQualifications
-                                .Where(workExperienceQualification =>
-                                    workExperienceQualification.Type == (int)QualificationType.Required)
-                                .All(workExperienceQualification => r.WorkExperiences
-                                    .Any(workExperience => 
-                                        jobTitlesSimilarities.ContainsKey(workExperience.JobTitleId) &&
-                                        workExperienceQualification.JobTitleId == jobTitlesSimilarities[workExperience.JobTitleId] &&
-                                        HelperFunctions.GetYears(workExperience.StartDate, (workExperience.EndDate ?? DateTime.Now)) >= workExperienceQualification.MinimumYears)) &&
-                            jobVacancy.EducationQualifications
-                                .Where(educationQualification =>
-                                    educationQualification.Type == (int)QualificationType.Required)
-                                .All(educationQualification => r.Educations
-                                    .Any(education =>
-                                        fieldsOfStudySimilarities.ContainsKey(education.FieldOfStudyId) &&
-                                        educationQualification.FieldOfStudyId == fieldsOfStudySimilarities[education.FieldOfStudyId] &&
-                                        HelperFunctions.GetYears(education.StartDate, (education.EndDate ?? DateTime.Now)) >= educationQualification.MinimumYears)) &&
-                            jobVacancy.DesiredSkills
-                                .Where(desiredSkill =>
-                                    desiredSkill.Type == (int)QualificationType.Required)
-                                .All(desiredSkill => r.OwnedSkills
-                                    .Any(ownedSkill =>
-                                        skillsSimilarities.ContainsKey(ownedSkill.SkillId) &&
-                                        desiredSkill.SkillId == skillsSimilarities[ownedSkill.SkillId] &&
-                                        ownedSkill.Years >= desiredSkill.MinimumYears)));
+            resumesIds = requiredWorks
+                .Aggregate(resumesIds, (current, work) => current.Intersect(context.WorkExperiences
+                    .Where(e => e.JobTitleId == work)
+                    .Select(e => e.ResumeId)
+                    .ToList())
+                .ToList());
 
-            foreach (var resume in resumes)
-            {
-                foreach (var workExperience in resume.WorkExperiences)
-                {
-                    if (jobTitlesSimilarities.ContainsKey(workExperience.JobTitleId))
-                    {
-                        workExperience.JobTitleId = jobTitlesSimilarities[workExperience.JobTitleId];
-                    }
-                }
-                foreach (var education in resume.Educations)
-                {
-                    if (jobTitlesSimilarities.ContainsKey(education.FieldOfStudyId))
-                    {
-                        education.FieldOfStudyId = jobTitlesSimilarities[education.FieldOfStudyId];
-                    }
-                }
-                foreach (var ownedSkill in resume.OwnedSkills)
-                {
-                    if (jobTitlesSimilarities.ContainsKey(ownedSkill.SkillId))
-                    {
-                        ownedSkill.SkillId = jobTitlesSimilarities[ownedSkill.SkillId];
-                    }
-                }
-
-                context.Entry(resume).State = EntityState.Unchanged;
-            }
-
-            return resumes.Select(r => new EvaluatedResume {Resume = r}).ToList();
-        }
-
-        private static Dictionary<long, long> GetSimilarJobTitles(ApplicationDbContext context, 
-            JobVacancy jobVacancy, string similaritiesQueryPath)
-        {
-            var jobTitles = jobVacancy.WorkExperienceQualifications
-                .Select(q => q.JobTitle);
-
-            var jobTitlesSimilarities = new Dictionary<long, long>();
-
-            foreach (var jobTitle in jobTitles)
-            {
-                var similarities = SimilaritiesOperator
-                    .GetSimilarities(jobTitle.NormalizedTitle, similaritiesQueryPath);
-                foreach (var similarity in similarities)
-                {
-                    var similarityInDb = context.JobTitles
-                        .SingleOrDefault(j => j.NormalizedTitle == similarity);
-                    if (similarityInDb != null &&
-                        !jobTitlesSimilarities.ContainsKey(similarityInDb.Id))
-                        jobTitlesSimilarities.Add(similarityInDb.Id, jobTitle.Id);
-                }
-            }
-
-            return jobTitlesSimilarities;
-        }
-
-        private static Dictionary<long, long> GetSimilarFieldsOfStudy(ApplicationDbContext context,
-            JobVacancy jobVacancy, string similaritiesQueryPath)
-        {
-            var fieldsOfStudy = jobVacancy.EducationQualifications
-                .Select(q => q.FieldOfStudy);
-
-            var fieldsOfStudySimilarities = new Dictionary<long, long>();
-
-            foreach (var fieldOfStudy in fieldsOfStudy)
-            {
-                var similarities = SimilaritiesOperator
-                    .GetSimilarities(fieldOfStudy.NormalizedTitle, similaritiesQueryPath);
-                foreach (var similarity in similarities)
-                {
-                    var similarityInDb = context.FieldOfStudies
-                        .SingleOrDefault(f => f.NormalizedTitle == similarity);
-                    if (similarityInDb != null &&
-                        !fieldsOfStudySimilarities.ContainsKey(similarityInDb.Id))
-                        fieldsOfStudySimilarities.Add(similarityInDb.Id, fieldOfStudy.Id);
-                }
-            }
-
-            return fieldsOfStudySimilarities;
-        }
-
-        private static Dictionary<long, long> GetSimilarSkills(ApplicationDbContext context,
-            JobVacancy jobVacancy, string similaritiesQueryPath)
-        {
-            var skills = jobVacancy.DesiredSkills
-                .Select(q => q.Skill);
-
-            var skillsSimilarities = new Dictionary<long, long>();
-
-            foreach (var skill in skills)
-            {
-                var similarities = SimilaritiesOperator
-                    .GetSimilarities(skill.NormalizedTitle, similaritiesQueryPath);
-                foreach (var similarity in similarities)
-                {
-                    var similarityInDb = context.Skills
-                        .SingleOrDefault(j => j.NormalizedTitle == similarity);
-                    if (similarityInDb != null &&
-                        !skillsSimilarities.ContainsKey(similarityInDb.Id))
-                        skillsSimilarities.Add(similarityInDb.Id, skill.Id);
-                }
-            }
-
-            return skillsSimilarities;
+            var jobVacancyJobTypes = jobVacancy.JobTypes.Select(t => t.JobType);
+            return resumesIds
+                .Select(id => context.Resumes
+                    .Include(r => r.WorkExperiences).ThenInclude(w => w.JobTitle)
+                    .Include(r => r.Educations).ThenInclude(e => e.FieldOfStudy)
+                    .Include(r => r.OwnedSkills).ThenInclude(s => s.Skill)
+                    .Include(r => r.JobTypes)
+                    .Include(r => r.User)
+                    .FirstOrDefault(r => r.Id == id))
+                .Where(r =>
+                    r != null &&
+                    (
+                        jobVacancy.DistanceLimit == 0 ||
+                        context.GeoDistances.First(d =>
+                                d.City1Id == r.User.CityId && d.City2Id == jobVacancyCityId ||
+                                d.City1Id == r.User.CityId && d.City2Id == jobVacancyCityId)
+                            .Distance <= jobVacancy.DistanceLimit
+                    ) &&
+                    r.JobTypes
+                        .Select(type => type.JobType)
+                        .Intersect(jobVacancyJobTypes)
+                        .Any())
+                .Select(r => new EvaluatedResume { Resume = r }).ToList();
         }
     }
 }

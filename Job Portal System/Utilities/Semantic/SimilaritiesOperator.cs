@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Microsoft.AspNetCore.Hosting;
 using VDS.RDF;
 using VDS.RDF.Query;
 using VDS.RDF.Storage;
@@ -19,8 +20,9 @@ namespace Job_Portal_System.Utilities.Semantic
                 return (enumerable1.Count() - enumerable1.Max()).CompareTo(enumerable2.Count() - enumerable2.Max());
             });
 
-        public static IEnumerable<string> GetSimilarities(string sentence, string queryFilePath)
+        public static IEnumerable<string> GetSimilarities(string sentence, IHostingEnvironment env)
         {
+            var queryFilePath = Path.Combine(env.ContentRootPath, "Queries", "GetSimilarities.txt");
             var tokens = sentence.Split(" ");
             var setsLengths = GetSetsLengths(tokens.Length)
                 .OrderBy(setLengths => setLengths, TokensSetsComparer);

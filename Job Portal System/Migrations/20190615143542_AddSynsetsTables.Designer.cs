@@ -4,14 +4,16 @@ using Job_Portal_System.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Job_Portal_System.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190615143542_AddSynsetsTables")]
+    partial class AddSynsetsTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -241,7 +243,7 @@ namespace Job_Portal_System.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<long>("FieldOfStudySynsetId");
+                    b.Property<long?>("FieldOfStudySynsetId");
 
                     b.Property<string>("NormalizedTitle")
                         .IsRequired()
@@ -309,7 +311,7 @@ namespace Job_Portal_System.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<long>("JobTitleSynsetId");
+                    b.Property<long?>("JobTitleSynsetId");
 
                     b.Property<string>("NormalizedTitle")
                         .IsRequired()
@@ -557,7 +559,7 @@ namespace Job_Portal_System.Migrations
                         .IsRequired()
                         .HasMaxLength(255);
 
-                    b.Property<long>("SkillSynsetId");
+                    b.Property<long?>("SkillSynsetId");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -955,8 +957,7 @@ namespace Job_Portal_System.Migrations
                 {
                     b.HasOne("Job_Portal_System.Models.FieldOfStudySynset", "FieldOfStudySynset")
                         .WithMany()
-                        .HasForeignKey("FieldOfStudySynsetId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("FieldOfStudySynsetId");
                 });
 
             modelBuilder.Entity("Job_Portal_System.Models.GeoDistance", b =>
@@ -981,8 +982,7 @@ namespace Job_Portal_System.Migrations
                 {
                     b.HasOne("Job_Portal_System.Models.JobTitleSynset", "JobTitleSynset")
                         .WithMany()
-                        .HasForeignKey("JobTitleSynsetId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("JobTitleSynsetId");
                 });
 
             modelBuilder.Entity("Job_Portal_System.Models.JobVacancy", b =>
@@ -1069,8 +1069,7 @@ namespace Job_Portal_System.Migrations
                 {
                     b.HasOne("Job_Portal_System.Models.SkillSynset", "SkillSynset")
                         .WithMany()
-                        .HasForeignKey("SkillSynsetId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("SkillSynsetId");
                 });
 
             modelBuilder.Entity("Job_Portal_System.Models.UserNotification", b =>

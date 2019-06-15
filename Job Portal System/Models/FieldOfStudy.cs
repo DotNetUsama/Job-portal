@@ -16,5 +16,8 @@ namespace Job_Portal_System.Models
         [StringLength(70)]
         [DataType(DataType.Text)]
         public string NormalizedTitle { get; set; }
+
+        public FieldOfStudySynset FieldOfStudySynset { get; set; }
+        public long FieldOfStudySynsetId { get; set; }
     }
 }

@@ -19,7 +19,7 @@ namespace Job_Portal_System.Models
 
         public long ToNumber()
         {
-            return SkillId;
+            return Skill.SkillSynsetId;
         }
     }
 }

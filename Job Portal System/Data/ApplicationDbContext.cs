@@ -30,7 +30,9 @@ namespace Job_Portal_System.Data
         public DbSet<GeoDistance> GeoDistances { get; set; }
         public DbSet<EducationQualification> EducationQualifications { get; set; }
         public DbSet<FieldOfStudy> FieldOfStudies { get; set; }
+        public DbSet<FieldOfStudySynset> FieldOfStudySynsets { get; set; }
         public DbSet<JobTitle> JobTitles { get; set; }
+        public DbSet<JobTitleSynset> JobTitleSynsets { get; set; }
         public DbSet<JobVacancy> JobVacancies { get; set; }
         public DbSet<JobVacancyJobType> JobVacancyJobTypes { get; set; }
         public DbSet<Notification> Notifications { get; set; }
@@ -40,6 +42,7 @@ namespace Job_Portal_System.Data
         public DbSet<School> Schools { get; set; }
         public DbSet<SeekedJobTitle> SeekedJobTitles { get; set; }
         public DbSet<Skill> Skills { get; set; }
+        public DbSet<SkillSynset> SkillSynsets { get; set; }
         public DbSet<UserNotification> UserNotifications { get; set; }
         public DbSet<WorkExperience> WorkExperiences { get; set; }
         public DbSet<WorkExperienceQualification> WorkExperienceQualifications { get; set; }

@@ -29,7 +29,7 @@ namespace Job_Portal_System.Models
 
         public long ToNumber()
         {
-            return JobTitleId;
+            return JobTitle.JobTitleSynsetId;
         }
 
 

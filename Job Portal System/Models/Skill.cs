@@ -15,5 +15,8 @@ namespace Job_Portal_System.Models
         [StringLength(255)]
         [DataType(DataType.Text)]
         public string NormalizedTitle { get; set; }
+
+        public SkillSynset SkillSynset { get; set; }
+        public long SkillSynsetId { get; set; }
     }
 }

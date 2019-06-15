@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Job_Portal_System.Enums;
 using Job_Portal_System.Models;
@@ -65,7 +66,7 @@ namespace Job_Portal_System.Utilities.RankingSystem
             return ranks
                 .OrderByDescending(r => r.Value)
                 .Select(r => r.Key)
-                .Take(10)
+                .Take((int) Math.Ceiling(Math.Pow(jobVacancy.RequiredHires + 1, 1.5)))
                 .ToList();
         }
 

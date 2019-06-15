@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Job_Portal_System.Areas.Resumes.Pages.InputModels;
 using Job_Portal_System.Data;
+using Job_Portal_System.Dependencies;
 using Job_Portal_System.Enums;
 using Job_Portal_System.Models;
 using Job_Portal_System.Validation;
@@ -19,12 +20,15 @@ namespace Job_Portal_System.Areas.Resumes.Pages
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<User> _userManager;
+        private readonly ITermsManager _termsManager;
 
         public CreateModel(ApplicationDbContext context,
-            UserManager<User> userManager)
+            UserManager<User> userManager,
+            ITermsManager termsManager)
         {
             _context = context;
             _userManager = userManager;
+            _termsManager = termsManager;
         }
 
         [BindProperty]
@@ -119,21 +123,12 @@ namespace Job_Portal_System.Areas.Resumes.Pages
                     Name = education.School,
                 };
 
-            var fieldOfStudy =
-                _context.FieldOfStudies.SingleOrDefault(fieldInDb => 
-                        fieldInDb.NormalizedTitle == education.FieldOfStudy.ToLower()) ??
-                new FieldOfStudy
-                {
-                    Title = education.FieldOfStudy,
-                    NormalizedTitle = education.FieldOfStudy.ToLower(),
-                };
-
             resume.Educations.Add(new Education
             {
                 StartDate = education.StartDate,
                 EndDate = education.EndDate,
                 Degree = education.Degree,
-                FieldOfStudy = fieldOfStudy,
+                FieldOfStudy = _termsManager.GetFieldOfStudy(education.FieldOfStudy),
                 School = school,
             });
         }
@@ -150,57 +145,30 @@ namespace Job_Portal_System.Areas.Resumes.Pages
                     Approved = false,
                 };
 
-            var jobTitle =
-                _context.JobTitles.SingleOrDefault(jobTitleInDb => 
-                    jobTitleInDb.NormalizedTitle == workExperience.JobTitle.ToLower()) ??
-                new JobTitle
-                {
-                    Title = workExperience.JobTitle,
-                    NormalizedTitle = workExperience.JobTitle.ToLower(),
-                };
-
             resume.WorkExperiences.Add(new WorkExperience()
             {
                 StartDate = workExperience.StartDate,
                 EndDate = workExperience.EndDate,
                 Company = company,
-                JobTitle = jobTitle,
+                JobTitle = _termsManager.GetJobTitle(workExperience.JobTitle),
                 Description = workExperience.Description,
             });
         }
 
-        private void AddSkill(Resume resume, SkillInputModel skillModel)
+        private void AddSkill(Resume resume, SkillInputModel skill)
         {
-            var skill =
-                _context.Skills.SingleOrDefault(skillInDb => 
-                        skillInDb.NormalizedTitle == skillModel.Skill.ToLower()) ??
-                new Skill
-                {
-                    Title = skillModel.Skill,
-                    NormalizedTitle = skillModel.Skill.ToLower(),
-                };
-
             resume.OwnedSkills.Add(new OwnedSkill
             {
-                Skill = skill,
-                Years = skillModel.Years,
+                Skill = _termsManager.GetSkill(skill.Skill),
+                Years = skill.Years,
             });
         }
 
         private void AddSeekedJobTitle(Resume resume, JobTitleInputModel jobTitleModel)
         {
-            var jobTitle =
-                _context.JobTitles.SingleOrDefault(jobTitleInDb => 
-                    jobTitleInDb.NormalizedTitle == jobTitleModel.JobTitle.ToLower()) ??
-                new JobTitle
-                {
-                    Title = jobTitleModel.JobTitle,
-                    NormalizedTitle = jobTitleModel.JobTitle.ToLower(),
-                };
-
             resume.SeekedJobTitles.Add(new SeekedJobTitle
             {
-                JobTitle = jobTitle,
+                JobTitle = _termsManager.GetJobTitle(jobTitleModel.JobTitle),
             });
         }
     }

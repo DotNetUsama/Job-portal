@@ -2,22 +2,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Job_Portal_System.Areas.JobVacancies.Pages.InputModels;
-using Job_Portal_System.BackgroundTasking;
 using Job_Portal_System.Data;
 using Job_Portal_System.Dependencies;
 using Job_Portal_System.Enums;
 using Job_Portal_System.Handlers;
 using Job_Portal_System.Models;
 using Job_Portal_System.SignalR;
-using Job_Portal_System.Utilities.RankingSystem;
 using Job_Portal_System.Validation;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Job_Portal_System.Areas.JobVacancies.Pages
 {
@@ -26,23 +22,18 @@ namespace Job_Portal_System.Areas.JobVacancies.Pages
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<User> _userManager;
-        private readonly IBackgroundOperator _backgroundOperator;
-        //private readonly IServiceScopeFactory _serviceScopeFactory;
-        //private readonly BackgroundTaskQueue _queue;
+        private readonly IHubContext<SignalRHub> _hubContext;
+        private readonly ITermsManager _termsManager;
 
         public CreateModel(ApplicationDbContext context,
             UserManager<User> userManager,
-            IBackgroundOperator backgroundOperator
-            //,
-            //IServiceScopeFactory serviceScopeFactory,
-            //BackgroundTaskQueue queue
-            )
+            IHubContext<SignalRHub> hubContext,
+            ITermsManager termsManager)
         {
             _context = context;
             _userManager = userManager;
-            _backgroundOperator = backgroundOperator;
-            //_serviceScopeFactory = serviceScopeFactory;
-            //_queue = queue;
+            _hubContext = hubContext;
+            _termsManager = termsManager;
         }
 
         [BindProperty]
@@ -91,6 +82,7 @@ namespace Job_Portal_System.Areas.JobVacancies.Pages
                 .SingleOrDefault(recruiterInDb => recruiterInDb.UserId == user.Id);
             var jobVacancy = new JobVacancy
             {
+                JobTitle = _termsManager.GetJobTitle(JobVacancyInfo.JobTitle),
                 Title = JobVacancyInfo.Title,
                 Description = JobVacancyInfo.Description,
                 DistanceLimit = JobVacancyInfo.DistanceLimit,
@@ -109,24 +101,11 @@ namespace Job_Portal_System.Areas.JobVacancies.Pages
             Educations?.ForEach(education => AddEducation(jobVacancy, education));
             WorkExperiences?.ForEach(workExperience => AddWorkExperience(jobVacancy, workExperience));
             DesiredSkills?.ForEach(skill => AddSkill(jobVacancy, skill));
-            AddJobTitle(jobVacancy);
             AddJobTypes(jobVacancy);
             _context.JobVacancies.Add(jobVacancy);
-            if (JobVacancyInfo.Method == (int) JobVacancyMethod.Recommendation)
+            if (JobVacancyInfo.Method == (int)JobVacancyMethod.Recommendation)
             {
-                _backgroundOperator.Recommend(jobVacancy);
-
-                //_queue.QueueBackgroundWorkItem(async token =>
-                //{
-                //    using (var scope = _serviceScopeFactory.CreateScope())
-                //    {
-                //        var scopedServices = scope.ServiceProvider;
-                //        var context = scopedServices.GetRequiredService<ApplicationDbContext>();
-                //        var hubContext = scopedServices.GetRequiredService<IHubContext<SignalRHub>>();
-                //        var env = scopedServices.GetRequiredService<IHostingEnvironment>();
-                //        await AsyncHandler.Recommend(context, env, hubContext, jobVacancy);
-                //    }
-                //});
+                await AsyncHandler.Recommend(_context, _hubContext, jobVacancy);
                 return Redirect("./Index");
             }
 
@@ -146,75 +125,34 @@ namespace Job_Portal_System.Areas.JobVacancies.Pages
             }
         }
 
-        private void AddJobTitle(JobVacancy jobVacancy)
-        {
-            var jobTitle = 
-                _context.JobTitles.SingleOrDefault(jobTitleInDb => 
-                    jobTitleInDb.NormalizedTitle == JobVacancyInfo.JobTitle.ToLower()) ??
-                new JobTitle
-                {
-                    Title = JobVacancyInfo.JobTitle,
-                    NormalizedTitle = JobVacancyInfo.JobTitle.ToLower(),
-                };
-
-            jobVacancy.JobTitle = jobTitle;
-        }
-
         private void AddEducation(JobVacancy jobVacancy, EducationInputModel education)
         {
-            var fieldOfStudy =
-                _context.FieldOfStudies.SingleOrDefault(fieldInDb => 
-                    fieldInDb.NormalizedTitle == education.FieldOfStudy) ??
-                new FieldOfStudy
-                {
-                    Title = education.FieldOfStudy,
-                    NormalizedTitle = education.FieldOfStudy.ToLower(),
-                };
-
             jobVacancy.EducationQualifications.Add(new EducationQualification
             {
                 Type = education.Type,
                 Degree = education.Degree,
                 MinimumYears = education.MinimumYears,
-                FieldOfStudy = fieldOfStudy,
+                FieldOfStudy = _termsManager.GetFieldOfStudy(education.FieldOfStudy),
             });
         }
 
         private void AddWorkExperience(JobVacancy jobVacancy, WorkExperienceInputModel workExperience)
         {
-            var jobTitle =
-                _context.JobTitles.SingleOrDefault(jobTitleInDb => 
-                    jobTitleInDb.NormalizedTitle == workExperience.JobTitle.ToLower()) ??
-                new JobTitle
-                {
-                    Title = workExperience.JobTitle,
-                    NormalizedTitle = workExperience.JobTitle.ToLower(),
-                };
-
             jobVacancy.WorkExperienceQualifications.Add(new WorkExperienceQualification()
             {
                 Type = workExperience.Type,
                 MinimumYears = workExperience.MinimumYears,
-                JobTitle = jobTitle,
+                JobTitle = _termsManager.GetJobTitle(workExperience.JobTitle),
             });
         }
 
-        private void AddSkill(JobVacancy jobVacancy, SkillInputModel skillModel)
+        private void AddSkill(JobVacancy jobVacancy, SkillInputModel skill)
         {
-            var skill =
-                _context.Skills.SingleOrDefault(skillInDb => 
-                    skillInDb.NormalizedTitle == skillModel.Skill) ??
-                new Skill
-                {
-                    Title = skillModel.Skill,
-                    NormalizedTitle = skillModel.Skill.ToLower(),
-                };
-
             jobVacancy.DesiredSkills.Add(new DesiredSkill
             {
-                Type = skillModel.Type,
-                Skill = skill,
-                MinimumYears = skillModel.MinimumYears,
+                Type = skill.Type,
+                Skill = _termsManager.GetSkill(skill.Skill),
+                MinimumYears = skill.MinimumYears,
             });
         }
     }

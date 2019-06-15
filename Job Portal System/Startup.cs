@@ -64,8 +64,7 @@ namespace Job_Portal_System
 
             services.AddHostedService<QueuedHostedService>();
             services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
-
-            services.AddScoped<IBackgroundOperator, BackgroundOperator>();
+            services.AddScoped<ITermsManager, TermsManager>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -99,7 +98,7 @@ namespace Job_Portal_System
             //DatabaseSeeder.SeedData(env, context, userManager, roleManager);
             //DatabaseSeeder.ClearDatabase(context);
             //DatabaseSeeder.SeedJobSeekers(context, userManager, 10);
-
+            //var count = context.JobSeekers.Count();
             app.UseMvc();
         }
     }

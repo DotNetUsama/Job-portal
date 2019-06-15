@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using DinkToPdf;
 using DinkToPdf.Contracts;
@@ -34,10 +33,9 @@ namespace Job_Portal_System.Controllers
         [Route("Search")]
         public IActionResult Search(string query, int p = 1)
         {
-            var similaritiesQueryPath = Path.Combine(_env.ContentRootPath, "Queries", "GetSimilarities.txt");
             query = query.ToLower().Trim();
 
-            var similarities = SimilaritiesOperator.GetSimilarities(query, similaritiesQueryPath);
+            var similarities = SimilaritiesOperator.GetSimilarities(query, _env);
             var jobTitles = similarities
                 .Select(similarity => _context.JobTitles.SingleOrDefault(j => j.NormalizedTitle == similarity))
                 .Where(jobTitle => jobTitle != null)

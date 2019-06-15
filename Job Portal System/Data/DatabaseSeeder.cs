@@ -6,6 +6,7 @@ using System.Net;
 using GeoCoordinatePortable;
 using Job_Portal_System.Enums;
 using Job_Portal_System.Models;
+using Job_Portal_System.Utilities.Semantic;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Newtonsoft.Json;
@@ -103,6 +104,92 @@ namespace Job_Portal_System.Data
 
             context.Roles.RemoveAll();
             if (context.HasUnsavedChanges()) context.SaveChanges();
+        }
+
+        public static void FixDatabase(ApplicationDbContext context, IHostingEnvironment env)
+        {
+            //FixJobTitles(context, env);
+            //FixFieldsOfStudy(context, env);
+            FixSkills(context, env);
+        }
+
+        private static void FixJobTitles(ApplicationDbContext context, IHostingEnvironment env)
+        {
+            var count = context.JobTitles.Count();
+            for (var i = 0; i < count; i++)
+            {
+                var jobTitle = context.JobTitles.Skip(i).First();
+                if (jobTitle.JobTitleSynset != null) continue;
+
+                var synset = new JobTitleSynset();
+                jobTitle.JobTitleSynset = synset;
+                var normalizedTitle = jobTitle.NormalizedTitle;
+                var similarities = SimilaritiesOperator.GetSimilarities(normalizedTitle, env);
+                foreach (var similarity in similarities)
+                {
+                    var similarityInDb = context.JobTitles
+                        .FirstOrDefault(j => j.NormalizedTitle == similarity);
+                    if (similarityInDb != null)
+                    {
+                        similarityInDb.JobTitleSynset = synset;
+                    }
+                }
+
+                context.SaveChanges();
+            }
+        }
+
+        private static void FixFieldsOfStudy(ApplicationDbContext context, IHostingEnvironment env)
+        {
+            var count = context.FieldOfStudies.Count();
+            for (var i = 0; i < count; i++)
+            {
+                var fieldOfStudy = context.FieldOfStudies.Skip(i).First();
+                if (fieldOfStudy.FieldOfStudySynset != null) continue;
+
+                var synset = new FieldOfStudySynset();
+                fieldOfStudy.FieldOfStudySynset = synset;
+                var normalizedTitle = fieldOfStudy.NormalizedTitle;
+                var similarities = SimilaritiesOperator.GetSimilarities(normalizedTitle, env);
+                foreach (var similarity in similarities)
+                {
+                    var similarityInDb = context.FieldOfStudies
+                        .FirstOrDefault(j => j.NormalizedTitle == similarity);
+                    if (similarityInDb != null)
+                    {
+                        similarityInDb.FieldOfStudySynset = synset;
+                    }
+                }
+
+                context.SaveChanges();
+            }
+        }
+
+        private static void FixSkills(ApplicationDbContext context, IHostingEnvironment env)
+        {
+            var count = context.Skills.Count();
+            for (var i = 333; i < count; i++)
+            {
+                var skill = context.Skills.Skip(i).First();
+                if (skill.SkillSynset != null) continue;
+
+                var synset = new SkillSynset();
+                skill.SkillSynset = synset;
+                var normalizedTitle = skill.NormalizedTitle.Split(" - ").Last();
+                skill.NormalizedTitle = normalizedTitle;
+                var similarities = SimilaritiesOperator.GetSimilarities(normalizedTitle, env);
+                foreach (var similarity in similarities)
+                {
+                    var similarityInDb = context.Skills
+                        .FirstOrDefault(j => j.NormalizedTitle == similarity);
+                    if (similarityInDb != null)
+                    {
+                        similarityInDb.SkillSynset = synset;
+                    }
+                }
+
+                context.SaveChanges();
+            }
         }
 
         private static void SeedUsers(UserManager<User> userManager)
