@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Job_Portal_System.Areas.JobVacancies.Pages.InputModels;
+using Job_Portal_System.BackgroundTasking.Interfaces;
 using Job_Portal_System.Data;
 using Job_Portal_System.Dependencies;
 using Job_Portal_System.Enums;
@@ -14,6 +15,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Job_Portal_System.Areas.JobVacancies.Pages
 {
@@ -22,18 +24,21 @@ namespace Job_Portal_System.Areas.JobVacancies.Pages
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<User> _userManager;
-        private readonly IHubContext<SignalRHub> _hubContext;
         private readonly ITermsManager _termsManager;
+        private readonly IServiceScopeFactory _serviceScopeFactory;
+        private readonly IBackgroundTaskQueue _queue;
 
         public CreateModel(ApplicationDbContext context,
             UserManager<User> userManager,
-            IHubContext<SignalRHub> hubContext,
-            ITermsManager termsManager)
+            ITermsManager termsManager,
+            IServiceScopeFactory serviceScopeFactory,
+            IBackgroundTaskQueue queue)
         {
             _context = context;
             _userManager = userManager;
-            _hubContext = hubContext;
             _termsManager = termsManager;
+            _serviceScopeFactory = serviceScopeFactory;
+            _queue = queue;
         }
 
         [BindProperty]
@@ -102,10 +107,21 @@ namespace Job_Portal_System.Areas.JobVacancies.Pages
             WorkExperiences?.ForEach(workExperience => AddWorkExperience(jobVacancy, workExperience));
             DesiredSkills?.ForEach(skill => AddSkill(jobVacancy, skill));
             AddJobTypes(jobVacancy);
-            _context.JobVacancies.Add(jobVacancy);
+            var jobVacancyId = _context.JobVacancies.Add(jobVacancy).Entity.Id;
             if (JobVacancyInfo.Method == (int)JobVacancyMethod.Recommendation)
             {
-                await AsyncHandler.Recommend(_context, _hubContext, jobVacancy);
+                _context.SaveChanges();
+                _queue.QueueBackgroundWorkItem(async token =>
+                {
+                    using (var scope = _serviceScopeFactory.CreateScope())
+                    {
+                        var scopedServices = scope.ServiceProvider;
+                        var context = scopedServices.GetRequiredService<ApplicationDbContext>();
+                        var hubContext = scopedServices.GetRequiredService<IHubContext<SignalRHub>>();
+
+                        await AsyncHandler.Recommend(context, hubContext, token, jobVacancyId);
+                    }
+                });
                 return Redirect("./Index");
             }
 

@@ -237,20 +237,20 @@ namespace Job_Portal_System.Controllers
             await _context.SaveChangesAsync();
         }
 
-        [HttpGet]
-        [Route("Test")]
-        public async Task Test()
-        {
-            var jobVacancy = _context.JobVacancies
-                .Include(j => j.WorkExperienceQualifications).ThenInclude(w => w.JobTitle)
-                .Include(j => j.EducationQualifications).ThenInclude(e => e.FieldOfStudy)
-                .Include(j => j.DesiredSkills).ThenInclude(s => s.Skill)
-                .Include(j => j.JobTypes)
-                .Include(j => j.CompanyDepartment)
-                .Include(j => j.User)
-                .FirstOrDefault(j => j.Id == "758f9b03-f431-4043-81f6-2ecc38f07a99");
-            await AsyncHandler.Recommend(_context, _hubContext, jobVacancy);
-        }
+        //[HttpGet]
+        //[Route("Test")]
+        //public async Task Test()
+        //{
+        //    var jobVacancy = _context.JobVacancies
+        //        .Include(j => j.WorkExperienceQualifications).ThenInclude(w => w.JobTitle)
+        //        .Include(j => j.EducationQualifications).ThenInclude(e => e.FieldOfStudy)
+        //        .Include(j => j.DesiredSkills).ThenInclude(s => s.Skill)
+        //        .Include(j => j.JobTypes)
+        //        .Include(j => j.CompanyDepartment)
+        //        .Include(j => j.User)
+        //        .FirstOrDefault(j => j.Id == "758f9b03-f431-4043-81f6-2ecc38f07a99");
+        //    await AsyncHandler.Recommend(_context, _hubContext, jobVacancy.Id);
+        //}
     }
 }
 

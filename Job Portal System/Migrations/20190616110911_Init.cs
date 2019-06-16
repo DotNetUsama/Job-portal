@@ -44,31 +44,27 @@ namespace Job_Portal_System.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "FieldOfStudies",
+                name: "FieldOfStudySynsets",
                 columns: table => new
                 {
                     Id = table.Column<long>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    Title = table.Column<string>(maxLength: 70, nullable: false),
-                    NormalizedTitle = table.Column<string>(maxLength: 70, nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_FieldOfStudies", x => x.Id);
+                    table.PrimaryKey("PK_FieldOfStudySynsets", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "JobTitles",
+                name: "JobTitleSynsets",
                 columns: table => new
                 {
                     Id = table.Column<long>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    Title = table.Column<string>(maxLength: 70, nullable: false),
-                    NormalizedTitle = table.Column<string>(maxLength: 70, nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_JobTitles", x => x.Id);
+                    table.PrimaryKey("PK_JobTitleSynsets", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -101,17 +97,15 @@ namespace Job_Portal_System.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Skills",
+                name: "SkillSynsets",
                 columns: table => new
                 {
                     Id = table.Column<long>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    Title = table.Column<string>(maxLength: 255, nullable: false),
-                    NormalizedTitle = table.Column<string>(maxLength: 255, nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Skills", x => x.Id);
+                    table.PrimaryKey("PK_SkillSynsets", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -143,6 +137,69 @@ namespace Job_Portal_System.Migrations
                         name: "FK_AspNetRoleClaims_AspNetRoles_RoleId",
                         column: x => x.RoleId,
                         principalTable: "AspNetRoles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "FieldOfStudies",
+                columns: table => new
+                {
+                    Id = table.Column<long>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Title = table.Column<string>(maxLength: 70, nullable: false),
+                    NormalizedTitle = table.Column<string>(maxLength: 70, nullable: false),
+                    FieldOfStudySynsetId = table.Column<long>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_FieldOfStudies", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_FieldOfStudies_FieldOfStudySynsets_FieldOfStudySynsetId",
+                        column: x => x.FieldOfStudySynsetId,
+                        principalTable: "FieldOfStudySynsets",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "JobTitles",
+                columns: table => new
+                {
+                    Id = table.Column<long>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Title = table.Column<string>(maxLength: 70, nullable: false),
+                    NormalizedTitle = table.Column<string>(maxLength: 70, nullable: false),
+                    JobTitleSynsetId = table.Column<long>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_JobTitles", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_JobTitles_JobTitleSynsets_JobTitleSynsetId",
+                        column: x => x.JobTitleSynsetId,
+                        principalTable: "JobTitleSynsets",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Skills",
+                columns: table => new
+                {
+                    Id = table.Column<long>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Title = table.Column<string>(maxLength: 255, nullable: false),
+                    NormalizedTitle = table.Column<string>(maxLength: 255, nullable: false),
+                    SkillSynsetId = table.Column<long>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Skills", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Skills_SkillSynsets_SkillSynsetId",
+                        column: x => x.SkillSynsetId,
+                        principalTable: "SkillSynsets",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -927,6 +984,11 @@ namespace Job_Portal_System.Migrations
                 column: "SchoolId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_FieldOfStudies_FieldOfStudySynsetId",
+                table: "FieldOfStudies",
+                column: "FieldOfStudySynsetId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_GeoDistances_City1Id",
                 table: "GeoDistances",
                 column: "City1Id");
@@ -940,6 +1002,11 @@ namespace Job_Portal_System.Migrations
                 name: "IX_JobSeekers_UserId",
                 table: "JobSeekers",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_JobTitles_JobTitleSynsetId",
+                table: "JobTitles",
+                column: "JobTitleSynsetId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_JobVacancies_CompanyDepartmentId",
@@ -1010,6 +1077,11 @@ namespace Job_Portal_System.Migrations
                 name: "IX_SeekedJobTitles_ResumeId",
                 table: "SeekedJobTitles",
                 column: "ResumeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Skills_SkillSynsetId",
+                table: "Skills",
+                column: "SkillSynsetId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserNotifications_NotificationId",
@@ -1125,6 +1197,12 @@ namespace Job_Portal_System.Migrations
                 name: "Resumes");
 
             migrationBuilder.DropTable(
+                name: "FieldOfStudySynsets");
+
+            migrationBuilder.DropTable(
+                name: "SkillSynsets");
+
+            migrationBuilder.DropTable(
                 name: "CompanyDepartments");
 
             migrationBuilder.DropTable(
@@ -1135,6 +1213,9 @@ namespace Job_Portal_System.Migrations
 
             migrationBuilder.DropTable(
                 name: "JobSeekers");
+
+            migrationBuilder.DropTable(
+                name: "JobTitleSynsets");
 
             migrationBuilder.DropTable(
                 name: "Companies");

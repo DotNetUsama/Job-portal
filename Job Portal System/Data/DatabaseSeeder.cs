@@ -108,8 +108,8 @@ namespace Job_Portal_System.Data
 
         public static void FixDatabase(ApplicationDbContext context, IHostingEnvironment env)
         {
-            //FixJobTitles(context, env);
-            //FixFieldsOfStudy(context, env);
+            FixJobTitles(context, env);
+            FixFieldsOfStudy(context, env);
             FixSkills(context, env);
         }
 
@@ -123,7 +123,8 @@ namespace Job_Portal_System.Data
 
                 var synset = new JobTitleSynset();
                 jobTitle.JobTitleSynset = synset;
-                var normalizedTitle = jobTitle.NormalizedTitle;
+                var normalizedTitle = jobTitle.NormalizedTitle.Split(" - ").Last();
+                jobTitle.NormalizedTitle = normalizedTitle;
                 var similarities = SimilaritiesOperator.GetSimilarities(normalizedTitle, env);
                 foreach (var similarity in similarities)
                 {
@@ -149,7 +150,8 @@ namespace Job_Portal_System.Data
 
                 var synset = new FieldOfStudySynset();
                 fieldOfStudy.FieldOfStudySynset = synset;
-                var normalizedTitle = fieldOfStudy.NormalizedTitle;
+                var normalizedTitle = fieldOfStudy.NormalizedTitle.Split(" - ").Last();
+                fieldOfStudy.NormalizedTitle = normalizedTitle;
                 var similarities = SimilaritiesOperator.GetSimilarities(normalizedTitle, env);
                 foreach (var similarity in similarities)
                 {
@@ -168,7 +170,7 @@ namespace Job_Portal_System.Data
         private static void FixSkills(ApplicationDbContext context, IHostingEnvironment env)
         {
             var count = context.Skills.Count();
-            for (var i = 333; i < count; i++)
+            for (var i = 0; i < count; i++)
             {
                 var skill = context.Skills.Skip(i).First();
                 if (skill.SkillSynset != null) continue;
@@ -246,17 +248,34 @@ namespace Job_Portal_System.Data
             var file = new StreamReader(path);
             while ((title = file.ReadLine()) != null)
             {
-                if (context.JobTitles.SingleOrDefault(s => s.Title == title) == null)
-                {
-                    context.JobTitles.Add(new JobTitle
-                    {
-                        Title = title,
-                        NormalizedTitle = title.ToLower(),
-                    });
-                }
-            }
+                var normalizedTitle = title.ToLower().Split(" - ").Last();
+                if (context.JobTitles.FirstOrDefault(s => s.NormalizedTitle == normalizedTitle) != null) continue;
 
-            context.SaveChanges();
+                var jobTitle = new JobTitle
+                {
+                    Title = title,
+                    NormalizedTitle = normalizedTitle,
+                };
+                var similarities = SimilaritiesOperator.GetSimilarities(normalizedTitle, env);
+                var similarityFound = false;
+                foreach (var similarity in similarities)
+                {
+                    var similarityInDb = context.JobTitles
+                        .FirstOrDefault(s => s.NormalizedTitle == similarity);
+                    if (similarityInDb == null) continue;
+                    jobTitle.JobTitleSynsetId = similarityInDb.JobTitleSynsetId;
+                    similarityFound = true;
+                    break;
+                }
+
+                if (!similarityFound)
+                {
+                    jobTitle.JobTitleSynset = new JobTitleSynset();
+                }
+                context.JobTitles.Add(jobTitle);
+
+                context.SaveChanges();
+            }
         }
 
         private static void SeedFieldsOfStudy(IHostingEnvironment env, ApplicationDbContext context)
@@ -266,17 +285,34 @@ namespace Job_Portal_System.Data
             var file = new StreamReader(path);
             while ((fieldTitle = file.ReadLine()) != null)
             {
-                if (context.FieldOfStudies.SingleOrDefault(s => s.Title == fieldTitle) == null)
-                {
-                    context.FieldOfStudies.Add(new FieldOfStudy
-                    {
-                        Title = fieldTitle,
-                        NormalizedTitle = fieldTitle.ToLower(),
-                    });
-                }
-            }
+                var normalizedTitle = fieldTitle.ToLower().Split(" - ").Last();
+                if (context.FieldOfStudies.FirstOrDefault(s => s.NormalizedTitle == normalizedTitle) != null) continue;
 
-            context.SaveChanges();
+                var fieldOfStudy = new FieldOfStudy
+                {
+                    Title = fieldTitle,
+                    NormalizedTitle = normalizedTitle,
+                };
+                var similarities = SimilaritiesOperator.GetSimilarities(normalizedTitle, env);
+                var similarityFound = false;
+                foreach (var similarity in similarities)
+                {
+                    var similarityInDb = context.FieldOfStudies
+                        .FirstOrDefault(s => s.NormalizedTitle == similarity);
+                    if (similarityInDb == null) continue;
+                    fieldOfStudy.FieldOfStudySynsetId = similarityInDb.FieldOfStudySynsetId;
+                    similarityFound = true;
+                    break;
+                }
+
+                if (!similarityFound)
+                {
+                    fieldOfStudy.FieldOfStudySynset = new FieldOfStudySynset();
+                }
+                context.FieldOfStudies.Add(fieldOfStudy);
+
+                context.SaveChanges();
+            }
         }
 
         private static void SeedSkills(IHostingEnvironment env, ApplicationDbContext context)
@@ -286,14 +322,33 @@ namespace Job_Portal_System.Data
             var file = new StreamReader(path);
             while ((title = file.ReadLine()) != null)
             {
-                if (context.Skills.SingleOrDefault(s => s.Title == title) == null)
+                var normalizedTitle = title.ToLower().Split(" - ").Last();
+                if (context.Skills.FirstOrDefault(s => s.NormalizedTitle == normalizedTitle) != null) continue;
+
+                var skill = new Skill
                 {
-                    context.Skills.Add(new Skill
-                    {
-                        Title = title,
-                        NormalizedTitle = title.ToLower(),
-                    });
+                    Title = title,
+                    NormalizedTitle = normalizedTitle,
+                };
+                var similarities = SimilaritiesOperator.GetSimilarities(normalizedTitle, env);
+                var similarityFound = false;
+                foreach (var similarity in similarities)
+                {
+                    var similarityInDb = context.Skills
+                        .FirstOrDefault(s => s.NormalizedTitle == similarity);
+                    if (similarityInDb == null) continue;
+                    skill.SkillSynsetId = similarityInDb.SkillSynsetId;
+                    similarityFound = true;
+                    break;
                 }
+
+                if (!similarityFound)
+                {
+                    skill.SkillSynset = new SkillSynset();
+                }
+                context.Skills.Add(skill);
+
+                context.SaveChanges();
             }
 
             context.SaveChanges();

@@ -1,3 +1,4 @@
+using System.Linq;
 using DinkToPdf;
 using DinkToPdf.Contracts;
 using Job_Portal_System.BackgroundTasking;
@@ -11,8 +12,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Job_Portal_System.Data;
 using Job_Portal_System.Dependencies;
+using Job_Portal_System.Handlers;
 using Job_Portal_System.Models;
 using Job_Portal_System.SignalR;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -70,7 +73,8 @@ namespace Job_Portal_System
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env,
             UserManager<User> userManager, RoleManager<IdentityRole> roleManager,
-            ApplicationDbContext context)
+            ApplicationDbContext context, IHubContext<SignalRHub> hubContext,
+            IServiceScopeFactory serviceScopeFactory, IBackgroundTaskQueue queue)
         {
             if (env.IsDevelopment())
             {
@@ -97,8 +101,28 @@ namespace Job_Portal_System
 
             //DatabaseSeeder.SeedData(env, context, userManager, roleManager);
             //DatabaseSeeder.ClearDatabase(context);
-            //DatabaseSeeder.SeedJobSeekers(context, userManager, 10);
+            //DatabaseSeeder.SeedJobSeekers(context, userManager, 1000);
             //var count = context.JobSeekers.Count();
+            //DatabaseSeeder.FixDatabase(context, env);
+            var jobVacancy = context.JobVacancies
+                .Include(j => j.WorkExperienceQualifications).ThenInclude(q => q.JobTitle)
+                .Include(j => j.EducationQualifications).ThenInclude(q => q.FieldOfStudy)
+                .Include(j => j.DesiredSkills).ThenInclude(q => q.Skill)
+                .Include(j => j.JobTypes)
+                .Include(j => j.CompanyDepartment)
+                .Include(j => j.User)
+                .First();
+            queue.QueueBackgroundWorkItem(async token =>
+            {
+                using (var scope = serviceScopeFactory.CreateScope())
+                {
+                    var scopedServices = scope.ServiceProvider;
+                    var context1 = scopedServices.GetRequiredService<ApplicationDbContext>();
+                    var hubContext1 = scopedServices.GetRequiredService<IHubContext<SignalRHub>>();
+
+                    await AsyncHandler.Recommend(context1, hubContext1, token, jobVacancy.Id);
+                }
+            });
             app.UseMvc();
         }
     }

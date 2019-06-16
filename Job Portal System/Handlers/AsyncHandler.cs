@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Job_Portal_System.Data;
 using Job_Portal_System.Enums;
@@ -136,9 +137,21 @@ namespace Job_Portal_System.Handlers
         }
 
         public static async Task Recommend(ApplicationDbContext context,
-            IHubContext<SignalRHub> hubContext, JobVacancy jobVacancy)
+            IHubContext<SignalRHub> hubContext, CancellationToken token, string jobVacancyId)
         {
+            var jobVacancy = context.JobVacancies
+                .Include(j => j.WorkExperienceQualifications).ThenInclude(q => q.JobTitle)
+                .Include(j => j.EducationQualifications).ThenInclude(q => q.FieldOfStudy)
+                .Include(j => j.DesiredSkills).ThenInclude(q => q.Skill)
+                .Include(j => j.JobTypes)
+                .Include(j => j.CompanyDepartment)
+                .Include(j => j.User)
+                .FirstOrDefault(j => j.Id == jobVacancyId);
+            if (jobVacancy == null) return;
+
             var fetchedResumes = FetchMatchingResumes(context, jobVacancy);
+            if (!fetchedResumes.Any()) return;
+
             var recommendedResumes = Operator.GetRecommendedResumes(fetchedResumes, jobVacancy);
             recommendedResumes.ForEach(async r =>
             {
@@ -164,7 +177,7 @@ namespace Job_Portal_System.Handlers
                 Peer1 = jobVacancy.Title,
             }, jobVacancy.User);
             
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync(token);
         }
 
         public static async Task DeleteJobVacancy(ApplicationDbContext context,
@@ -213,10 +226,6 @@ namespace Job_Portal_System.Handlers
         private static List<EvaluatedResume> FetchMatchingResumes(ApplicationDbContext context,
             JobVacancy jobVacancy)
         {
-            var jobVacancyCityId = context.CompanyDepartments
-                .SingleOrDefault(d => d.Id == jobVacancy.CompanyDepartmentId)?
-                .CityId;
-
             var requiredEducations = jobVacancy.EducationQualifications
                 .Where(q => q.Type == (int)QualificationType.Required)
                 .Select(q => q.FieldOfStudy.FieldOfStudySynsetId)
@@ -236,6 +245,7 @@ namespace Job_Portal_System.Handlers
                     r.MinSalary <= jobVacancy.MaxSalary && r.MinSalary >= jobVacancy.MinSalary)
                 .Select(r => r.Id)
                 .ToList();
+
             resumesIds = requiredEducations
                 .Aggregate(resumesIds, (current, education) => current.Intersect(context.Educations
                     .Where(e => e.FieldOfStudy.FieldOfStudySynsetId == education)
@@ -252,13 +262,13 @@ namespace Job_Portal_System.Handlers
 
             resumesIds = requiredWorks
                 .Aggregate(resumesIds, (current, work) => current.Intersect(context.WorkExperiences
-                    .Where(e => e.JobTitleId == work)
+                    .Where(e => e.JobTitle.JobTitleSynsetId == work)
                     .Select(e => e.ResumeId)
                     .ToList())
                 .ToList());
 
             var jobVacancyJobTypes = jobVacancy.JobTypes.Select(t => t.JobType);
-            return resumesIds
+            var resumes = resumesIds
                 .Select(id => context.Resumes
                     .Include(r => r.WorkExperiences).ThenInclude(w => w.JobTitle)
                     .Include(r => r.Educations).ThenInclude(e => e.FieldOfStudy)
@@ -271,15 +281,16 @@ namespace Job_Portal_System.Handlers
                     (
                         jobVacancy.DistanceLimit == 0 ||
                         context.GeoDistances.First(d =>
-                                d.City1Id == r.User.CityId && d.City2Id == jobVacancyCityId ||
-                                d.City1Id == r.User.CityId && d.City2Id == jobVacancyCityId)
+                                d.City1Id == r.User.CityId && d.City2Id == jobVacancy.CompanyDepartment.CityId ||
+                                d.City1Id == r.User.CityId && d.City2Id == jobVacancy.CompanyDepartment.CityId)
                             .Distance <= jobVacancy.DistanceLimit
                     ) &&
                     r.JobTypes
                         .Select(type => type.JobType)
                         .Intersect(jobVacancyJobTypes)
                         .Any())
-                .Select(r => new EvaluatedResume { Resume = r }).ToList();
+                .ToList();
+            return resumes.Select(r => new EvaluatedResume { Resume = r }).ToList();
         }
     }
 }
