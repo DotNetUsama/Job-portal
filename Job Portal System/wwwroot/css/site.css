@@ -115,6 +115,21 @@ body {
         color: royalblue;
     }
 
+.btn-s {
+    padding: 5px 10px;
+    background-color: #f2f2f2;
+    border: 1px solid #bfbfbf;
+    border-radius: 2px;
+    color: #508295;
+    cursor: default;
+}
+
+    .btn-s:hover {
+        color: #508295;
+        text-decoration: none;
+        background-color: #e6e6e6;
+    }
+
 .item-details {
     display: none;
 }
@@ -520,6 +535,106 @@ a.no-hover-anchor:hover {
     border-radius: 50%;
     width: 50px;
     height: 50px;
+}
+
+.profile-toggle {
+    position: relative;
+    padding-left: 15px;
+    cursor: pointer;
+}
+
+    .profile-toggle .dropdown-toggle:after {
+        display: none;
+    }
+
+.dropdown-menu {
+    left: inherit;
+    right: -10px;
+    background-color: var(--general-secondary);
+    box-shadow: 0 2px 2px rgba(12,13,14,0.2);
+    cursor: default;
+}
+
+.dropdown-item:active {
+    background-color: var(--form-main);
+}
+
+.profile-image-container {
+    position: relative;
+    width: 40px;
+    height: 40px;
+}
+
+    .profile-image-container img {
+        border-radius: 50%;
+        border: 2px solid rgba(0, 0, 0, .1);
+        width: 100%;
+        height: 100%;
+    }
+
+.profile-toggle:before {
+    content: '';
+    display: block;
+    height: 22px;
+    left: -1px;
+    position: absolute;
+    top: 9px;
+    width: 1px;
+    background: rgba(0, 0, 0, .1);
+}
+
+.profile-toggle:hover .profile-image-container:after {
+    content: '';
+    display: block;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background: rgba(0, 0, 0, .1);
+    border-radius: 50%;
+}
+
+.circle {
+    border-radius: 50%;
+}
+
+.sm-info {
+    font-size: .8rem;
+    line-height: 1.4;
+    font-family: sans-serif;
+}
+
+.nav-container {
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+    -ms-flex-align: center;
+    align-items: center;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+    width: 100%;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+@media (min-width: 576px) {
+    .nav-container {
+        padding: 0 15px;
+    }
+}
+
+@media (min-width: 768px) {
+    .nav-container {
+        padding: 0 30px;
+    }
+}
+
+@media (min-width: 992px) {
+    .nav-container {
+        padding: 0 50px;
+    }
 }
 
 @keyframes spin {

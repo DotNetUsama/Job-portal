@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using DinkToPdf;
 using DinkToPdf.Contracts;
@@ -104,25 +105,33 @@ namespace Job_Portal_System
             //DatabaseSeeder.SeedJobSeekers(context, userManager, 1000);
             //var count = context.JobSeekers.Count();
             //DatabaseSeeder.FixDatabase(context, env);
-//             var jobVacancy = context.JobVacancies
-//                 .Include(j => j.WorkExperienceQualifications).ThenInclude(q => q.JobTitle)
-//                 .Include(j => j.EducationQualifications).ThenInclude(q => q.FieldOfStudy)
-//                 .Include(j => j.DesiredSkills).ThenInclude(q => q.Skill)
-//                 .Include(j => j.JobTypes)
-//                 .Include(j => j.CompanyDepartment)
-//                 .Include(j => j.User)
-//                 .First();
-//             queue.QueueBackgroundWorkItem(async token =>
-//             {
-//                 using (var scope = serviceScopeFactory.CreateScope())
-//                 {
-//                     var scopedServices = scope.ServiceProvider;
-//                     var context1 = scopedServices.GetRequiredService<ApplicationDbContext>();
-//                     var hubContext1 = scopedServices.GetRequiredService<IHubContext<SignalRHub>>();
+            //var jobVacancy = context.JobVacancies
+            //    .Include(j => j.WorkExperienceQualifications).ThenInclude(q => q.JobTitle)
+            //    .Include(j => j.EducationQualifications).ThenInclude(q => q.FieldOfStudy)
+            //    .Include(j => j.DesiredSkills).ThenInclude(q => q.Skill)
+            //    .Include(j => j.JobTypes)
+            //    .Include(j => j.CompanyDepartment)
+            //    .Include(j => j.User)
+            //    .FirstOrDefault(j => j.Id == "faf10145-211b-4a99-ab16-6ca4bb356b10");
+            var jobVacancyId = "faf10145-211b-4a99-ab16-6ca4bb356b10";
+            queue.QueueBackgroundWorkItem(async token =>
+            {
+                using (var scope = serviceScopeFactory.CreateScope())
+                {
+                    var scopedServices = scope.ServiceProvider;
+                    var context1 = scopedServices.GetRequiredService<ApplicationDbContext>();
+                    var hubContext1 = scopedServices.GetRequiredService<IHubContext<SignalRHub>>();
 
-//                     await AsyncHandler.Recommend(context1, hubContext1, token, jobVacancy.Id);
-//                 }
-//             });
+                    try
+                    {
+                        await AsyncHandler.Recommend(context1, hubContext1, token, jobVacancyId);
+                    }
+                    catch (Exception e)
+                    {
+                       
+                    }
+                }
+            });
             app.UseMvc();
         }
     }

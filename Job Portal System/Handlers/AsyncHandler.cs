@@ -280,15 +280,18 @@ namespace Job_Portal_System.Handlers
                     r != null &&
                     (
                         jobVacancy.DistanceLimit == 0 ||
-                        context.GeoDistances.First(d =>
-                                d.City1Id == r.User.CityId && d.City2Id == jobVacancy.CompanyDepartment.CityId ||
-                                d.City1Id == r.User.CityId && d.City2Id == jobVacancy.CompanyDepartment.CityId)
-                            .Distance <= jobVacancy.DistanceLimit
-                    ) &&
+                        r.MovingDistanceLimit != 0 ||
+                        context.GeoDistances.Any(d =>
+                                (d.City1Id == r.User.CityId && d.City2Id == jobVacancy.CompanyDepartment.CityId ||
+                                d.City2Id == r.User.CityId && d.City1Id == jobVacancy.CompanyDepartment.CityId) &&
+                                d.Distance <= jobVacancy.DistanceLimit + r.MovingDistanceLimit)
+                    )
+                    &&
                     r.JobTypes
                         .Select(type => type.JobType)
                         .Intersect(jobVacancyJobTypes)
-                        .Any())
+                        .Any()
+                    )
                 .ToList();
             return resumes.Select(r => new EvaluatedResume { Resume = r }).ToList();
         }
