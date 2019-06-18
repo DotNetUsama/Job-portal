@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using DinkToPdf;
 using DinkToPdf.Contracts;
 using Job_Portal_System.Data;
@@ -10,6 +11,7 @@ using JW;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Extensions.Internal;
 
 namespace Job_Portal_System.Controllers
 {
@@ -33,24 +35,34 @@ namespace Job_Portal_System.Controllers
         [Route("Search")]
         public IActionResult Search(string query, int p = 1)
         {
-            query = query.ToLower().Trim();
+            var normalizedTitle = query.ToLower().Split(" - ").Last();
+            var jobTitleSynsetId = _context.JobTitles
+                .FirstOrDefault(j => j.NormalizedTitle == normalizedTitle)?.JobTitleSynsetId;
 
-            var similarities = SimilaritiesOperator.GetSimilarities(query, _env);
-            var jobTitles = similarities
-                .Select(similarity => _context.JobTitles.SingleOrDefault(j => j.NormalizedTitle == similarity))
-                .Where(jobTitle => jobTitle != null)
-                .ToList();
-
-            var resumes = new List<Resume>();
-            foreach (var job in jobTitles)
+            if (jobTitleSynsetId == null)
             {
-                resumes.AddRange(_context.SeekedJobTitles
-                    .Where(s => s.JobTitleId == job.Id)
-                    .Select(s => s.Resume)
-                    .Include(r => r.User)
-                    .Include(r => r.SeekedJobTitles).ThenInclude(s => s.JobTitle));
+                var similarities = SimilaritiesOperator.GetSimilarities(normalizedTitle, _env);
+                foreach (var similarity in similarities)
+                {
+                    jobTitleSynsetId = _context.JobTitles
+                        .FirstOrDefault(j => j.NormalizedTitle == similarity)?.JobTitleSynsetId;
+                    if (jobTitleSynsetId != null) break;
+                }
             }
-            var pager = new Pager(resumes.Count, p, 3);
+
+            IEnumerable<Resume> resumes = new List<Resume>();
+
+            if (jobTitleSynsetId != null)
+            {
+                var watch = System.Diagnostics.Stopwatch.StartNew();
+                resumes = _context.Resumes
+                    .Include(r => r.User)
+                    .Include(r => r.SeekedJobTitles).ThenInclude(s => s.JobTitle)
+                    .Where(r => r.SeekedJobTitles.Any(j => j.JobTitle.JobTitleSynsetId == jobTitleSynsetId));
+                watch.Stop();
+            }
+
+            var pager = new Pager(resumes.Count(), p, 15);
 
             var viewedResumes = resumes
                 .Distinct()

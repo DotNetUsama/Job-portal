@@ -183,23 +183,31 @@ namespace Job_Portal_System.Controllers
         [Route("Search")]
         public IActionResult Search(string query, int p = 1)
         {
-            query = query.ToLower().Trim();
-            var similarities = SimilaritiesOperator.GetSimilarities(query, _env);
-            var jobTitles = similarities
-                .Select(similarity => _context.JobTitles.SingleOrDefault(j => j.NormalizedTitle == similarity))
-                .Where(jobTitle => jobTitle != null)
-                .ToList();
+            var normalizedTitle = query.ToLower().Split(" - ").Last();
+            var jobTitleSynsetId = _context.JobTitles
+                .FirstOrDefault(j => j.NormalizedTitle == normalizedTitle)?.JobTitleSynsetId;
 
-            var jobVacancies = new List<JobVacancy>();
-            foreach (var jobTitle in jobTitles)
+            if (jobTitleSynsetId == null)
             {
-                jobVacancies.AddRange(_context.JobVacancies
-                    .Include(j => j.JobTitle)
-                    .Include(j => j.CompanyDepartment).ThenInclude(c => c.Company)
-                    .Where(r => r.JobTitleId == jobTitle.Id));
+                var similarities = SimilaritiesOperator.GetSimilarities(normalizedTitle, _env);
+                foreach (var similarity in similarities)
+                {
+                    jobTitleSynsetId = _context.JobTitles
+                        .FirstOrDefault(j => j.NormalizedTitle == similarity)?.JobTitleSynsetId;
+                    if (jobTitleSynsetId != null) break;
+                }
             }
 
-            var pager = new Pager(jobVacancies.Count, p);
+            var jobVacancies = new List<JobVacancy>();
+
+            if (jobTitleSynsetId != null)
+            {
+                jobVacancies = _context.JobVacancies
+                    .Where(j => j.JobTitle.JobTitleSynsetId == jobTitleSynsetId)
+                    .ToList();
+            }
+
+            var pager = new Pager(jobVacancies.Count, p, 15);
             
             var viewedJobVacancies = jobVacancies
                 .Distinct()
