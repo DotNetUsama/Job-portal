@@ -29,7 +29,7 @@
                 <a class="navbar-brand" asp-area="" asp-page="/Index">
                     <div class="d-flex" style="align-items: center">
                         <div style="font-size:larger">
-                            <i class="fa fa-handshake"></i> 
+                            <i class="fa fa-handshake"></i>
                         </div>
                         <div class="pl-2">handshake</div>
                     </div>
@@ -49,12 +49,14 @@
             </div>
         </nav>
     </header>
-    <div class="container">
-        <partial name="_CookieConsentPartial" />
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
+    <partial name="_CookieConsentPartial" />
+    @RenderBody()
+    @*<div class="container">
+            <partial name="_CookieConsentPartial" />
+            <main role="main" class="pb-3">
+                @RenderBody()
+            </main>
+        </div>*@
 
     <footer class="border-top footer text-muted">
         <div class="container">

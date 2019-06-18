@@ -113,25 +113,6 @@ namespace Job_Portal_System
             //    .Include(j => j.CompanyDepartment)
             //    .Include(j => j.User)
             //    .FirstOrDefault(j => j.Id == "faf10145-211b-4a99-ab16-6ca4bb356b10");
-            var jobVacancyId = "faf10145-211b-4a99-ab16-6ca4bb356b10";
-            queue.QueueBackgroundWorkItem(async token =>
-            {
-                using (var scope = serviceScopeFactory.CreateScope())
-                {
-                    var scopedServices = scope.ServiceProvider;
-                    var context1 = scopedServices.GetRequiredService<ApplicationDbContext>();
-                    var hubContext1 = scopedServices.GetRequiredService<IHubContext<SignalRHub>>();
-
-                    try
-                    {
-                        await AsyncHandler.Recommend(context1, hubContext1, token, jobVacancyId);
-                    }
-                    catch (Exception e)
-                    {
-                       
-                    }
-                }
-            });
             app.UseMvc();
         }
     }
