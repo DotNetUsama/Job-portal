@@ -1,0 +1,14 @@
+﻿@{
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<div id="main-bar">
+    @RenderBody()
+</div>
+<div id="sidebar">
+    <partial name="_AnnouncementsPartial" />
+    @if (User.IsInRole("JobSeeker"))
+    {
+        <partial name="_SeekedJobTitlesModulePartial" />
+    }
+</div>

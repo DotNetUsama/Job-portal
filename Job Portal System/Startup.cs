@@ -69,6 +69,8 @@ namespace Job_Portal_System
             services.AddHostedService<QueuedHostedService>();
             services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
             services.AddScoped<ITermsManager, TermsManager>();
+            services.AddScoped<AnnouncementsManager>();
+            services.AddScoped<JobSeekersManager>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

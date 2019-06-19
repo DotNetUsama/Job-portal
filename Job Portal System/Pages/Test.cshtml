@@ -2,233 +2,125 @@
 @model TestModel
 @{
     ViewData["Title"] = "Test";
+    Layout = "~/Pages/Shared/_WithSidebarLayout.cshtml";
 }
 
-<div class="dash-container">
-    <div class="left-sidebar">
-        <div class="left-sidebar--sticky">
-            <nav>
-                <ol class="nav-links">
-                    <li>    </li>
-                    <li>
-                        <a href="/" class="pl8 nav-links--link">Home</a>
-                    </li>
-                    <li>
-                        <ol class="nav-links">
-                            <li class="fs-fine tt-uppercase ml8 mt16 mb4 fc-light">Public</li>
-                            <li class="you-are-here">
-                                <a href="#" class="pl8 nav-links--link -link__with-icon">
-                                    <svg aria-hidden="true" class="svg-icon" width="18" height="18" viewBox="0 0 18 18">
-                                        <path d="M9 1a8 8 0 1 0 0 16A8 8 0 0 0 9 1zM8 15.32a6.4 6.4 0 0 1-5.23-7.75L7 11.68v.8c0 .88.12 1.32 1 1.32v1.52zm5.72-2c-.2-.66-1-1.32-1.72-1.32h-1v-2c0-.44-.56-1-1-1H6V7h1c.44 0 1-.56 1-1V5h2c.88 0 1.4-.72 1.4-1.6v-.33a6.4 6.4 0 0 1 2.32 10.24v.01z"></path>
-                                    </svg>
-                                    <span class="-link--channel-name">Handshake</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a id="nav-tags" href="#" class="nav-links--link">Tags</a>
-                            </li>
-                            <li>
-                                <a id="nav-users" href="#" class="nav-links--link">Users</a>
-                            </li>
-                            <li>
-                                <a id="nav-jobs" href="#" class="nav-links--link">Jobs</a>
-                            </li>
-                        </ol>
-                    </li>
-                </ol>
-            </nav>
+<div class="grid">
+    <h1 class="grid--cell fl1 fs-headline1">
+        Top Questions
+    </h1>
+    <div class="pl8 grid--cell">
+        <a href="#" class="ws-nowrap s-btn s-btn__primary">
+            Ask Question
+        </a>
+    </div>
+</div>
+<div class="grid ai-center mb16">
+    <div class="grid--cell fl1 fs-body3"></div>
+    <div class="grid--cell">
+        <div class="grid s-btn-group">
+            <a class="you-are-here is-selected grid--cell s-btn s-btn__muted s-btn__outlined"
+               href="?tab=interesting"
+               title="Title">
+                Interesting
+            </a>
+            <a class="grid--cell s-btn s-btn__muted s-btn__outlined"
+               href="?tab=featured"
+               title="Title">
+                Featured
+            </a>
         </div>
     </div>
-    <div id="content">
-        <div id="main-bar">
-            <div class="grid">
-                <h1 class="grid--cell fl1 fs-headline1">
-                    Top Questions
-                </h1>
-                <div class="pl8 grid--cell">
-                    <a href="#" class="ws-nowrap s-btn s-btn__primary">
-                        Ask Question
-                    </a>
+</div>
+
+<div id="qlist-wrapper" class="flush-left">
+    <div id="question-mini-list">
+        <div>
+            <div class="question-summary narrow" id="question-summary-56647785">
+                <div onclick="window.location.href='/questions/56647785/docker-composer-node-js-give-error-when-running-the-docker-composer-mysql-er-n'" class="cp">
+                    <div class="votes">
+                        <div class="mini-counts"><span title="0 votes">0</span></div>
+                        <div>votes</div>
+                    </div>
+                    <div class="status unanswered">
+                        <div class="mini-counts"><span title="0 answers">0</span></div>
+                        <div>answers</div>
+                    </div>
+                    <div class="views">
+                        <div class="mini-counts"><span title="2 views">2</span></div>
+                        <div>views</div>
+                    </div>
                 </div>
-            </div>
-            <div class="grid ai-center mb16">
-                <div class="grid--cell fl1 fs-body3"></div>
-                <div class="grid--cell">
-                    <div class="grid s-btn-group">
-                        <a class="you-are-here is-selected grid--cell s-btn s-btn__muted s-btn__outlined" 
-                           href="?tab=interesting" 
-                           title="Title">
-                            Interesting
-                        </a>
-                        <a class="grid--cell s-btn s-btn__muted s-btn__outlined" 
-                           href="?tab=featured" 
-                           title="Title">
-                            Featured
-                        </a>
+                <div class="summary">
+                    <h3>
+                        <a href="#" class="question-hyperlink">Title</a>
+                    </h3>
+                    <div class="tags">
+                        <a href="#" class="post-tag" title="Title" rel="tag">mysql</a>
+                        <a href="#" class="post-tag" title="Title" rel="tag">node.js</a>
+                    </div>
+                    <div class="started">
+                        <a href="#" class="started-link">asked <span title="2019-06-18 11:10:46Z" class="relativetime">1 min ago</span></a>
+                        <a href="#">muhammad ahmed</a> <span class="reputation-score" title="reputation score" dir="ltr">23</span>
                     </div>
                 </div>
             </div>
 
-            <div id="qlist-wrapper" class="flush-left">
-                <div id="question-mini-list">
-                    <div>
-                        <div class="question-summary narrow" id="question-summary-56647785">
-                            <div onclick="window.location.href='/questions/56647785/docker-composer-node-js-give-error-when-running-the-docker-composer-mysql-er-n'" class="cp">
-                                <div class="votes">
-                                    <div class="mini-counts"><span title="0 votes">0</span></div>
-                                    <div>votes</div>
-                                </div>
-                                <div class="status unanswered">
-                                    <div class="mini-counts"><span title="0 answers">0</span></div>
-                                    <div>answers</div>
-                                </div>
-                                <div class="views">
-                                    <div class="mini-counts"><span title="2 views">2</span></div>
-                                    <div>views</div>
-                                </div>
-                            </div>
-                            <div class="summary">
-                                <h3>
-                                    <a href="#" class="question-hyperlink">Title</a>
-                                </h3>
-                                <div class="tags">
-                                    <a href="#" class="post-tag" title="Title" rel="tag">mysql</a> 
-                                    <a href="#" class="post-tag" title="Title" rel="tag">node.js</a>
-                                </div>
-                                <div class="started">
-                                    <a href="#" class="started-link">asked <span title="2019-06-18 11:10:46Z" class="relativetime">1 min ago</span></a>
-                                    <a href="#">muhammad ahmed</a> <span class="reputation-score" title="reputation score" dir="ltr">23</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="question-summary narrow" id="question-summary-56640925">
-                            <div onclick="window.location.href='/questions/56640925/creating-a-label-which-disappears-after-a-few-seconds'" class="cp">
-                                <div class="votes">
-                                    <div class="mini-counts"><span title="0 votes">0</span></div>
-                                    <div>votes</div>
-                                </div>
-                                <div class="status answered">
-                                    <div class="mini-counts"><span title="2 answers">2</span></div>
-                                    <div>answers</div>
-                                </div>
-                                <div class="views">
-                                    <div class="mini-counts"><span title="19 views">19</span></div>
-                                    <div>views</div>
-                                </div>
-                            </div>
-                            <div class="summary">
-                                <h3>
-                                    <a href="#" class="question-hyperlink">Title</a>
-                                </h3>
-                                <div class="tags">
-                                    <a href="#" class="post-tag" title="Title'" rel="tag">powershell</a>
-                                </div>
-                                <div class="started">
-                                    <a href="#" class="started-link">modified <span title="2019-06-18 11:10:41Z" class="relativetime">1 min ago</span></a>
-                                    <a href="#">Ansgar Wiechers</a> <span class="reputation-score" title="reputation score 149,195" dir="ltr">149k</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="question-summary narrow tagged-interesting" id="question-summary-31374749">
-                            <div onclick="window.location.href='/questions/31374749/opencv-svm-prediction-confidence-with-3-classes'" class="cp">
-                                <div class="votes">
-                                    <div class="mini-counts"><span title="2 votes">2</span></div>
-                                    <div>votes</div>
-                                </div>
-                                <div class="status answered-accepted">
-                                    <div class="mini-counts"><span title="1 answer">1</span></div>
-                                    <div>answer</div>
-                                </div>
-                                <div class="views">
-                                    <div class="mini-counts"><span title="443 views">443</span></div>
-                                    <div>views</div>
-                                </div>
-                            </div>
-                            <div class="summary">
-
-
-                                <h3><a href="#" class="question-hyperlink">Title</a></h3>
-                                <div class="tags">
-                                    <a href="#" class="post-tag" title="Title" rel="tag">c++</a> 
-                                    <a href="#" class="post-tag" title="Title" rel="tag">opencv</a> 
-                                </div>
-                                <div class="started">
-                                    <a href="#" class="started-link">modified <span title="2019-06-18 11:10:24Z" class="relativetime">1 min ago</span></a>
-                                    <a href="#">Cynichniy Bandera</a> <span class="reputation-score" title="reputation score " dir="ltr">4,891</span>
-                                </div>
-                            </div>
-                        </div>
+            <div class="question-summary narrow" id="question-summary-56640925">
+                <div onclick="window.location.href='/questions/56640925/creating-a-label-which-disappears-after-a-few-seconds'" class="cp">
+                    <div class="votes">
+                        <div class="mini-counts"><span title="0 votes">0</span></div>
+                        <div>votes</div>
+                    </div>
+                    <div class="status answered">
+                        <div class="mini-counts"><span title="2 answers">2</span></div>
+                        <div>answers</div>
+                    </div>
+                    <div class="views">
+                        <div class="mini-counts"><span title="19 views">19</span></div>
+                        <div>views</div>
+                    </div>
+                </div>
+                <div class="summary">
+                    <h3>
+                        <a href="#" class="question-hyperlink">Title</a>
+                    </h3>
+                    <div class="tags">
+                        <a href="#" class="post-tag" title="Title'" rel="tag">powershell</a>
+                    </div>
+                    <div class="started">
+                        <a href="#" class="started-link">modified <span title="2019-06-18 11:10:41Z" class="relativetime">1 min ago</span></a>
+                        <a href="#">Ansgar Wiechers</a> <span class="reputation-score" title="reputation score 149,195" dir="ltr">149k</span>
                     </div>
                 </div>
             </div>
-        </div>
-        <div id="sidebar">
-            <div class="s-sidebarwidget s-sidebarwidget__blue s-anchors s-anchors__default mb16" data-tracker="cb=1">
-                <div class="s-sidebarwidget--header s-sidebarwidget__small-bold-text">
-                    Announcements
+
+            <div class="question-summary narrow tagged-interesting" id="question-summary-31374749">
+                <div onclick="window.location.href='/questions/31374749/opencv-svm-prediction-confidence-with-3-classes'" class="cp">
+                    <div class="votes">
+                        <div class="mini-counts"><span title="2 votes">2</span></div>
+                        <div>votes</div>
+                    </div>
+                    <div class="status answered-accepted">
+                        <div class="mini-counts"><span title="1 answer">1</span></div>
+                        <div>answer</div>
+                    </div>
+                    <div class="views">
+                        <div class="mini-counts"><span title="443 views">443</span></div>
+                        <div>views</div>
+                    </div>
                 </div>
-                <ul class="s-sidebarwidget--content s-sidebarwidget__items pt0 pr16 pb0 pl16">
-                    <li class="s-sidebarwidget--item grid">
-                        <div class="grid--cell1 fl-shrink0">
-                            <div class="favicon favicon-stackexchangemeta" title="Meta Stack Exchange"></div>
-                        </div>
-                        <div class="grid--cell">
-                            <a href="#" title="Title">Title</a>
-                        </div>
-                    </li>
-                </ul>
-                <ul class="s-sidebarwidget--content s-sidebarwidget__items pt0 pr16 pb0 pl16">
-                    <li class="s-sidebarwidget--item grid">
-                        <div class="grid--cell1 fl-shrink0">
-                            <div class="favicon favicon-stackexchangemeta" title="Meta Stack Exchange"></div>
-                        </div>
-                        <div class="grid--cell">
-                            <a href="#" title="Title">Title</a>
-                        </div>
-                    </li>
-                </ul>
-            </div>
+                <div class="summary">
 
-            <div class="module js-tag-preferences-container">
-                <div class="s-sidebarwidget mb16">
-                    <div class="s-sidebarwidget--header grid">
-                        <span class="grid--cell mr4"><svg aria-hidden="true" class="svg-icon iconEye" width="18" height="18" viewBox="0 0 18 18"><path d="M9.06 3C4 3 1 9 1 9s3 6 8.06 6C14 15 17 9 17 9s-3-6-7.94-6zM9 13a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm0-2a2 2 0 0 0 2-2 2 2 0 0 0-2-2 2 2 0 0 0-2 2 2 2 0 0 0 2 2z"></path></svg></span>
-                        <span class="grid--cell fl1">
-                            Seeked job titles
-                        </span>
-                        <a class="js-edit-watched-tags grid--cell ml12" href="#">edit</a>
+
+                    <h3><a href="#" class="question-hyperlink">Title</a></h3>
+                    <div class="tags">
+                        <a href="#" class="post-tag" title="Title" rel="tag">c++</a>
+                        <a href="#" class="post-tag" title="Title" rel="tag">opencv</a>
                     </div>
-                    <div class="s-sidebarwidget--content fd-column">
-                        <div class="js-watched-tag-list grid gs4 py4 fw-wrap">
-                            <div class="js-tag grid--cell">
-                                <a href="#"
-                                   class="post-tag user-tag"
-                                   title="show questions tagged 'asp.net'"
-                                   rel="tag">
-                                    asp.net
-                                </a>
-                            </div>
-                            <div class="js-tag grid--cell">
-                                <a href="#"
-                                   class="post-tag user-tag"
-                                   title="show questions tagged 'asp.net-mvc'"
-                                   rel="tag">
-                                    asp.net-mvc
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="js-add-watched-container"></div>
-
-                    <div class="js-show-add-watched-container grid fd-column ta-center ai-center gsy gs16 mx-auto d-none">
-                        <img class="grid--cell" alt="Tag watching" src="https://cdn.sstatic.net/Img/ico-binoculars.svg?v=d4dbaac4eec9">
-                        <p class="grid--cell w100 wmx6 fc-black-300">
-                            Watch tags to curate your list of questions.
-                        </p>
-                        <a class="js-show-add-watched grid--cell s-btn s-btn__filled s-btn__icon d-none"><svg aria-hidden="true" class="svg-icon iconEye" width="18" height="18" viewBox="0 0 18 18"><path d="M9.06 3C4 3 1 9 1 9s3 6 8.06 6C14 15 17 9 17 9s-3-6-7.94-6zM9 13a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm0-2a2 2 0 0 0 2-2 2 2 0 0 0-2-2 2 2 0 0 0-2 2 2 2 0 0 0 2 2z"></path></svg> Watch a tag</a>
+                    <div class="started">
+                        <a href="#" class="started-link">modified <span title="2019-06-18 11:10:24Z" class="relativetime">1 min ago</span></a>
+                        <a href="#">Cynichniy Bandera</a> <span class="reputation-score" title="reputation score " dir="ltr">4,891</span>
                     </div>
                 </div>
             </div>
