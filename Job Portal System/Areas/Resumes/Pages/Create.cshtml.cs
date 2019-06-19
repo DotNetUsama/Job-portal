@@ -62,7 +62,7 @@ namespace Job_Portal_System.Areas.Resumes.Pages
                 .SingleOrDefault(resume => resume.User.UserName == User.Identity.Name);
             if (resumeInDb != null)
             {
-                return Redirect("./Index");
+                return Redirect("./MyResume");
             }
 
             return Page();

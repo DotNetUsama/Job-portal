@@ -149,6 +149,10 @@ h1, h2, h3 {
     font-size: 1.30769231rem !important;
 }
 
+.fw-b {
+    font-weight: bold;
+}
+
 .fd-column {
     flex-direction: column !important;
 }
@@ -1517,3 +1521,101 @@ select option {
     height: 60px;
     line-height: 60px; /* Vertically center the text there */
 }
+
+.t15 {
+    top: 15px !important;
+}
+
+.r0 {
+    right: 0 !important;
+}
+
+.bb {
+    border-bottom-style: solid !important;
+    border-bottom-width: 1px !important;
+}
+
+.bc-black-2 {
+    border-color: #e4e6e8 !important;
+}
+
+.p12 {
+    padding: 12px !important;
+}
+
+.pt2 {
+    padding-top: 2px !important;
+}
+
+.pr12 {
+    padding-right: 12px !important;
+}
+
+.pl30 {
+    padding-left: 30px !important;
+}
+
+.ps-relative {
+    position: relative !important;
+}
+
+.ps-absolute {
+    position: absolute !important;
+}
+
+.mt2 {
+    margin-top: 2px !important;
+}
+
+.mt12 {
+    margin-top: 12px !important;
+}
+
+.mb4 {
+    margin-bottom: 4px !important;
+}
+
+.fc-black-500 {
+    color: #6a737c !important;
+}
+
+.fc-black-700 {
+    color: #3b4045 !important;
+}
+
+.fs-body1 {
+    font-size: 13px !important;
+}
+
+.fs-body2 {
+    font-size: 0.9384615rem !important;
+}
+
+.fs-body3 {
+    font-size: 0.824615rem !important;
+}
+
+.fs-subheading {
+    font-size: 1.26153846rem !important;
+}
+
+.job-details__spaced {
+    padding-right: 64px;
+}
+
+#mainbar h2, #mainbar h3, #mainbar h4 {
+    font-weight: 400;
+}
+
+.-remote {
+    color: #F98C71;
+}
+
+.-relocation {
+    color: #71a5cb;
+}
+
+.-salary {
+    color: #5fba7d;
+}
+

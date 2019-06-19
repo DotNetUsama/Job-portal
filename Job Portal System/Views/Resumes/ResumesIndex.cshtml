@@ -1,0 +1,92 @@
+﻿@model ViewModels.ResumesIndexViewModel
+
+@{
+    ViewData["Title"] = "All Resumes";
+    Layout = "~/Pages/Shared/_WithSidebarLayout.cshtml";
+}
+
+<div class="grid">
+    <h1 class="grid--cell fl1 fs-headline1">
+        All Resumes
+    </h1>
+    @if (Model.IsJobSeeker)
+    {
+        <div class="pl8 grid--cell">
+            @if (Model.OwnResumeCreated)
+            {
+                <a href="/Resumes/MyResume"
+                   class="ws-nowrap s-btn s-btn__primary">
+                    My Resume
+                </a>
+            }
+            else
+            {
+                <a href="/Resumes/Create"
+                   class="ws-nowrap s-btn s-btn__primary">
+                    Create Resume
+                </a>
+            }
+        </div>
+    }
+</div>
+
+<div class="grid ai-center mb16">
+    <div class="grid--cell fl1 fs-body3"></div>
+    <div class="grid--cell">
+        <div class="grid s-btn-group">
+            <a class="@(Model.ActiveTab == "interesting" ? "you-are-here is-selected " : "")grid--cell s-btn s-btn__muted s-btn__outlined"
+               href="?tab=interesting"
+               title="Interesting resumes">
+                Interesting
+            </a>
+            <a class="@(Model.ActiveTab == "recent" ? "you-are-here is-selected " : "")grid--cell s-btn s-btn__muted s-btn__outlined"
+               href="?tab=recent"
+               title="Recent resumes">
+                Recent
+            </a>
+        </div>
+    </div>
+</div>
+
+<div id="qlist-wrapper" class="flush-left">
+    <div id="question-mini-list">
+        <div>
+            @foreach (var resume in Model.Resumes)
+            {
+                <div class="question-summary narrow">
+                    <div onclick="window.location.href = '/resumes/details?id=@resume.Id'" class="cp">
+                        <div class="status">
+                            <div class="mini-counts"><span title="@resume.WorksCount experiences">@resume.WorksCount</span></div>
+                            <div>experiences</div>
+                        </div>
+                        <div class="status">
+                            <div class="mini-counts"><span title="@resume.SkillsCount skills">@resume.SkillsCount</span></div>
+                            <div>skills</div>
+                        </div>
+                        <div class="status">
+                            <div class="mini-counts"><span title="@resume.EducationsCount educations">@resume.EducationsCount</span></div>
+                            <div>educations</div>
+                        </div>
+                    </div>
+                    <div class="summary">
+                        <h3>
+                            <a href="/Resumes/Details?id=@resume.Id" class="question-hyperlink">
+                                @resume.OwnerName
+                            </a>
+                        </h3>
+                        <div class="tags">
+                            @foreach (var jobTitle in resume.SeekedJobTitles)
+                            {
+                                <span class="post-tag" title="@jobTitle">@jobTitle</span>
+                            }
+                        </div>
+                        <div class="started">
+                            <span class="started-link">@(resume.IsModified ? "updated" : "created")<span title="@resume.LastUpdate" class="relativetime">@resume.LastUpdate</span></span>
+                            <span class="started-link fw-b"><i class="fa fa-map-marker-alt"></i> @resume.Location</span>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

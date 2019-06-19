@@ -15,12 +15,12 @@ using Microsoft.EntityFrameworkCore;
 namespace Job_Portal_System.Areas.Resumes.Pages
 {
     [Authorize(Roles = "JobSeeker")]
-    public class IndexModel : PageModel
+    public class MyResumeModel : PageModel
     {
         private readonly ApplicationDbContext _context;
         private readonly ITermsManager _termsManager;
 
-        public IndexModel(ApplicationDbContext context,
+        public MyResumeModel(ApplicationDbContext context,
             ITermsManager termsManager)
         {
             _context = context;
@@ -106,6 +106,7 @@ namespace Job_Portal_System.Areas.Resumes.Pages
             resume.IsPublic = ResumeInfo.IsPublic;
             resume.IsSeeking = ResumeInfo.IsSeeking;
             resume.Biography = ResumeInfo.Biography;
+            resume.UpdatedAt = DateTime.Now;;
             await _context.SaveChangesAsync();
             return Redirect("./Index");
         }

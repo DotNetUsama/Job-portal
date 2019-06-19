@@ -1,5 +1,3 @@
-using System;
-using System.Linq;
 using DinkToPdf;
 using DinkToPdf.Contracts;
 using Job_Portal_System.BackgroundTasking;
@@ -13,7 +11,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Job_Portal_System.Data;
 using Job_Portal_System.Dependencies;
-using Job_Portal_System.Handlers;
 using Job_Portal_System.Models;
 using Job_Portal_System.SignalR;
 using Microsoft.AspNetCore.SignalR;

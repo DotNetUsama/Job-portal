@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Job_Portal_System.Data;
@@ -37,6 +38,38 @@ namespace Job_Portal_System.Controllers
             _hubContext = hubContext;
         }
 
+        [HttpGet]
+        [Route("Index")]
+        public IActionResult Index(string tab)
+        {
+            var isRecruiter = User.IsInRole("Recruiter");
+
+            tab = tab ?? (isRecruiter ? "my-jobs" : "interesting");
+
+            IEnumerable<JobVacancyGeneralViewModel> jobVacancies;
+            switch (tab)
+            {
+                case "recent":
+                    jobVacancies = RecentJobVacancies();
+                    break;
+                case "interesting":
+                    jobVacancies = InterestingJobVacancies();
+                    break;
+                case "my-jobs":
+                    jobVacancies = OwnJobVacancies();
+                    break;
+                default:
+                    return NotFound();
+            }
+
+            return View("JobVacanciesIndex", new JobVacanciesIndexViewModel
+            {
+                IsRecruiter = isRecruiter,
+                ActiveTab = tab,
+                JobVacancies = jobVacancies,
+            });
+        }
+
         [HttpPost]
         [Route("Close")]
         [Authorize(Roles = "Recruiter")]
@@ -58,14 +91,14 @@ namespace Job_Portal_System.Controllers
 
             jobVacancy.Status = (int)JobVacancyStatus.Closed;
 
-            if (jobVacancy.Method == (int) JobVacancyMethod.Recommendation)
+            if (jobVacancy.Method == (int)JobVacancyMethod.Recommendation)
             {
                 var pendingApplicants = _context.Applicants
                     .Where(a => a.JobVacancyId == jobVacancy.Id &&
-                                a.Status == (int) ApplicantStatus.PendingRecommendation);
+                                a.Status == (int)ApplicantStatus.PendingRecommendation);
                 foreach (var pendingApplicant in pendingApplicants)
                 {
-                    pendingApplicant.Status = (int) ApplicantStatus.RejectedByRecruiter;
+                    pendingApplicant.Status = (int)ApplicantStatus.RejectedByRecruiter;
                 }
             }
 
@@ -89,15 +122,15 @@ namespace Job_Portal_System.Controllers
 
             if (jobVacancy.User.UserName != User.Identity.Name) return BadRequest();
 
-            if (jobVacancy.Method != (int) JobVacancyMethod.Submission &&
-                (jobVacancy.Method != (int) JobVacancyMethod.Recommendation ||
-                 jobVacancy.Status == (int) JobVacancyStatus.Open)) return BadRequest();
+            if (jobVacancy.Method != (int)JobVacancyMethod.Submission &&
+                (jobVacancy.Method != (int)JobVacancyMethod.Recommendation ||
+                 jobVacancy.Status == (int)JobVacancyStatus.Open)) return BadRequest();
 
             await AsyncHandler.DeleteJobVacancy(_context, _hubContext, jobVacancy);
-            
+
             return LocalRedirect("/JobVacancies");
         }
-        
+
         [HttpPost]
         [Route("Submit")]
         [Authorize(Roles = "JobSeeker")]
@@ -132,7 +165,7 @@ namespace Job_Portal_System.Controllers
 
             var resume = _context.Resumes
                 .SingleOrDefault(r => r.JobSeekerId == jobSeeker.Id);
-            
+
             if (resume == null || !resume.IsSeeking ||
                 _context.Applicants.Any(a => a.JobVacancyId == jobVacancy.Id
                                              && a.JobSeekerId == jobSeeker.User.Id))
@@ -154,7 +187,7 @@ namespace Job_Portal_System.Controllers
                 .SingleOrDefaultAsync(j => j.Id == id);
 
             if (jobVacancy == null) return NotFound();
-            if (jobVacancy.Status != (int) JobVacancyStatus.Closed ||
+            if (jobVacancy.Status != (int)JobVacancyStatus.Closed ||
                 jobVacancy.AwaitingApplicants != 0) return BadRequest();
 
             var jobVacancyOwner = await _userManager.FindByIdAsync(jobVacancy.UserId);
@@ -208,7 +241,7 @@ namespace Job_Portal_System.Controllers
             }
 
             var pager = new Pager(jobVacancies.Count, p, 15);
-            
+
             var viewedJobVacancies = jobVacancies
                 .Distinct()
                 .Skip((pager.CurrentPage - 1) * pager.PageSize)
@@ -223,6 +256,90 @@ namespace Job_Portal_System.Controllers
                 IsFirst = pager.CurrentPage == 1 || pager.CurrentPage == 0,
                 IsLast = pager.CurrentPage == pager.TotalPages,
             });
+        }
+
+        private IEnumerable<JobVacancyGeneralViewModel> RecentJobVacancies()
+        {
+            return _context.JobVacancies
+                .Include(j => j.JobTitle)
+                .Include(j => j.CompanyDepartment).ThenInclude(d => d.City).ThenInclude(c => c.State)
+                .Include(j => j.CompanyDepartment).ThenInclude(d => d.Company)
+                .OrderByDescending(j => j.PublishedAt)
+                .Take(20)
+                .Select(j => new JobVacancyGeneralViewModel
+                {
+                    Id = j.Id,
+                    Title = j.Title,
+                    CreatedAt = j.PublishedAt,
+                    IsRemote = j.DistanceLimit == 0,
+                    MinSalary = j.MinSalary,
+                    MaxSalary = j.MaxSalary,
+                    JobTitle = j.JobTitle.Title,
+                    Location = $"{j.CompanyDepartment.City.State.Name}, {j.CompanyDepartment.City.Name}",
+                    Company = j.CompanyDepartment.Company.Name,
+                    DesiredSkills = _context.DesiredSkills
+                        .Where(s => s.JobVacancyId == j.Id)
+                        .Select(s => s.Skill.Title),
+                });
+        }
+
+        private IEnumerable<JobVacancyGeneralViewModel> InterestingJobVacancies()
+        {
+            return _context.JobVacancies
+                .Include(j => j.JobTitle)
+                .Include(j => j.CompanyDepartment).ThenInclude(d => d.City).ThenInclude(c => c.State)
+                .Include(j => j.CompanyDepartment).ThenInclude(d => d.Company)
+                .OrderByDescending(r => r.PublishedAt)
+                .Take(200)
+                .OrderBy(r => Guid.NewGuid())
+                .Take(20)
+                .OrderByDescending(r => r.PublishedAt)
+                .Select(j => new JobVacancyGeneralViewModel
+                {
+                    Id = j.Id,
+                    Title = j.Title,
+                    CreatedAt = j.PublishedAt,
+                    IsRemote = j.DistanceLimit == 0,
+                    MinSalary = j.MinSalary,
+                    MaxSalary = j.MaxSalary,
+                    JobTitle = j.JobTitle.Title,
+                    Location = $"{j.CompanyDepartment.City.State.Name}, {j.CompanyDepartment.City.Name}",
+                    Company = j.CompanyDepartment.Company.Name,
+                    DesiredSkills = _context.DesiredSkills
+                        .Where(s => s.JobVacancyId == j.Id)
+                        .Select(s => s.Skill.Title),
+                });
+        }
+
+        private IEnumerable<JobVacancyGeneralViewModel> OwnJobVacancies()
+        {
+            var userId = _userManager.GetUserId(User);
+
+            return _context.JobVacancies
+                .Where(j => j.UserId == _userManager.GetUserId(User))
+                .Include(j => j.JobTitle)
+                .Include(j => j.CompanyDepartment).ThenInclude(d => d.City).ThenInclude(c => c.State)
+                .Include(j => j.CompanyDepartment).ThenInclude(d => d.Company)
+                .OrderByDescending(r => r.PublishedAt)
+                .Take(200)
+                .OrderBy(r => Guid.NewGuid())
+                .Take(20)
+                .OrderByDescending(r => r.PublishedAt)
+                .Select(j => new JobVacancyGeneralViewModel
+                {
+                    Id = j.Id,
+                    Title = j.Title,
+                    CreatedAt = j.PublishedAt,
+                    IsRemote = j.DistanceLimit == 0,
+                    MinSalary = j.MinSalary,
+                    MaxSalary = j.MaxSalary,
+                    JobTitle = j.JobTitle.Title,
+                    Location = $"{j.CompanyDepartment.City.State.Name}, {j.CompanyDepartment.City.Name}",
+                    Company = j.CompanyDepartment.Company.Name,
+                    DesiredSkills = _context.DesiredSkills
+                        .Where(s => s.JobVacancyId == j.Id)
+                        .Select(s => s.Skill.Title),
+                });
         }
     }
 }

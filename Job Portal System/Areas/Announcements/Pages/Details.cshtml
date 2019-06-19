@@ -13,7 +13,7 @@
         <div class="form-container">
             <div class="form-head">
                 <h1 class="form-head-title">@ViewData["Title"]</h1>
-                <span class="form-head-details">By @Model.AutherName</span>
+                <span class="form-head-details">By @($"{Model.Announcement.Author.FirstName} {Model.Announcement.Author.LastName}")</span>
             </div>
             <div class="form-body">
                 <div class="marker">

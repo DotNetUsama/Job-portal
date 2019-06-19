@@ -4,18 +4,20 @@ using Job_Portal_System.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Job_Portal_System.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190619140737_AddDatesToResumesTable")]
+    partial class AddDatesToResumesTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.2.3-servicing-35854")
+                .HasAnnotation("ProductVersion", "2.2.0-rtm-35687")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -474,6 +476,8 @@ namespace Job_Portal_System.Migrations
                     b.Property<string>("Biography")
                         .HasColumnType("text");
 
+                    b.Property<DateTime>("CreatedAt");
+
                     b.Property<bool>("IsPublic");
 
                     b.Property<bool>("IsSeeking");
@@ -483,6 +487,8 @@ namespace Job_Portal_System.Migrations
                     b.Property<double>("MinSalary");
 
                     b.Property<long>("MovingDistanceLimit");
+
+                    b.Property<DateTime>("UpdatedAt");
 
                     b.Property<string>("UserId");
 

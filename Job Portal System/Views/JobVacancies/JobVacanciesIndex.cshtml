@@ -1,0 +1,104 @@
+﻿@model ViewModels.JobVacanciesIndexViewModel
+
+@{
+    ViewData["Title"] = "All Jobs";
+    Layout = "~/Pages/Shared/_WithSidebarLayout.cshtml";
+}
+
+<div class="grid">
+    <h1 class="grid--cell fl1 fs-headline1">
+        All Jobs
+    </h1>
+    @if (Model.IsRecruiter)
+    {
+    <div class="pl8 grid--cell">
+        <a href="/JobVacancies/Create"
+           class="ws-nowrap s-btn s-btn__primary">
+            Add Job Vacancy
+        </a>
+    </div>
+    }
+</div>
+
+<div class="grid ai-center mb16">
+    <div class="grid--cell fl1 fs-body3"></div>
+    <div class="grid--cell">
+        <div class="grid s-btn-group">
+            @if (Model.IsRecruiter)
+            {
+            <a class="@(Model.ActiveTab == "my-jobs" ? "you-are-here is-selected " : "")grid--cell s-btn s-btn__muted s-btn__outlined"
+               href="?tab=my-jobs"
+               title="Your jobs">
+                Your jobs
+            </a>
+            }
+            <a class="@(Model.ActiveTab == "interesting" ? "you-are-here is-selected " : "")grid--cell s-btn s-btn__muted s-btn__outlined"
+               href="?tab=interesting"
+               title="Interesting jobs">
+                Interesting
+            </a>
+            <a class="@(Model.ActiveTab == "recent" ? "you-are-here is-selected " : "")grid--cell s-btn s-btn__muted s-btn__outlined"
+               href="?tab=recent"
+               title="Recent jobs">
+                Recent
+            </a>
+        </div>
+    </div>
+</div>
+
+<div id="qlist-wrapper" class="flush-left">
+    <div id="question-mini-list">
+        <div>
+            @foreach (var jobVacancy in Model.JobVacancies)
+            {
+                <div class="p12 pl30 bb ps-relative bc-black-2">
+                    <div>
+                        <div>
+                            <h2 class="fs-subheading job-details__spaced mb4">
+                                <a href="/JobVacancies/Details?id=@jobVacancy.Id" title="@jobVacancy.Title"
+                                   class="s-link">
+                                    @jobVacancy.Title
+                                </a>
+                            </h2>
+                            <span class="ps-absolute pt2 r0 fc-black-500 fs-body1 pr12 t15">@jobVacancy.CreatedAt</span>
+                        </div>
+                        <div class="fc-black-700 fs-body2">
+                            <span>
+                                @jobVacancy.Company
+                            </span>
+
+                            <span class="fc-black-500">
+                                -
+                                @if (jobVacancy.IsRemote)
+                                {
+                                    <i>No office location</i>
+                                }
+                                else
+                                {
+                                    @jobVacancy.Location
+                                }
+                            </span>
+                        </div>
+                        <div class="mt2 fs-body3">
+                            <span class="-salary pr16" title="£@jobVacancy.MinSalary - @jobVacancy.MaxSalary (Syrian Pounds)">£@jobVacancy.MinSalary - @jobVacancy.MaxSalary</span>
+                            @if (jobVacancy.IsRemote)
+                            {
+                                <span class="-remote pr16">Remote</span>
+                            }
+                            <span class="-relocation">@jobVacancy.JobTitle</span>
+                        </div>
+                        <div class="mt12">
+                            @foreach (var desiredSkill in jobVacancy.DesiredSkills)
+                            {
+                                <span href="/jobs/developer-jobs-using-git"
+                                      class="post-tag job-link no-tag-menu">
+                                    @desiredSkill
+                                </span>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

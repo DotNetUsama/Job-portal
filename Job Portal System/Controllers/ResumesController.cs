@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DinkToPdf;
@@ -9,9 +10,9 @@ using Job_Portal_System.Utilities.Semantic;
 using Job_Portal_System.ViewModels;
 using JW;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Extensions.Internal;
 
 namespace Job_Portal_System.Controllers
 {
@@ -19,16 +20,54 @@ namespace Job_Portal_System.Controllers
     public class ResumesController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<User> _userManager;
         private readonly IHostingEnvironment _env;
         private readonly IConverter _converter;
 
         public ResumesController(ApplicationDbContext context,
+            UserManager<User> userManager,
             IHostingEnvironment env,
             IConverter converter)
         {
             _context = context;
+            _userManager = userManager;
             _env = env;
             _converter = converter;
+        }
+        
+        [HttpGet]
+        [Route("Index")]
+        public async Task<IActionResult> Index(string tab)
+        {
+            IEnumerable<ResumeGeneralViewModel> resumes;
+            switch (tab)
+            {
+                case "recent":
+                    resumes = RecentResumes();
+                    break;
+                case "interesting":
+                case null:
+                    resumes = InterestingResumes();
+                    break;
+                default:
+                    return NotFound();
+            }
+
+            var isJobSeeker = User.IsInRole("JobSeeker");
+            var ownResumeCreated = false;
+            if (isJobSeeker)
+            {
+                var user = await _userManager.GetUserAsync(User);
+                ownResumeCreated = _context.Resumes.Any(r => r.UserId == user.Id);
+            }
+
+            return View("ResumesIndex", new ResumesIndexViewModel
+            {
+                IsJobSeeker = isJobSeeker,
+                OwnResumeCreated = ownResumeCreated,
+                ActiveTab = tab ?? "interesting",
+                Resumes = resumes,
+            });
         }
 
         [HttpGet]
@@ -111,6 +150,57 @@ namespace Job_Portal_System.Controllers
             var pdf = _converter.Convert(doc);
 
             return File(pdf, "application/pdf", $"{resume.User.LastName}_Resume.pdf");
+        }
+
+        private IEnumerable<ResumeGeneralViewModel> RecentResumes()
+        {
+            return _context.Resumes
+                .Where(r => r.IsPublic)
+                .Include(r => r.User).ThenInclude(u => u.City).ThenInclude(c => c.State)
+                .OrderByDescending(r => r.UpdatedAt)
+                .Take(20)
+                .Select(r => new ResumeGeneralViewModel
+                {
+                    Id = r.Id,
+                    OwnerName = $"{r.User.FirstName} {r.User.LastName}",
+                    IsModified = r.UpdatedAt != r.CreatedAt,
+                    LastUpdate = r.UpdatedAt,
+                    Location = $"{r.User.City.State.Name}-{r.User.City.Name}",
+                    WorksCount = _context.WorkExperiences.Count(w => w.ResumeId == r.Id),
+                    EducationsCount = _context.Educations.Count(e => e.ResumeId == r.Id),
+                    SkillsCount = _context.OwnedSkills.Count(s => s.ResumeId == r.Id),
+                    SeekedJobTitles = _context.SeekedJobTitles
+                        .Where(s => s.ResumeId == r.Id)
+                        .Select(j => j.JobTitle.Title)
+                        .ToList(),
+                });
+        }
+
+        private IEnumerable<ResumeGeneralViewModel> InterestingResumes()
+        {
+            return _context.Resumes
+                .Where(r => r.IsPublic)
+                .Include(r => r.User).ThenInclude(u => u.City).ThenInclude(c => c.State)
+                .OrderByDescending(r => r.UpdatedAt)
+                .Take(200)
+                .OrderBy(r => Guid.NewGuid())
+                .Take(20)
+                .OrderByDescending(r => r.UpdatedAt)
+                .Select(r => new ResumeGeneralViewModel
+                {
+                    Id = r.Id,
+                    OwnerName = $"{r.User.FirstName} {r.User.LastName}",
+                    IsModified = r.UpdatedAt != r.CreatedAt,
+                    LastUpdate = r.UpdatedAt,
+                    Location = $"{r.User.City.State.Name}-{r.User.City.Name}",
+                    WorksCount = _context.WorkExperiences.Count(w => w.ResumeId == r.Id),
+                    EducationsCount = _context.Educations.Count(e => e.ResumeId == r.Id),
+                    SkillsCount = _context.OwnedSkills.Count(s => s.ResumeId == r.Id),
+                    SeekedJobTitles = _context.SeekedJobTitles
+                        .Where(s => s.ResumeId == r.Id)
+                        .Select(j => j.JobTitle.Title)
+                        .ToList(),
+                });
         }
     }
 }

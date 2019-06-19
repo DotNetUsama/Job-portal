@@ -21,7 +21,7 @@ namespace Job_Portal_System.Dependencies
             _userManager = userManager;
         }
 
-        public async Task<IEnumerable<JobTitle>> GetSeekedJobTitles(ClaimsPrincipal claim)
+        public async Task<IEnumerable<JobTitle>> GetSeekedJobTitlesAsync(ClaimsPrincipal claim)
         {
             var user = await _userManager.GetUserAsync(claim);
             return _context.Resumes

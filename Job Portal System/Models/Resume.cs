@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -22,6 +23,14 @@ namespace Job_Portal_System.Models
         [Column(TypeName = "text")]
         [Display(Name = "Biography")]
         public string Biography { get; set; }
+
+        [DataType(DataType.Date)]
+        [Display(Name = "Created at")]
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
+
+        [DataType(DataType.Date)]
+        [Display(Name = "Updated at")]
+        public DateTime UpdatedAt { get; set; } = DateTime.Now;
 
         public User User { get; set; }
         public string UserId { get; set; }

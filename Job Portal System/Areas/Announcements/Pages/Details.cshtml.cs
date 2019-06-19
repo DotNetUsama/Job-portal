@@ -21,8 +21,6 @@ namespace Job_Portal_System.Areas.Announcements.Pages
 
         public Announcement Announcement { get; set; }
 
-        public string AutherName { get; set; }
-
         public bool IsOwner { get; set; }
 
         public async Task<IActionResult> OnGetAsync(string id)
@@ -32,17 +30,19 @@ namespace Job_Portal_System.Areas.Announcements.Pages
                 return NotFound();
             }
 
-            Announcement = await _context.Announcements.FirstOrDefaultAsync(m => m.Id == id);
+            Announcement = await _context.Announcements
+                .Include(a => a.Author)
+                .FirstOrDefaultAsync(m => m.Id == id);
 
             if (Announcement == null)
             {
                 return NotFound();
             }
+            
 
-            var owner = await _userManager.GetUserAsync(User);
+            var currentUser = await _userManager.GetUserAsync(User);
 
-            IsOwner = owner.Id == Announcement.UserId;
-            AutherName = $"{owner.FirstName} {owner.LastName}";
+            IsOwner = currentUser != null && currentUser.Id == Announcement.UserId;
 
             return Page();
         }

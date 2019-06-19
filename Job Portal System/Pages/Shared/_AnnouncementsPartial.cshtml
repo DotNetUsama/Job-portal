@@ -10,8 +10,7 @@
         <ul class="s-sidebarwidget--content s-sidebarwidget__items pt0 pr16 pb0 pl16">
             <li class="s-sidebarwidget--item grid">
                 <div class="grid--cell">
-                    <a asp-area="Announcements" asp-page="Details"
-                       asp-route-id="@announcement.Id" title="@announcement.Headline">
+                    <a href="/Announcements/Details?id=@announcement.Id" title="@announcement.Headline">
                         @announcement.Headline
                     </a>
                 </div>
