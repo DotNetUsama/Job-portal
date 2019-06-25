@@ -8,7 +8,8 @@ using Job_Portal_System.Handlers;
 using Job_Portal_System.Models;
 using Job_Portal_System.SignalR;
 using Job_Portal_System.Utilities.Semantic;
-using Job_Portal_System.ViewModels;
+using Job_Portal_System.ViewModels.Companies;
+using Job_Portal_System.ViewModels.JobVacancies;
 using JW;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
@@ -70,7 +71,87 @@ namespace Job_Portal_System.Controllers
             });
         }
 
-        [HttpPost]
+        [HttpGet]
+        [Route("Details")]
+        public IActionResult Details(string id)
+        {
+            if (string.IsNullOrEmpty(id)) return NotFound();
+
+            var jobVacancyViewModel = _context.JobVacancies
+                .Include(j => j.DesiredSkills).ThenInclude(s => s.Skill)
+                .Include(j => j.WorkExperienceQualifications).ThenInclude(w => w.JobTitle)
+                .Include(j => j.EducationQualifications).ThenInclude(e => e.FieldOfStudy)
+                .Where(j => j.Id == id)
+                .Select(j => new JobVacancyFullViewModel
+                {
+                    Id = j.Id,
+                    Title = j.Title,
+                    IsRemote = j.DistanceLimit == 0,
+                    MinSalary = j.MinSalary,
+                    MaxSalary = j.MaxSalary,
+                    JobTitle = j.JobTitle.Title,
+                    Location = $"{j.CompanyDepartment.City.State.Name}, {j.CompanyDepartment.City.Name}",
+                    Description = j.Description,
+                    DesiredSkills = j.DesiredSkills,
+                    WorkExperienceQualifications = j.WorkExperienceQualifications,
+                    EducationQualifications = j.EducationQualifications,
+                    Company = _context.Companies
+                        .Where(c => c.Id == j.CompanyDepartment.CompanyId)
+                        .Select(c => new CompanyFullViewModel
+                        {
+                            Id = c.Id,
+                            Name = c.Name,
+                            Logo = c.Logo,
+                            Description = c.Description,
+                            EmployeesNum = c.EmployeesNum,
+                            FoundedYear = c.FoundedYear,
+                            Type = c.Type,
+                            JobVacancies = _context.JobVacancies
+                                .Where(cj => cj.CompanyDepartment.CompanyId == c.Id)
+                                .Select(cj => new JobVacancyGeneralViewModel
+                                {
+                                    Id = cj.Id,
+                                    Title = cj.Title,
+                                    CreatedAt = cj.PublishedAt,
+                                    IsRemote = cj.DistanceLimit == 0,
+                                    MinSalary = cj.MinSalary,
+                                    MaxSalary = cj.MaxSalary,
+                                    JobTitle = cj.JobTitle.Title,
+                                    Location = $"{cj.CompanyDepartment.City.State.Name}, {cj.CompanyDepartment.City.Name}",
+                                    Company = c.Name,
+                                    DesiredSkills = _context.DesiredSkills
+                                        .Where(s => s.JobVacancyId == cj.Id)
+                                        .Select(s => s.Skill.Title),
+                                }),
+                        })
+                        .First(),
+                    RelatedJobVacancies = _context.JobVacancies
+                        .Where(rj => rj.JobTitleId == j.JobTitleId)
+                        .Select(rj => new JobVacancyGeneralViewModel {
+                            Id = rj.Id,
+                            Title = rj.Title,
+                            CreatedAt = rj.PublishedAt,
+                            IsRemote = rj.DistanceLimit == 0,
+                            MinSalary = rj.MinSalary,
+                            MaxSalary = rj.MaxSalary,
+                            JobTitle = rj.JobTitle.Title,
+                            Location = $"{rj.CompanyDepartment.City.State.Name}, {rj.CompanyDepartment.City.Name}",
+                            Company = rj.CompanyDepartment.Company.Name,
+                            DesiredSkills = _context.DesiredSkills
+                                .Where(s => s.JobVacancyId == rj.Id)
+                                .Select(s => s.Skill.Title),
+                        }),
+                    JobTypes = _context.JobVacancyJobTypes
+                        .Where(t => t.JobVacancyId == j.Id)
+                        .Select(t => t.JobType),
+                })
+                .First();
+
+            if (jobVacancyViewModel == null) return NotFound();
+            return View("JobVacancyDetails", jobVacancyViewModel);
+        }
+
+        [HttpGet]
         [Route("Close")]
         [Authorize(Roles = "Recruiter")]
         public async Task<IActionResult> Close(string id)
@@ -104,10 +185,10 @@ namespace Job_Portal_System.Controllers
 
             await _context.SaveChangesAsync();
 
-            return Redirect(Request.Headers["Referer"].ToString());
+            return RedirectToAction("Details", "JobVacancies", new { id });
         }
 
-        [HttpPost]
+        [HttpGet]
         [Route("Delete")]
         [Authorize(Roles = "Recruiter")]
         public async Task<IActionResult> Delete(string id)
@@ -116,7 +197,7 @@ namespace Job_Portal_System.Controllers
 
             var jobVacancy = await _context.JobVacancies
                 .Include(j => j.User)
-                .SingleOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync(m => m.Id == id);
 
             if (jobVacancy == null) return NotFound();
 
@@ -128,10 +209,10 @@ namespace Job_Portal_System.Controllers
 
             await AsyncHandler.DeleteJobVacancy(_context, _hubContext, jobVacancy);
 
-            return LocalRedirect("/JobVacancies");
+            return RedirectToAction("Index");
         }
 
-        [HttpPost]
+        [HttpGet]
         [Route("Submit")]
         [Authorize(Roles = "JobSeeker")]
         public async Task<IActionResult> Submit(string id)
@@ -143,7 +224,7 @@ namespace Job_Portal_System.Controllers
 
             var jobVacancy = await _context.JobVacancies
                 .Include(j => j.User)
-                .SingleOrDefaultAsync(j => j.Id == id);
+                .FirstOrDefaultAsync(j => j.Id == id);
 
             if (jobVacancy == null)
             {
@@ -159,12 +240,12 @@ namespace Job_Portal_System.Controllers
 
             var jobSeeker = await _context.JobSeekers
                 .Include(j => j.User)
-                .SingleOrDefaultAsync(j => j.User.UserName == User.Identity.Name);
+                .FirstOrDefaultAsync(j => j.User.UserName == User.Identity.Name);
 
             if (jobSeeker == null) return BadRequest();
 
             var resume = _context.Resumes
-                .SingleOrDefault(r => r.JobSeekerId == jobSeeker.Id);
+                .FirstOrDefault(r => r.JobSeekerId == jobSeeker.Id);
 
             if (resume == null || !resume.IsSeeking ||
                 _context.Applicants.Any(a => a.JobVacancyId == jobVacancy.Id
@@ -175,16 +256,16 @@ namespace Job_Portal_System.Controllers
 
             await AsyncHandler.SubmitToJobVacancy(_context, _hubContext, jobVacancy, resume);
 
-            return Redirect(Request.Headers["Referer"].ToString());
+            return RedirectToAction("Details", "JobVacancies", new {id});
         }
 
-        [HttpPost]
+        [HttpGet]
         [Route("FinalDecision")]
         [Authorize(Roles = "Recruiter")]
         public async Task<IActionResult> FinalDecision(string id)
         {
             var jobVacancy = await _context.JobVacancies
-                .SingleOrDefaultAsync(j => j.Id == id);
+                .FirstOrDefaultAsync(j => j.Id == id);
 
             if (jobVacancy == null) return NotFound();
             if (jobVacancy.Status != (int)JobVacancyStatus.Closed ||
@@ -209,7 +290,7 @@ namespace Job_Portal_System.Controllers
 
             await AsyncHandler.FinalDecideOnApplicants(_env, _context, _hubContext, jobVacancy);
 
-            return Redirect(Request.Headers["Referer"].ToString());
+            return RedirectToAction("Details", "JobVacancies", new { id });
         }
 
         [HttpGet]
@@ -313,8 +394,6 @@ namespace Job_Portal_System.Controllers
 
         private IEnumerable<JobVacancyGeneralViewModel> OwnJobVacancies()
         {
-            var userId = _userManager.GetUserId(User);
-
             return _context.JobVacancies
                 .Where(j => j.UserId == _userManager.GetUserId(User))
                 .Include(j => j.JobTitle)

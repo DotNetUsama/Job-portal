@@ -1,0 +1,8 @@
+@model IEnumerable<Job_Portal_System.ViewModels.Applicants.ApplicantForRecruiterGeneralViewModel>
+
+<div>
+    @foreach (var applicant in Model)
+    {
+        <partial name="_ApplicantForRecruiterGeneralInfoPartial" model="applicant" />
+    }
+</div>

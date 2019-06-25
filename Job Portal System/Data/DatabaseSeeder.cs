@@ -36,6 +36,8 @@ namespace Job_Portal_System.Data
             var randomUsers = new List<User>();
             var j = 0;
 
+            var minDate = new DateTime(2000, 1, 1);
+
             for (var i = 0; i < count; i++)
             {
                 if (j == randomUsers.Count)
@@ -56,10 +58,15 @@ namespace Job_Portal_System.Data
                     User = user,
                 }).Entity;
 
+                var createdAt = RandomGenerator.RandomDate(minDate, DateTime.Now, 1);
+                var updatedAt = RandomGenerator.RandomDate(createdAt, DateTime.Now, 1);
+
                 context.Resumes.Add(new Resume
                 {
                     JobSeeker = jobSeeker,
                     User = user,
+                    CreatedAt = createdAt,
+                    UpdatedAt = updatedAt,
                     IsPublic = true,
                     IsSeeking = true,
                     MovingDistanceLimit = (uint)RandomGenerator.RandomNumber(5, 60),
@@ -108,9 +115,10 @@ namespace Job_Portal_System.Data
 
         public static void FixDatabase(ApplicationDbContext context, IHostingEnvironment env)
         {
-            FixJobTitles(context, env);
-            FixFieldsOfStudy(context, env);
-            FixSkills(context, env);
+            //FixJobTitles(context, env);
+            //FixFieldsOfStudy(context, env);
+            //FixSkills(context, env);
+            FixResumes(context);
         }
 
         private static void FixJobTitles(ApplicationDbContext context, IHostingEnvironment env)
@@ -190,6 +198,21 @@ namespace Job_Portal_System.Data
                     }
                 }
 
+                context.SaveChanges();
+            }
+        }
+
+        private static void FixResumes(ApplicationDbContext context)
+        {
+            var resumesCount = context.Resumes.Count();
+            var minDate = new DateTime(2000, 1, 1);
+            for (var i = 0; i < resumesCount; i++)
+            {
+                var resume = context.Resumes.Skip(i).First();
+                var createdAt = RandomGenerator.RandomDate(minDate, DateTime.Now, 1);
+                var updatedAt = RandomGenerator.RandomDate(createdAt, DateTime.Now, 1);
+                resume.CreatedAt = createdAt;
+                resume.UpdatedAt = updatedAt;
                 context.SaveChanges();
             }
         }

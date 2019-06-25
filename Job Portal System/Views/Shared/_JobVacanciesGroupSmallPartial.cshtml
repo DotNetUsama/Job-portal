@@ -1,0 +1,8 @@
+@model IEnumerable<Job_Portal_System.ViewModels.JobVacancies.JobVacancyGeneralViewModel>
+
+<div>
+    @foreach (var jobVacancy in Model)
+    {
+        <partial name="_JobVacancyGeneralSmallInfoPartial" model="jobVacancy" />
+    }
+</div>

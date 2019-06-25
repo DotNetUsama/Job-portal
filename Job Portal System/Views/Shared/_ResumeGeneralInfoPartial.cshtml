@@ -1,0 +1,30 @@
+@model Job_Portal_System.ViewModels.Resumes.ResumeGeneralViewModel
+
+<div class="question-summary narrow">
+    <div onclick="window.location.href = '/resumes/details?id=@Model.Id'" class="cp">
+        <div class="status">
+            <div class="mini-counts"><span title="@Model.WorksCount experiences">@Model.WorksCount</span></div>
+            <div>experiences</div>
+        </div>
+        <div class="status">
+            <div class="mini-counts"><span title="@Model.SkillsCount skills">@Model.SkillsCount</span></div>
+            <div>skills</div>
+        </div>
+        <div class="status">
+            <div class="mini-counts"><span title="@Model.EducationsCount educations">@Model.EducationsCount</span></div>
+            <div>educations</div>
+        </div>
+    </div>
+    <div class="summary">
+        <h3>
+            <a href="/Resumes/Details?id=@Model.Id" class="question-hyperlink">
+                @Model.OwnerName
+            </a>
+        </h3>
+        <partial name="_TagsGroupPartial" model="@Model.SeekedJobTitles"/>
+        <div class="started">
+            <span class="started-link">@(Model.IsModified ? "updated" : "created") <span title="@Model.LastUpdate" class="js-relative-time"></span></span>
+            <span class="started-link fw-b"><i class="fa fa-map-marker-alt"></i> @Model.Location</span>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,25 @@
+﻿@model Job_Portal_System.ViewModels.Companies.CompaniesIndexViewModel
+
+@{
+    ViewData["Title"] = "All Companies";
+    Layout = "~/Pages/Shared/_WithSidebarLayout.cshtml";
+}
+
+<div class="grid">
+    <h1 class="grid--cell fl1 fs-headline1">
+        All Companies
+    </h1>
+    @if (Model.IsRecruiter)
+    {
+    <div class="pl8 grid--cell">
+        <a href="/Companies/MyCompany"
+           class="ws-nowrap s-btn s-btn__primary">
+            My Company
+        </a>
+    </div>
+    }
+</div>
+
+<div id="qlist-wrapper" class="flush-left">
+    <partial name="_CompaniesGroupPartial" model="@Model.Companies" />
+</div>

@@ -1,0 +1,42 @@
+@model Job_Portal_System.ViewModels.JobVacancies.JobVacancyGeneralViewModel
+
+<div class="p12 bb ps-relative bc-black-2">
+    <div>
+        <div>
+            <h2 class="fs-subheading job-details__spaced mb4">
+                <a href="/JobVacancies/Details?id=@Model.Id" title="@Model.Title"
+                   class="s-link">
+                    @Model.Title
+                </a>
+            </h2>
+        </div>
+        <div class="fc-black-700 fs-body2">
+            <span>
+                @Model.Company
+            </span>
+
+            <span class="fc-black-500">
+                -
+                @if (Model.IsRemote)
+                {
+                    <i>No office location</i>
+                }
+                else
+                {
+                    @Model.Location
+                }
+            </span>
+        </div>
+        <div class="mt2 fs-body3">
+            <span class="-salary pr16" title="£@Model.MinSalary - @Model.MaxSalary (Syrian Pounds)">£@Model.MinSalary - @Model.MaxSalary</span>
+            @if (Model.IsRemote)
+            {
+                <span class="-remote pr16">Remote</span>
+            }
+            <span class="-relocation">@Model.JobTitle</span>
+        </div>
+        <div class="mt12">
+            <partial name="_TagsGroupPartial" model="@Model.DesiredSkills"/>
+        </div>
+    </div>
+</div>

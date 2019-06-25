@@ -1,0 +1,20 @@
+@using Job_Portal_System.Enums
+@model Job_Portal_System.Enums.JobVacancyStatus
+
+@switch (Model)
+{
+    case JobVacancyStatus.Closed:
+        @:<span class="ps-absolute pt2 r0 mr12 t15 s-badge s-badge__danger">Closed</span>
+        break;
+    case JobVacancyStatus.Finished:
+        @:<span class="ps-absolute pt2 r0 mr12 t15 s-badge s-badge__danger">Finished</span>
+        break;
+    case JobVacancyStatus.InAction:
+        @:<span class="ps-absolute pt2 r0 mr12 t15 s-badge s-badge__warning">In action</span>
+        break;
+    case JobVacancyStatus.Open:
+        @:<span class="ps-absolute pt2 r0 mr12 t15 s-badge s-badge__success">Open</span>
+        break;
+    default:
+        break;
+}

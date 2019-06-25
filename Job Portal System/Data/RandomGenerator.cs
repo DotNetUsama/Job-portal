@@ -25,7 +25,6 @@ namespace Job_Portal_System.Data
             for (var i = 0; i < count; i++)
             {
                 var startDate = RandomDate(birthDate.AddYears(15), DateTime.Now.AddMonths(-1), 17);
-                if (startDate == null) continue;
                 var fieldOfStudyId = fieldsOfStudiesIds.Random(fieldsOfStudiesCount);
                 while (res.Any(j => j.FieldOfStudyId == fieldOfStudyId))
                 {
@@ -35,8 +34,8 @@ namespace Job_Portal_System.Data
                 {
                     Degree =
                             (int)(EducationDegree)educationDegrees.GetValue(Random.Next(educationDegrees.Length)),
-                    StartDate = startDate.Value,
-                    EndDate = RandomDate(startDate.Value.AddMonths(1), DateTime.Now, 28, true),
+                    StartDate = startDate,
+                    EndDate = RandomDateNullable(startDate.AddMonths(1), DateTime.Now, 28),
                     SchoolId = schoolsIds.Random(schoolsCount),
                     FieldOfStudyId = fieldsOfStudiesIds.Skip(Random.Next(0, fieldsOfStudiesCount)).Take(1).First(),
                 });
@@ -59,7 +58,6 @@ namespace Job_Portal_System.Data
             for (var i = 0; i < count; i++)
             {
                 var startDate = RandomDate(birthDate.AddYears(15), DateTime.Now.AddMonths(-1), 17);
-                if (startDate == null) continue;
                 var jobTitleId = jobTitlesIds.Random(jobTitlesCount);
                 while (res.Any(j => j.JobTitleId == jobTitleId))
                 {
@@ -67,8 +65,8 @@ namespace Job_Portal_System.Data
                 }
                 res.Add(new WorkExperience
                 {
-                    StartDate = startDate.Value,
-                    EndDate = RandomDate(startDate.Value.AddMonths(1), DateTime.Now, 28, true),
+                    StartDate = startDate,
+                    EndDate = RandomDateNullable(startDate.AddMonths(1), DateTime.Now, 28),
                     CompanyId = companiesIds.Random(companiesCount),
                     JobTitleId = jobTitleId,
                 });
@@ -168,10 +166,16 @@ namespace Job_Portal_System.Data
             return $"{RandomString(4)}@{RandomString(2)}.{RandomString(2)}";
         }
 
-        public static DateTime? RandomDate(DateTime start, DateTime end, int daysRange, bool isNullable = false)
+        public static DateTime RandomDate(DateTime start, DateTime end, int daysRange)
         {
             var days = Random.Next((end - start).Days / daysRange);
-            return isNullable && days == 0 ? (DateTime?)null : start.AddDays(days * daysRange);
+            return start.AddDays(days * daysRange);
+        }
+
+        public static DateTime? RandomDateNullable(DateTime start, DateTime end, int daysRange)
+        {
+            var days = Random.Next((end - start).Days / daysRange);
+            return days == 0 ? (DateTime?)null : start.AddDays(days * daysRange);
         }
     }
 }

@@ -1,0 +1,25 @@
+@model Job_Portal_System.ViewModels.JobVacancies.JobVacancyActionsForRecruiterViewModel
+
+<div class="g-col g-column timeline-sidebar">
+    <div class="timeline-sidebar-module">
+        <h3>Options</h3>
+        @if (Model.CanClose)
+        {
+            <a asp-controller="JobVacancies" asp-action="Close" asp-route-id="@Model.JobVacancyId" class="btn block">
+                Close
+            </a>
+        }
+        @if (Model.CanFinalDecide)
+        {
+            <a asp-controller="JobVacancies" asp-action="FinalDecision" asp-route-id="@Model.JobVacancyId" class="btn block">
+                Final decide
+            </a>
+        }
+        @if (Model.CanDelete)
+        {
+            <a asp-controller="JobVacancies" asp-action="Delete" asp-route-id="@Model.JobVacancyId" class="btn-secondary block">
+                Delete
+            </a>
+        }
+    </div>
+</div>

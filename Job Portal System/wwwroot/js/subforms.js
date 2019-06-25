@@ -74,14 +74,14 @@
     };
 
     const addToDisplayList = (list, displayFunction, count) => {
-        const item = $(`<li class="removable-object" data-index=${count}></li>`);
-        const displayStringDiv = $("<div class=\"col-md-10\"></div>");
+        const item = $(`<li class="removable-object fs-body3" data-index=${count}></li>`);
+        const displayStringDiv = $(`<div class="col-md-10"></div>`);
         displayStringDiv.append(displayFunction());
-        const removeBtnDiv = $("<div class=\"col-md-2 d-flex\"></div>");
-        const removeBtn = $("<button type=\"button\" class=\"ml-auto btn-icon btn-sub-remove cancel\"></button>");
+        const removeBtnDiv = $(`<div class="col-md-2 d-flex"></div>`);
+        const removeBtn = $(`<button type="button" class="s-btn ml-auto btn-icon btn-sub-remove cancel"></button>`);
         removeBtn.click(removeBtnHandler);
-        const removeSympol = $("<i class=\"fa fa-times\"></i>");
-        const containerDiv = $("<div class=\"row info-item bg-ghostwhite-hover\"></div>");
+        const removeSympol = $(`<i class="fa fa-times"></i>`);
+        const containerDiv = $(`<div class="row info-item bg-ghostwhite-hover"></div>`);
         removeBtn.append(removeSympol);
         removeBtnDiv.append(removeBtn);
         containerDiv.append(displayStringDiv);
@@ -119,7 +119,6 @@
         const inputsContainer = this.find(".form-inputs");
         const inputs = inputsContainer.find("input, select, textarea");
         const name = this.attr("data-for");
-        console.log(name);
 
         $(submitButton).click(() => {
             if (validateInputs(inputs)) {

@@ -10,5 +10,6 @@ namespace Job_Portal_System.Models
         public int JobType { get; set; }
 
         public JobVacancy JobVacancy { get; set; }
+        public string JobVacancyId { get; set; }
     }
 }

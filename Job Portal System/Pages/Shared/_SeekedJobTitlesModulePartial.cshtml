@@ -1,6 +1,10 @@
 @using Dependencies
 @inject JobSeekersManager JobSeekersManager
 
+@{
+    var seekedJobTitles = await JobSeekersManager.GetSeekedJobTitlesAsync(User);
+}
+
 <div class="module">
     <div class="s-sidebarwidget mb16">
         <div class="s-sidebarwidget--header grid">
@@ -17,15 +21,18 @@
         </div>
         <div class="s-sidebarwidget--content fd-column">
             <div class="js-seeked-job-titles-list grid gs4 py4 fw-wrap">
-                @foreach (var jobTitle in await JobSeekersManager.GetSeekedJobTitlesAsync(User))
+                @if (seekedJobTitles != null)
                 {
-                    <div class="js-tag grid--cell">
-                        <a href="#"
-                           class="post-tag user-tag"
-                           title="show questions tagged '@jobTitle.Title'">
-                            @jobTitle.Title
-                        </a>
-                    </div>
+                    @foreach (var jobTitle in seekedJobTitles)
+                     {
+                         <div class="js-tag grid--cell">
+                             <a href="#"
+                                class="post-tag user-tag"
+                                title="show questions tagged '@jobTitle.Title'">
+                                 @jobTitle.Title
+                             </a>
+                         </div>
+                     }
                 }
             </div>
         </div>

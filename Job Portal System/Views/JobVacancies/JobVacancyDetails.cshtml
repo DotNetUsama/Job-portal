@@ -1,0 +1,116 @@
+﻿@using Accord
+@using Job_Portal_System.Enums
+@model Job_Portal_System.ViewModels.JobVacancies.JobVacancyFullViewModel
+
+@{
+    ViewData["Title"] = Model.Title;
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<div class="main-columns">
+    <div id="main-bar" class="fs-body2">
+        <div class="grid mb32 gs12 gsx">
+            <div class="s-avatar s-avatar__lg mr8" style="flex-shrink: 0; background-color: white">
+                <a href="/Companies/Details?id=@Model.Company.Id">
+                    <img alt="@Model.Company.Name" class="hmx100 wmx100" src="@Model.Company.Logo">
+                </a>
+            </div>
+            <div class="grid--cell fl1">
+                <h1 class="fs-headline1 mb4">
+                    <a href="/JobVacancies/Details?id=@Model.Id" title="@Model.Title" class="fc-black-900">@Model.Title</a>
+                </h1>
+                <div class="fc-black-700 fs-body1">
+                    <a class="fc-black-700" href="/Companies/Details?id=@Model.Company.Id">@Model.Company.Name</a>
+                    <span class="fc-black-500">
+                        <span class="px8">|</span>
+                        @(Model.IsRemote ? Model.Location : "No office location")
+                    </span>
+                </div>
+                <div class="mt12 fs-body1">
+                    <span class="-salary pr16" title="£@Model.MinSalary - @Model.MaxSalary (Syrian Pounds)">£@Model.MinSalary - @Model.MaxSalary</span>
+                    @if (Model.IsRemote)
+                    {
+                        <span class="-remote pr16">Remote</span>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="grid by mt16 mb24 py16 bc-black-3">
+            <nav class="grid--cell mr-auto">
+                <a href="#overview-items" class="s-btn d-inline-block" data-nav-item="Overview">Overview</a>
+                <a href="#company-items" class="s-btn d-inline-block" data-nav-item="Company">Company</a>
+            </nav>
+        </div>
+        <div id="overview-items" class="job-details__spaced">
+            <section class="mb32">
+                <h2 class="fs-subheading mb16">About this job</h2>
+                <div class="grid gs16 gsx">
+                    <div class="grid--cell6">
+                        <div class="mb8">
+                            <span>Role: </span>
+                            <span class="fw-bold">@Model.JobTitle</span>
+                        </div>
+                        <div class="mb8">
+                            <span>Job types: </span>
+                            @foreach (var jobType in Model.JobTypes)
+                            {
+                                <span class="fw-bold px8">@(((JobType) jobType).GetDescription())</span>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="grid--cell6">
+                        <div class="mb8">
+                            <span>Company size: </span>
+                            @if (Model.Company.EmployeesNum.HasValue)
+                            {
+                                <span class="fw-bold">@Model.Company.EmployeesNum.Value people</span>
+                            }
+                            else
+                            {
+                                <span class="fw-bold">Unknown</span>
+                            }
+                        </div>
+                        <div class="mb8">
+                            <span>Company type: </span>
+                            <span class="fw-bold tt-capitalize">@Model.Company.Type</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section class="mb32">
+                <h2 class="fs-subheading mb16">Job description</h2>
+                <div>
+                    <div class="marker">
+                        <div class="content d-none">@Model.Description</div>
+                        <div class="view"></div>
+                    </div>
+                </div>
+            </section>
+            @await Component.InvokeAsync("JobVacancyActions", new { jobVacancyId = Model.Id, user = User })
+        </div>
+        <div id="company-items" class="job-details__spaced">
+            <section class="mb32">
+                <h2 class="fs-subheading mb16">About @Model.Company.Name</h2>
+                <div class="marker">
+                    <div class="content d-none">@Model.Company.Description</div>
+                    <div class="view"></div>
+                </div>
+            </section>
+        </div>
+    </div>
+    <div class="sidebar">
+        <section class="mb24">
+            <h2 class="fs-subheading mb12">Jobs at @Model.Company.Name</h2>
+            <partial name="_JobVacanciesGroupSmallPartial" model="@Model.Company.JobVacancies" />
+        </section>
+        <section class="mb24">
+            <h2 class="fs-subheading mb12">Related jobs</h2>
+            <partial name="_JobVacanciesGroupSmallPartial" model="@Model.RelatedJobVacancies" />
+        </section>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_MarkerScriptsPartial" />
+}

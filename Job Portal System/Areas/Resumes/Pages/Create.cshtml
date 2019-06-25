@@ -5,260 +5,480 @@
     ViewData["Title"] = "Create Resume";
 }
 
-<div class="row">
-<div class="col-md-6 offset-md-3 col-sm-8 offset-sm-2 multi-step-form">
-<div class="progress" style="height: 4px;">
-    <div class="progress-bar" role="progressbar"
-         aria-valuemin="0" aria-valuemax="100"></div>
-</div>
-<div class="form-container">
-<div class="form-head">
-    <h1 class="form-head-title">@ViewData["Title"]</h1>
-    <span class="form-head-details">Step <span id="step-num"></span> of <span id="steps-count"></span></span>
-</div>
-<div class="form-body">
-<form method="post">
-<div asp-validation-summary="All" class="text-danger"></div>
-<fieldset id="educations-partial" class="sub-form tab" data-count="0" data-for="Educations">
-    <h2 class="form-body-title"><i class="fa fa-graduation-cap"></i> Educations</h2>
-    <ul class="displayed-objects-list list-unstyled"></ul>
-
-    <div class="hidden-objects-container d-none"></div>
-
-    <div class="form-inputs">
-        <div class="form-group">
-            <label asp-for="Education.FieldOfStudy"></label>
-            <input asp-for="Education.FieldOfStudy"
-                   id="field-of-study-input" class="form-control" />
-            <span asp-validation-for="Education.FieldOfStudy" class="validation-label text-danger"></span>
-        </div>
-        <div class="form-group">
-            <label asp-for="Education.Degree"></label>
-            <select asp-for="Education.Degree"
-                    asp-items="Html.GetEnumSelectList<EducationDegree>()"
-                    class="form-control">
-                <option value="">Please select</option>
-            </select>
-            <span asp-validation-for="Education.Degree" class="validation-label text-danger"></span>
-        </div>
-        <div class="form-group">
-            <label>Education period</label>
-            <div class="d-flex">
-                <div style="flex: 1">
-                    <input asp-for="Education.StartDate" class="form-control" />
-                </div>
-                <div style="flex: 0 0 25px; align-self: center">
-                    <span class="ml-2 mr-2">to</span>
-                </div>
-                <div style="flex: 1">
-                    <input asp-for="Education.EndDate" class="form-control" />
-                </div>
-            </div>
-            <div class="d-flex">
-                <div style="flex: 1">
-                    <span asp-validation-for="Education.StartDate" class="validation-label text-danger"></span>
-                </div>
-                <div class="flex: 0 0 25px"></div>
-                <div style="flex: 1">
-                    <span asp-validation-for="Education.EndDate" class="validation-label text-danger"></span>
-                </div>
-            </div>
-        </div>
-        <div class="form-group">
-            <label asp-for="Education.School"></label>
-            <input asp-for="Education.School" id="school-input"
-                   class="form-control" />
-            <span asp-validation-for="Education.School"
-                  class="validation-label text-danger"></span>
-        </div>
+<div class="wmx6 m-auto ba bc-black-2 my24">
+    <div class="progress" style="height: 4px;">
+        <div class="progress-bar bg-info" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="width: 25%;"></div>
     </div>
-    <button type="button"
-            class="btn btn-submit btn-sub-submit">
-        <i class="fa fa-plus-circle"></i> Add
-    </button>
-</fieldset>
-
-<fieldset id="work-experiences-partial" class="sub-form tab" data-count="0" data-for="WorkExperiences">
-    <h2 class="form-body-title"><i class="fa fa-briefcase"></i> Work experiences</h2>
-    <ul class="displayed-objects-list list-unstyled"></ul>
-
-    <div class="hidden-objects-container d-none"></div>
-
-    <div class="form-inputs">
-        <div class="form-group">
-            <label asp-for="WorkExperience.JobTitle"></label>
-            <input asp-for="WorkExperience.JobTitle"
-                   id="work-experience-job-title-input" class="form-control" />
-            <span asp-validation-for="WorkExperience.JobTitle" class="validation-label text-danger"></span>
+    <div class="px28 py24 ps-relative">
+        <div class="bb bc-black-2">
+            <h1 class="fs-headline1 ta-center mb32 mt12">Create Resume</h1>
+            <span class="form-steps fs-body4 fc-black-500">Step <span id="step-num">1</span> of <span id="steps-count">4</span></span>
         </div>
-        <div class="form-group">
-            <label>Work period</label>
-            <div class="d-flex">
-                <div style="flex: 1">
-                    <input asp-for="WorkExperience.StartDate" class="form-control" />
-                </div>
-                <div style="flex: 0 0 25px; align-self: center">
-                    <span class="ml-2 mr-2">to</span>
-                </div>
-                <div style="flex: 1">
-                    <input asp-for="WorkExperience.EndDate" class="form-control" />
-                </div>
-            </div>
-            <div class="d-flex">
-                <div style="flex: 1">
-                    <span asp-validation-for="WorkExperience.StartDate" class="validation-label text-danger"></span>
-                </div>
-                <div class="flex: 0 0 25px"></div>
-                <div style="flex: 1">
-                    <span asp-validation-for="WorkExperience.EndDate" class="validation-label text-danger"></span>
-                </div>
-            </div>
-        </div>
-        <div class="form-group">
-            <label asp-for="WorkExperience.Company"></label>
-            <input asp-for="WorkExperience.Company" id="company-input" class="form-control" />
-            <span asp-validation-for="WorkExperience.Company" class="validation-label text-danger"></span>
-        </div>
-        <div class="form-group">
-            <label asp-for="WorkExperience.Description"></label>
-            <textarea asp-for="WorkExperience.Description" class="form-control"></textarea>
-            <span asp-validation-for="WorkExperience.Description" class="validation-label text-danger"></span>
-        </div>
-    </div>
-    <button type="button"
-            class="btn btn-submit btn-sub-submit">
-        <i class="fa fa-plus-circle"></i> Add
-    </button>
-</fieldset>
+        <form method="post">
+            <div asp-validation-summary="All" class="text-danger fs-body3"></div>
 
-<fieldset id="skills-and-seekded-job-titles-partial" class="tab">
-    <fieldset class="sub-form" data-count="0" data-for="OwnedSkills" id="owned-skills-sub-form">
-        <legend>Owned Skills</legend>
-
-        <ul class="displayed-objects-list list-unstyled"></ul>
-
-        <div class="hidden-objects-container d-none"></div>
-
-        <div class="form-inputs form-row">
-            <div class="form-group col-md-6">
-                <label asp-for="OwnedSkill.Skill"></label>
-                <input asp-for="OwnedSkill.Skill" id="skill-input" class="form-control" />
-            </div>
-            <div class="form-group col-md-4">
-                <label asp-for="OwnedSkill.Years"></label>
-                <input asp-for="OwnedSkill.Years" id="skill-years" class="form-control" />
-            </div>
-            <div class="form-group col-md-2 d-flex">
-                <button type="button"
-                        class="btn btn-submit btn-sub-submit mt-auto ml-auto">
-                    <i class="fa fa-plus-circle"></i> Add
-                </button>
-            </div>
-        </div>
-        <div class="form-row">
-            <div class="col-md-6">
-                <span asp-validation-for="OwnedSkill.Skill" class="validation-label text-danger"></span>
-            </div>
-            <div class="col-md-4">
-                <span asp-validation-for="OwnedSkill.Years" class="validation-label text-danger"></span>
-            </div>
-        </div>
-    </fieldset>
-    <hr />
-    <fieldset class="sub-form" data-count="0" data-for="SeekedJobTitles" id="seeked-job-titles-sub-form">
-        <legend>Seeked job titles <span class="font-weight-light">(Optional)</span></legend>
-
-        <ul class="displayed-objects-list list-unstyled"></ul>
-
-        <div class="hidden-objects-container d-none"></div>
-
-        <div class="form-inputs form-row">
-            <div class="form-group col-md-10">
-                <label asp-for="SeekedJobTitle.JobTitle"></label>
-                <input asp-for="SeekedJobTitle.JobTitle"
-                       id="seeked-job-title-input" class="form-control" />
-            </div>
-            <div class="form-group col-md-2 d-flex">
-                <button type="button" class="btn btn-submit btn-sub-submit mt-auto ml-auto">
-                    <i class="fa fa-plus-circle"></i> Add
-                </button>
-            </div>
-        </div>
-
-        <div class="form-row">
-            <div class="form-group col-md-10">
-                <span asp-validation-for="SeekedJobTitle.JobTitle" class="validation-label text-danger"></span>
-            </div>
-        </div>
-    </fieldset>
-</fieldset>
-<fieldset id="general-info-partial" class="tab">
-    <h2 class="form-body-title"><i class="fa fa-question-circle"></i> General information</h2>
-    <div class="form-group">
-        <label asp-for="ResumeInfo.MinSalary"></label>
-        <input asp-for="ResumeInfo.MinSalary" class="form-control" />
-        <span asp-validation-for="ResumeInfo.MinSalary" class="validation-label text-danger"></span>
-    </div>
-    <div class="form-group">
-        <label asp-for="ResumeInfo.MovingDistanceLimit"></label>
-        <input asp-for="ResumeInfo.MovingDistanceLimit" class="form-control" />
-        <span asp-validation-for="ResumeInfo.MovingDistanceLimit" class="validation-label text-danger"></span>
-    </div>
-    <div class="form-group">
-        <label asp-for="ResumeInfo.Biography"></label>
-        <textarea asp-for="ResumeInfo.Biography" class="form-control">
+            <fieldset id="general-info-partial" class="tab pb24">
+                <h2 class="fs-headline2"><i class="fa fa-question-circle"></i> General information</h2>
+                <div class="px28 pb24 bb bc-black-2">
+                    <div class="input-group">
+                        <label asp-for="ResumeInfo.Biography" class="f-label">Biography</label>
+                        <textarea asp-for="ResumeInfo.Biography" class="f-input">
                                 @Model.ResumeInfo.Biography
-                            </textarea>
-        <span asp-validation-for="ResumeInfo.Biography" class="validation-label text-danger"></span>
-    </div>
-    <div class="form-group">
-        <label class="checkbox-container">
-            <label asp-for="ResumeInfo.IsSeeking"></label>
-            <input asp-for="ResumeInfo.IsSeeking" checked />
-            <span class="checkmark"></span>
-        </label>
-    </div>
-    <div class="form-group">
-        <label class="checkbox-container">
-            <label asp-for="ResumeInfo.IsPublic"></label>
-            <input asp-for="ResumeInfo.IsPublic" checked />
-            <span class="checkmark"></span>
-        </label>
-    </div>
-    <div class="form-row">
-        @foreach (var entity in Model.ResumeInfo.JobTypes)
-        {
-            <div class="col-md-4">
-                <label class="checkbox-container">
-                    @entity.Key.GetDescription()
-                    <input asp-for="ResumeInfo.JobTypes[entity.Key]" />
-                    <span class="checkmark"></span>
-                </label>
+                        </textarea>
+                        <span asp-validation-for="ResumeInfo.Biography" class="validation-label text-danger fs-body3"></span>
+                    </div>
+                    <div class="grid gs24 grid__allcells6 apply-form--grid">
+                        <div class="grid--cell input-group">
+                            <label asp-for="ResumeInfo.MinSalary" class="f-label">Minimum salary</label>
+                            <input asp-for="ResumeInfo.MinSalary" class="f-input" />
+                            <span asp-validation-for="ResumeInfo.MinSalary" class="validation-label text-danger fs-body3"></span>
+                        </div>
+                        <div class="grid--cell input-group">
+                            <label asp-for="ResumeInfo.MovingDistanceLimit" class="f-label">Moving distance limit</label>
+                            <input asp-for="ResumeInfo.MovingDistanceLimit" class="f-input" />
+                            <span asp-validation-for="ResumeInfo.MovingDistanceLimit" class="validation-label text-danger fs-body3"></span>
+                        </div>
+                    </div>
+                    <label title="Your resume will be recommended to job vacancies and you'll be notified" class="d-block fs-body2">
+                        <input asp-for="ResumeInfo.IsSeeking">
+                        Mark this if you're seeking for a job
+                    </label>
+                    <label title="Your resume will be visible to anyone in public" class="d-block fs-body2">
+                        <input asp-for="ResumeInfo.IsPublic">
+                        Make my resume public
+                    </label>
+
+                    <div class="input-group">
+                        <label class="f-label">Preferred job types</label>
+                        <div class="grid fw-wrap">
+                            @foreach (var (key, _) in Model.ResumeInfo.JobTypes)
+                            {
+                                <label title="Your resume will be visible to anyone in public" class="fl-third fs-body2">
+                                    <input asp-for="ResumeInfo.JobTypes[key]">
+                                    @key.GetDescription()
+                                </label>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+            <fieldset id="work-experiences-partial" class="sub-form tab pb24" data-count="0" data-for="WorkExperiences">
+                <h2 class="fs-headline2"><i class="fa fa-briefcase"></i> Work experiences</h2>
+                <ul class="px28 displayed-objects-list list-unstyled"></ul>
+                <div class="hidden-objects-container d-none"></div>
+                <div class="px28 pb24 bb bc-black-2">
+                    <div class="form-inputs">
+                        <div class="input-group">
+                            <label asp-for="WorkExperience.JobTitle" class="f-label">Position</label>
+                            <input asp-for="WorkExperience.JobTitle" id="work-experience-job-title-input" class="f-input" />
+                            <span asp-validation-for="WorkExperience.JobTitle" class="validation-label text-danger fs-body3"></span>
+                        </div>
+                        <div class="input-group">
+                            <label asp-for="WorkExperience.Company" class="f-label">Company or organization</label>
+                            <input asp-for="WorkExperience.Company" id="company-input" class="f-input" />
+                            <span asp-validation-for="WorkExperience.Company" class="validation-label text-danger fs-body3"></span>
+                        </div>
+                        <div class="grid gs24 grid__allcells6 apply-form--grid">
+                            <div class="grid--cell input-group">
+                                <label asp-for="WorkExperience.StartDate" class="f-label">Starting date</label>
+                                <input asp-for="WorkExperience.StartDate" class="f-input" />
+                                <span asp-validation-for="WorkExperience.StartDate" class="validation-label text-danger fs-body3"></span>
+                            </div>
+                            <div class="grid--cell input-group">
+                                <label asp-for="WorkExperience.EndDate" class="f-label">End date</label>
+                                <input asp-for="WorkExperience.EndDate" class="f-input" />
+                                <span asp-validation-for="WorkExperience.EndDate" class="validation-label text-danger fs-body3"></span>
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <label asp-for="WorkExperience.Description" class="f-label">Responsibilities</label>
+                            <textarea asp-for="WorkExperience.Description" class="f-input"></textarea>
+                            <span asp-validation-for="WorkExperience.Description" class="validation-label text-danger fs-body3"></span>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="s-btn btn-clear btn-sub-submit">
+                            <i class="fa fa-plus-circle"></i> Add
+                        </button>
+                    </div>
+                </div>
+            </fieldset>
+            <fieldset id="educations-partial" class="sub-form tab pb24" data-count="0" data-for="Educations" style="">
+                <h2 class="fs-headline2"><i class="fa fa-graduation-cap"></i> Educations</h2>
+                <ul class="px28 displayed-objects-list list-unstyled"></ul>
+                <div class="hidden-objects-container d-none"></div>
+                <div class="px28 pb24 bb bc-black-2">
+                    <div class="form-inputs">
+                        <div class="input-group">
+                            <label asp-for="Education.School" class="f-label">University or institution</label>
+                            <input asp-for="Education.School" id="school-input" class="f-input" />
+                            <span asp-validation-for="Education.School" class="validation-label text-danger fs-body3"></span>
+                        </div>
+                        <div class="grid gs24 grid__allcells6 apply-form--grid">
+                            <div class="grid--cell input-group">
+                                <label asp-for="Education.FieldOfStudy" class="f-label"></label>
+                                <input asp-for="Education.FieldOfStudy"
+                                       id="field-of-study-input" class="f-input" />
+                                <span asp-validation-for="Education.FieldOfStudy" class="validation-label text-danger fs-body3"></span>
+                            </div>
+                            <div class="grid--cell input-group">
+                                <label asp-for="Education.Degree" class="f-label"></label>
+                                <select asp-for="Education.Degree"
+                                        asp-items="Html.GetEnumSelectList<EducationDegree>()"
+                                        class="f-input">
+                                    <option value="">Please select</option>
+                                </select>
+                                <span asp-validation-for="Education.Degree" class="validation-label text-danger fs-body3"></span>
+                            </div>
+                        </div>
+                        <div class="grid gs24 grid__allcells6 apply-form--grid">
+                            <div class="grid--cell input-group">
+                                <label asp-for="Education.StartDate" class="f-label">Starting date</label>
+                                <input asp-for="Education.StartDate" class="f-input" />
+                                <span asp-validation-for="Education.StartDate" class="validation-label text-danger fs-body3"></span>
+                            </div>
+                            <div class="grid--cell input-group">
+                                <label asp-for="Education.EndDate" class="f-label">Graduating date</label>
+                                <input asp-for="Education.EndDate" class="f-input" />
+                                <span asp-validation-for="Education.EndDate" class="validation-label text-danger fs-body3"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="s-btn btn-clear btn-sub-submit">
+                            <i class="fa fa-plus-circle"></i> Add
+                        </button>
+                    </div>
+                </div>
+            </fieldset>
+            <fieldset id="skills-and-seekded-job-titles-partial" class="tab pb24">
+                <fieldset class="sub-form" data-count="0" data-for="OwnedSkills" id="owned-skills-sub-form">
+                    <h2 class="fs-headline2">Skills</h2>
+                    <ul class="px28 displayed-objects-list list-unstyled"></ul>
+                    <div class="hidden-objects-container d-none"></div>
+                    <div class="px28 pb24 bb bc-black-2">
+                        <div class="form-inputs">
+                            <div class="grid gs24 grid__allcells6 apply-form--grid">
+                                <div class="grid--cell input-group">
+                                    <label asp-for="OwnedSkill.Skill" class="f-label"></label>
+                                    <input asp-for="OwnedSkill.Skill" id="skill-input" class="f-input" />
+                                    <span asp-validation-for="OwnedSkill.Skill" class="validation-label text-danger fs-body3"></span>
+                                </div>
+                                <div class="grid--cell input-group">
+                                    <label asp-for="OwnedSkill.Years" class="f-label"></label>
+                                    <input asp-for="OwnedSkill.Years" id="skill-years" class="f-input" />
+                                    <span asp-validation-for="OwnedSkill.Years" class="validation-label text-danger fs-body3"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="s-btn btn-clear btn-sub-submit">
+                                <i class="fa fa-plus-circle"></i> Add
+                            </button>
+                        </div>
+                    </div>
+                </fieldset>
+                <fieldset class="sub-form pt24" data-count="0" data-for="SeekedJobTitles" id="seeked-job-titles-sub-form">
+                    <h2 class="fs-headline2">Seeked job titles <span class="fs-body1 fc-black-500">(Optional)</span></h2>
+                    <ul class="px28 displayed-objects-list list-unstyled"></ul>
+                    <div class="hidden-objects-container d-none"></div>
+                    <div class="px28 pb24 bb bc-black-2">
+                        <div class="form-inputs">
+                            <div class="input-group">
+                                <label asp-for="SeekedJobTitle.JobTitle" class="f-label">Job title</label>
+                                <input asp-for="SeekedJobTitle.JobTitle" id="seeked-job-title-input" class="f-input" />
+                                <span asp-validation-for="SeekedJobTitle.JobTitle" class="validation-label text-danger fs-body3"></span>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="s-btn btn-clear btn-sub-submit">
+                                <i class="fa fa-plus-circle"></i> Add
+                            </button>
+                        </div>
+                    </div>
+                </fieldset>
+            </fieldset>
+
+            <div class="grid px28 gs12">
+                <button type="button" id="prevBtn" class="grid--cell btn-step" onclick="nextPrev(-1)">
+                    <i class="fa fa-chevron-left"></i> Previous
+                </button>
+                <button type="button" id="nextBtn" class="grid--cell btn-step" onclick="nextPrev(1)">
+                    Next <i class="fa fa-chevron-right"></i>
+                </button>
+                <button asp-page-handler="createResume" class="grid--cell ml-auto cancel">
+                    Create
+                </button>
             </div>
-        }
+        </form>
     </div>
-</fieldset>
+</div>
 
-<div class="d-flex">
-    <button type="button" id="prevBtn"
-            class="btn btn-step ml-2 mr-2" onclick="nextPrev(-1)">
-        <i class="fa fa-chevron-left"></i> Previous
-    </button>
-    <button type="button" id="nextBtn"
-            class="btn btn-step ml-2 mr-2" onclick="nextPrev(1)">
-        Next <i class="fa fa-chevron-right"></i>
-    </button>
+@*<div class="wmx6 m-auto ba bc-black-2 my24">
+        <div class="progress" style="height: 4px;">
+            <div class="progress-bar bg-info" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="width: 25%;"></div>
+        </div>
+        <div class="form-head px28 py24 ps-relative">
+            <div class="bb bc-black-2">
+                <h1 class="fs-headline1 ta-center mb32 mt12">Create Resume</h1>
+                <span class="form-steps fs-body4 fc-black-500">Step <span id="step-num">1</span> of <span id="steps-count">4</span></span>
+            </div>
+            <div class="form-body">
+                <form method="post" novalidate="novalidate">
+                    <div asp-validation-summary="All"></div>
+                    <fieldset id="educations-partial" class="sub-form tab pb24" data-count="0" data-for="Educations" style="">
+                        <h2 class="fs-headline2"><i class="fa fa-graduation-cap"></i> Educations</h2>
+                        <ul class="displayed-objects-list list-unstyled"></ul>
+                        <div class="hidden-objects-container d-none"></div>
+                        <div class="px28 pb24 bb bc-black-2">
+                            <div class="form-inputs">
+                                <div class="input-group">
+                                    <label asp-for="Education"></label>
+                                    <label for="Education_School" class="f-label">School</label>
+                                    <input id="school-input" class="f-input ui-autocomplete-input" type="text" data-val="true" data-val-required="The School field is required." name="Education.School" value="" autocomplete="off">
+                                    <span class="validation-label text-danger field-validation-valid" data-valmsg-for="Education.School" data-valmsg-replace="true"></span>
+                                </div>
+                                <div class="grid gs24 grid__allcells6 apply-form--grid sm:fd-column">
+                                    <div class="grid--cell input-group">
+                                        <label for="Education_FieldOfStudy" class="f-label">Field of study</label>
+                                        <input id="field-of-study-input" class="f-input ui-autocomplete-input" type="text" data-val="true" data-val-required="The Field of study field is required." name="Education.FieldOfStudy" value="" autocomplete="off">
+                                        <span class="validation-label text-danger field-validation-valid" data-valmsg-for="Education.FieldOfStudy" data-valmsg-replace="true"></span>
+                                    </div>
+                                    <div class="grid--cell input-group">
+                                        <label for="Education_Degree" class="f-label">Degree</label>
+                                        <select class="f-input" data-val="true" data-val-required="The Degree field is required." id="Education_Degree" name="Education.Degree">
+                                            <option value="">Please select</option>
+                                            <option value="1">Other</option>
+                                            <option value="2">High school</option>
+                                            <option value="3">Associate</option>
+                                            <option value="4">Bachelore</option>
+                                            <option value="5">Master</option>
+                                            <option value="6">Dectorate</option>
+                                        </select>
+                                        <span class="validation-label text-danger field-validation-valid" data-valmsg-for="Education.Degree" data-valmsg-replace="true"></span>
+                                    </div>
+                                </div>
+                                <div class="grid gs24 grid__allcells6 apply-form--grid sm:fd-column">
+                                    <div class="grid--cell input-group">
+                                        <label class="f-label">Starting date</label>
+                                        <input class="f-input" type="date" data-val="true" data-val-required="The Start date field is required." id="Education_StartDate" name="Education.StartDate" value="">
+                                    </div>
+                                    <div class="grid--cell input-group">
+                                        <label class="f-label">Graduation date</label>
+                                        <input class="f-input" type="date" data-val="true" data-val-required="The Start date field is required." id="Education_StartDate" name="Education.StartDate" value="">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                <button type="button" class="s-btn btn-clear btn-sub-submit">
+                                    <i class="fa fa-plus-circle"></i> Add
+                                </button>
+                            </div>
+                        </div>
+                    </fieldset>
 
-    <button asp-page-handler="createResume"
-            class="btn btn-submit ml-auto cancel">
-        Create
-    </button>
-</div>
-</form>
-</div>
-</div>
-</div>
-</div>
+                    <fieldset id="work-experiences-partial" class="sub-form tab" data-count="0" data-for="WorkExperiences" style="display: none;">
+                        <h2 class="form-body-title"><i class="fa fa-briefcase"></i> Work experiences</h2>
+                        <ul class="displayed-objects-list list-unstyled"></ul>
+
+                        <div class="hidden-objects-container d-none"></div>
+
+                        <div class="form-inputs">
+                            <div class="form-group">
+                                <label for="WorkExperience_JobTitle">Job title</label>
+                                <input id="work-experience-job-title-input" class="form-control ui-autocomplete-input" type="text" data-val="true" data-val-required="The Job title field is required." name="WorkExperience.JobTitle" value="" autocomplete="off">
+                                <span class="validation-label text-danger field-validation-valid" data-valmsg-for="WorkExperience.JobTitle" data-valmsg-replace="true"></span>
+                            </div>
+                            <div class="form-group">
+                                <label>Work period</label>
+                                <div class="d-flex">
+                                    <div style="flex: 1">
+                                        <input class="form-control" type="date" data-val="true" data-val-required="The Start date field is required." id="WorkExperience_StartDate" name="WorkExperience.StartDate" value="">
+                                    </div>
+                                    <div style="flex: 0 0 25px; align-self: center">
+                                        <span class="ml-2 mr-2">to</span>
+                                    </div>
+                                    <div style="flex: 1">
+                                        <input class="form-control" type="date" id="WorkExperience_EndDate" name="WorkExperience.EndDate" value="">
+                                    </div>
+                                </div>
+                                <div class="d-flex">
+                                    <div style="flex: 1">
+                                        <span class="validation-label text-danger field-validation-valid" data-valmsg-for="WorkExperience.StartDate" data-valmsg-replace="true"></span>
+                                    </div>
+                                    <div class="flex: 0 0 25px"></div>
+                                    <div style="flex: 1">
+                                        <span class="validation-label text-danger field-validation-valid" data-valmsg-for="WorkExperience.EndDate" data-valmsg-replace="true"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="WorkExperience_Company">Company</label>
+                                <input id="company-input" class="form-control ui-autocomplete-input" type="text" data-val="true" data-val-required="The Company field is required." name="WorkExperience.Company" value="" autocomplete="off">
+                                <span class="validation-label text-danger field-validation-valid" data-valmsg-for="WorkExperience.Company" data-valmsg-replace="true"></span>
+                            </div>
+                            <div class="form-group">
+                                <label for="WorkExperience_Description">Description</label>
+                                <textarea class="form-control" id="WorkExperience_Description" name="WorkExperience.Description"></textarea>
+                                <span class="validation-label text-danger field-validation-valid" data-valmsg-for="WorkExperience.Description" data-valmsg-replace="true"></span>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-submit btn-sub-submit">
+                            <i class="fa fa-plus-circle"></i> Add
+                        </button>
+                    </fieldset>
+
+                    <fieldset id="skills-and-seekded-job-titles-partial" class="tab" style="display: none;">
+                        <fieldset class="sub-form" data-count="0" data-for="OwnedSkills" id="owned-skills-sub-form">
+                            <legend>Owned Skills</legend>
+
+                            <ul class="displayed-objects-list list-unstyled"></ul>
+
+                            <div class="hidden-objects-container d-none"></div>
+
+                            <div class="form-inputs form-row">
+                                <div class="form-group col-md-6">
+                                    <label for="OwnedSkill_Skill">Skill</label>
+                                    <input id="skill-input" class="form-control ui-autocomplete-input" type="text" data-val="true" data-val-required="The Skill field is required." name="OwnedSkill.Skill" value="" autocomplete="off">
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label for="OwnedSkill_Years">Years</label>
+                                    <input id="skill-years" class="form-control" type="number" data-val="true" data-val-range="The field Years must be between 1 and 25." data-val-range-max="25" data-val-range-min="1" data-val-required="The Years field is required." name="OwnedSkill.Years" value="">
+                                </div>
+                                <div class="form-group col-md-2 d-flex">
+                                    <button type="button" class="btn btn-submit btn-sub-submit mt-auto ml-auto">
+                                        <i class="fa fa-plus-circle"></i> Add
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="col-md-6">
+                                    <span class="validation-label text-danger field-validation-valid" data-valmsg-for="OwnedSkill.Skill" data-valmsg-replace="true"></span>
+                                </div>
+                                <div class="col-md-4">
+                                    <span class="validation-label text-danger field-validation-valid" data-valmsg-for="OwnedSkill.Years" data-valmsg-replace="true"></span>
+                                </div>
+                            </div>
+                        </fieldset>
+                        <hr>
+                        <fieldset class="sub-form" data-count="0" data-for="SeekedJobTitles" id="seeked-job-titles-sub-form">
+                            <legend>Seeked job titles <span class="font-weight-light">(Optional)</span></legend>
+
+                            <ul class="displayed-objects-list list-unstyled"></ul>
+
+                            <div class="hidden-objects-container d-none"></div>
+
+                            <div class="form-inputs form-row">
+                                <div class="form-group col-md-10">
+                                    <label for="SeekedJobTitle_JobTitle">Job title</label>
+                                    <input id="seeked-job-title-input" class="form-control ui-autocomplete-input" type="text" data-val="true" data-val-required="The Job title field is required." name="SeekedJobTitle.JobTitle" value="" autocomplete="off">
+                                </div>
+                                <div class="form-group col-md-2 d-flex">
+                                    <button type="button" class="btn btn-submit btn-sub-submit mt-auto ml-auto">
+                                        <i class="fa fa-plus-circle"></i> Add
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group col-md-10">
+                                    <span class="validation-label text-danger field-validation-valid" data-valmsg-for="SeekedJobTitle.JobTitle" data-valmsg-replace="true"></span>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </fieldset>
+                    <fieldset id="general-info-partial" class="tab" style="display: none;">
+                        <h2 class="form-body-title"><i class="fa fa-question-circle"></i> General information</h2>
+                        <div class="form-group">
+                            <label for="ResumeInfo_MinSalary">Minimum salary</label>
+                            <input class="form-control" type="text" data-val="true" data-val-number="The field Minimum salary must be a number." data-val-range="The field Minimum salary must be between 100 and 999999.99." data-val-range-max="999999.99" data-val-range-min="100" data-val-required="The Minimum salary field is required." id="ResumeInfo_MinSalary" name="ResumeInfo.MinSalary" value="0">
+                            <span class="validation-label text-danger field-validation-valid" data-valmsg-for="ResumeInfo.MinSalary" data-valmsg-replace="true"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="ResumeInfo_MovingDistanceLimit">Moving distance limit (in km)</label>
+                            <input class="form-control" type="number" data-val="true" data-val-range="The field Moving distance limit (in km) must be between 0 and 60." data-val-range-max="60" data-val-range-min="0" data-val-required="The Moving distance limit (in km) field is required." id="ResumeInfo_MovingDistanceLimit" name="ResumeInfo.MovingDistanceLimit" value="0">
+                            <span class="validation-label text-danger field-validation-valid" data-valmsg-for="ResumeInfo.MovingDistanceLimit" data-valmsg-replace="true"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="ResumeInfo_Biography">Biography</label>
+                            <textarea class="form-control" data-val="true" data-val-required="The Biography field is required." id="ResumeInfo_Biography" name="ResumeInfo.Biography"></textarea>
+                            <span class="validation-label text-danger field-validation-valid" data-valmsg-for="ResumeInfo.Biography" data-valmsg-replace="true"></span>
+                        </div>
+                        <div class="form-group">
+                            <label class="checkbox-container">
+                                <label for="ResumeInfo_IsSeeking">Seeking for a job</label>
+                                <input checked="" type="checkbox" data-val="true" data-val-required="The Seeking for a job field is required." id="ResumeInfo_IsSeeking" name="ResumeInfo.IsSeeking" value="true">
+                                <span class="checkmark"></span>
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label class="checkbox-container">
+                                <label for="ResumeInfo_IsPublic">Make my resume public</label>
+                                <input checked="" type="checkbox" data-val="true" data-val-required="The Make my resume public field is required." id="ResumeInfo_IsPublic" name="ResumeInfo.IsPublic" value="true">
+                                <span class="checkmark"></span>
+                            </label>
+                        </div>
+                        <div class="form-row">
+                            <div class="col-md-4">
+                                <label class="checkbox-container">
+                                    Part time
+                                    <input type="checkbox" data-val="true" data-val-required="The Boolean field is required." id="ResumeInfo_JobTypes_PartTime_" name="ResumeInfo.JobTypes[PartTime]" value="true">
+                                    <span class="checkmark"></span>
+                                </label>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="checkbox-container">
+                                    Full time
+                                    <input type="checkbox" data-val="true" data-val-required="The Boolean field is required." id="ResumeInfo_JobTypes_FullTime_" name="ResumeInfo.JobTypes[FullTime]" value="true">
+                                    <span class="checkmark"></span>
+                                </label>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="checkbox-container">
+                                    Internship
+                                    <input type="checkbox" data-val="true" data-val-required="The Boolean field is required." id="ResumeInfo_JobTypes_Internship_" name="ResumeInfo.JobTypes[Internship]" value="true">
+                                    <span class="checkmark"></span>
+                                </label>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="checkbox-container">
+                                    Temporary
+                                    <input type="checkbox" data-val="true" data-val-required="The Boolean field is required." id="ResumeInfo_JobTypes_Temporary_" name="ResumeInfo.JobTypes[Temporary]" value="true">
+                                    <span class="checkmark"></span>
+                                </label>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="checkbox-container">
+                                    Commission
+                                    <input type="checkbox" data-val="true" data-val-required="The Boolean field is required." id="ResumeInfo_JobTypes_Commission_" name="ResumeInfo.JobTypes[Commission]" value="true">
+                                    <span class="checkmark"></span>
+                                </label>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="checkbox-container">
+                                    Contract
+                                    <input type="checkbox" data-val="true" data-val-required="The Boolean field is required." id="ResumeInfo_JobTypes_Contract_" name="ResumeInfo.JobTypes[Contract]" value="true">
+                                    <span class="checkmark"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </fieldset>
+                    <div class="grid px28 gs12">
+                        <button type="button" id="prevBtn" class="grid--cell btn-step" onclick="nextPrev(-1)" style="display: none;">
+                            <i class="fa fa-chevron-left"></i> Previous
+                        </button>
+                        <button type="button" id="nextBtn" class="grid--cell btn-step" onclick="nextPrev(1)" style="display: inline;">
+                            Next <i class="fa fa-chevron-right"></i>
+                        </button>
+                        <button class="grid--cell ml-auto cancel" formaction="/Resumes/Create?handler=createResume">
+                            Create
+                        </button>
+                    </div>
+                    <input name="__RequestVerificationToken" type="hidden" value="CfDJ8EPYVQKj77xIgJOwwWU9AEzn2oKDs6ng9WWNDIZfrpi-FrmIcjanjcTNtojr2zM50re5cHptfwn_iqwsweDcx4868qhqSbVf_E3BmEbV-Y51eh-w4B5uxkEfKWyHdFScmk8g9C40q48zEnD0L9xDssY_UnZJwso5oCshT0moFE0SOYyTYkkEYqXp_KawiFK-dQ"><input name="ResumeInfo.IsSeeking" type="hidden" value="false"><input name="ResumeInfo.IsPublic" type="hidden" value="false"><input name="ResumeInfo.JobTypes[PartTime]" type="hidden" value="false"><input name="ResumeInfo.JobTypes[FullTime]" type="hidden" value="false"><input name="ResumeInfo.JobTypes[Internship]" type="hidden" value="false"><input name="ResumeInfo.JobTypes[Temporary]" type="hidden" value="false"><input name="ResumeInfo.JobTypes[Commission]" type="hidden" value="false"><input name="ResumeInfo.JobTypes[Contract]" type="hidden" value="false">
+                </form>
+            </div>
+        </div>
+    </div>*@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />

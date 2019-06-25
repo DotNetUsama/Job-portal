@@ -1,0 +1,8 @@
+@model IEnumerable<Job_Portal_System.ViewModels.Companies.CompanyGeneralViewModel>
+
+<div>
+    @foreach (var company in Model)
+    {
+        <partial name="_CompanyGeneralInfoPartial" model="company" />
+    }
+</div>

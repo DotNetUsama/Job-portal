@@ -1,0 +1,31 @@
+@model Job_Portal_System.ViewModels.Applicants.ApplicantForRecruiterGeneralViewModel
+
+<div class="question-summary narrow ps-relative">
+    <div onclick="window.location.href = '/applicants/details?id=@Model.Id'" class="cp">
+        <div class="status">
+            <div class="mini-counts"><span title="@Model.WorksCount experiences">@Model.WorksCount</span></div>
+            <div>experiences</div>
+        </div>
+        <div class="status">
+            <div class="mini-counts"><span title="@Model.SkillsCount skills">@Model.SkillsCount</span></div>
+            <div>skills</div>
+        </div>
+        <div class="status">
+            <div class="mini-counts"><span title="@Model.EducationsCount educations">@Model.EducationsCount</span></div>
+            <div>educations</div>
+        </div>
+    </div>
+    <div class="summary">
+        <h3>
+            <a asp-controller="Applicants" asp-action="Details" asp-route-id="@Model.Id" class="question-hyperlink">
+                @Model.OwnerName
+            </a>
+        </h3>
+        <partial name="_TagsGroupPartial" model="@Model.Skills"/>
+        <div class="started">
+            <span class="started-link">submitted <span title="@Model.SubmittedAt" class="js-relative-time"></span></span>
+            <span class="started-link fw-b"><i class="fa fa-map-marker-alt"></i> @Model.Location</span>
+        </div>
+    </div>
+    <partial name="_ApplicantStatusPartial" model="@Model.Status"/>
+</div>

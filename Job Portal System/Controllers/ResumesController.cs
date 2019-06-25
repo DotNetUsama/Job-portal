@@ -7,7 +7,7 @@ using DinkToPdf.Contracts;
 using Job_Portal_System.Data;
 using Job_Portal_System.Models;
 using Job_Portal_System.Utilities.Semantic;
-using Job_Portal_System.ViewModels;
+using Job_Portal_System.ViewModels.Resumes;
 using JW;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -71,6 +71,31 @@ namespace Job_Portal_System.Controllers
         }
 
         [HttpGet]
+        [Route("Details")]
+        public async Task<IActionResult> Details(string id)
+        {
+            if (id == null) return NotFound();
+
+            var resume = await _context.Resumes
+                .Include(r => r.Educations).ThenInclude(e => e.FieldOfStudy)
+                .Include(r => r.Educations).ThenInclude(e => e.School)
+                .Include(r => r.WorkExperiences).ThenInclude(w => w.JobTitle)
+                .Include(r => r.WorkExperiences).ThenInclude(w => w.Company)
+                .Include(r => r.OwnedSkills).ThenInclude(s => s.Skill)
+                .Include(r => r.SeekedJobTitles).ThenInclude(j => j.JobTitle)
+                .Include(r => r.User).ThenInclude(u => u.City).ThenInclude(c => c.State)
+                .SingleOrDefaultAsync(m => m.Id == id);
+
+            if (resume == null) return NotFound();
+
+            return View("ResumeDetails", new ResumeFullViewModel
+            {
+                Resume = resume,
+                IsOwner = _userManager.GetUserId(User) == resume.UserId,
+            });
+        }
+
+        [HttpGet]
         [Route("Search")]
         public IActionResult Search(string query, int p = 1)
         {
@@ -118,7 +143,7 @@ namespace Job_Portal_System.Controllers
             });
         }
 
-        [HttpPost]
+        [HttpGet]
         [Route("ExportAsPdf")]
         public IActionResult ExportAsPdf(string id)
         {

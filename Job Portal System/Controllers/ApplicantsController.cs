@@ -8,6 +8,7 @@ using Job_Portal_System.Models;
 using Job_Portal_System.Utilities.RankingSystem;
 using Job_Portal_System.SignalR;
 using Job_Portal_System.ViewModels;
+using Job_Portal_System.ViewModels.Applicants;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -37,6 +38,45 @@ namespace Job_Portal_System.Controllers
         }
 
         [HttpGet]
+        [Route("Index")]
+        [Authorize(Roles = "Recruiter")]
+        public async Task<IActionResult> Index(string jobVacancyId)
+        {
+            if (string.IsNullOrEmpty(jobVacancyId)) return NotFound();
+            var jobVacancy = await _context.JobVacancies
+                .Include(j => j.CompanyDepartment).ThenInclude(d => d.City).ThenInclude(c => c.State)
+                .Include(j => j.JobTitle)
+                .FirstOrDefaultAsync(j => j.Id == jobVacancyId);
+
+            if (jobVacancy == null) return NotFound();
+            if (jobVacancy.UserId != _userManager.GetUserId(User)) return BadRequest();
+
+            return View("ApplicantsIndexForRecruiter", new ApplicantsForRecruiterIndexViewModel
+            {
+                JobVacancyId = jobVacancy.Id,
+                JobVacancyTitle = jobVacancy.Title,
+                ApplicantsCount = _context.Applicants.Count(a => a.JobVacancyId == jobVacancy.Id),
+                JobTitle = jobVacancy.JobTitle.Title,
+                IsRemote = jobVacancy.DistanceLimit == 0,
+                Location = $"{jobVacancy.CompanyDepartment.City.State.Name}, {jobVacancy.CompanyDepartment.City.Name}, {jobVacancy.CompanyDepartment.DetailedAddress}",
+                Applicants = _context.Applicants
+                    .Where(a => a.JobVacancyId == jobVacancy.Id)
+                    .Select(a => new ApplicantForRecruiterGeneralViewModel
+                    {
+                        Id = a.Id,
+                        OwnerName = $"{a.JobSeeker.FirstName} {a.JobSeeker.LastName}",
+                        WorksCount = a.Resume.WorkExperiences.Count,
+                        EducationsCount = a.Resume.Educations.Count,
+                        SkillsCount = a.Resume.OwnedSkills.Count,
+                        Location = $"{a.JobSeeker.City.State.Name}, {a.JobSeeker.City.Name}",
+                        Status = (ApplicantStatus) a.Status,
+                        Skills = a.Resume.OwnedSkills.Select(s => s.Skill.Title),
+                        SubmittedAt = a.SubmittedAt,
+                    }),
+            });
+        }
+
+        [HttpGet]
         [Route("Details")]
         public async Task<IActionResult> Details(string id)
         {
@@ -48,7 +88,7 @@ namespace Job_Portal_System.Controllers
             {
                 applicant = await _context.Applicants
                     .Include(a => a.JobSeeker)
-                    .SingleOrDefaultAsync(a => a.Id == id);
+                    .FirstOrDefaultAsync(a => a.Id == id);
 
                 if (applicant == null) return NotFound();
                 if (applicant.JobSeeker.UserName != User.Identity.Name) return BadRequest();
@@ -58,7 +98,7 @@ namespace Job_Portal_System.Controllers
                     .Include(j => j.CompanyDepartment).ThenInclude(d => d.City)
                     .Include(r => r.JobTypes)
                     .Include(r => r.JobTitle)
-                    .SingleOrDefaultAsync(j => j.Id == applicant.JobVacancyId);
+                    .FirstOrDefaultAsync(j => j.Id == applicant.JobVacancyId);
 
                 EvaluatedJobSeekerApplicant viewModel;
                 try
@@ -118,7 +158,7 @@ namespace Job_Portal_System.Controllers
 
             applicant = await _context.Applicants
                 .Include(a => a.Recruiter)
-                .SingleOrDefaultAsync(a => a.Id == id);
+                .FirstOrDefaultAsync(a => a.Id == id);
 
             if (applicant == null) return NotFound();
             if (applicant.Recruiter.UserName != User.Identity.Name) return BadRequest();
@@ -130,9 +170,9 @@ namespace Job_Portal_System.Controllers
                 .Include(r => r.WorkExperiences).ThenInclude(w => w.Company)
                 .Include(r => r.OwnedSkills).ThenInclude(s => s.Skill)
                 .Include(r => r.User)
-                .SingleOrDefaultAsync(r => r.Id == applicant.ResumeId);
+                .FirstOrDefaultAsync(r => r.Id == applicant.ResumeId);
             applicant.JobVacancy = await _context.JobVacancies
-                .SingleOrDefaultAsync(j => j.Id == applicant.JobVacancyId);
+                .FirstOrDefaultAsync(j => j.Id == applicant.JobVacancyId);
             return View("DetailsForRecruiter", applicant);
         }
 
@@ -236,21 +276,6 @@ namespace Job_Portal_System.Controllers
             applicant.Status = newStatus;
             await _context.SaveChangesAsync();
         }
-
-        //[HttpGet]
-        //[Route("Test")]
-        //public async Task Test()
-        //{
-        //    var jobVacancy = _context.JobVacancies
-        //        .Include(j => j.WorkExperienceQualifications).ThenInclude(w => w.JobTitle)
-        //        .Include(j => j.EducationQualifications).ThenInclude(e => e.FieldOfStudy)
-        //        .Include(j => j.DesiredSkills).ThenInclude(s => s.Skill)
-        //        .Include(j => j.JobTypes)
-        //        .Include(j => j.CompanyDepartment)
-        //        .Include(j => j.User)
-        //        .FirstOrDefault(j => j.Id == "758f9b03-f431-4043-81f6-2ecc38f07a99");
-        //    await AsyncHandler.Recommend(_context, _hubContext, jobVacancy.Id);
-        //}
     }
 }
 

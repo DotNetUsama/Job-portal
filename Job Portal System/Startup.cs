@@ -1,3 +1,4 @@
+using System.Linq;
 using DinkToPdf;
 using DinkToPdf.Contracts;
 using Job_Portal_System.BackgroundTasking;
@@ -99,6 +100,8 @@ namespace Job_Portal_System
                 routes.MapHub<SignalRHub>("/signalRHub");
             });
 
+            var companyId = context.Recruiters.First(r => r.User.Email == "ammar@recruiter.com").CompanyId;
+            var i = 0;
             //DatabaseSeeder.SeedData(env, context, userManager, roleManager);
             //DatabaseSeeder.ClearDatabase(context);
             //DatabaseSeeder.SeedJobSeekers(context, userManager, 1000);
@@ -112,6 +115,7 @@ namespace Job_Portal_System
             //    .Include(j => j.CompanyDepartment)
             //    .Include(j => j.User)
             //    .FirstOrDefault(j => j.Id == "faf10145-211b-4a99-ab16-6ca4bb356b10");
+            //DatabaseSeeder.FixDatabase(context, env);
             app.UseMvc();
         }
     }

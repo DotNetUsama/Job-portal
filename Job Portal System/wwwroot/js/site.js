@@ -88,6 +88,8 @@ $(document).ready(()=> {
 
     $(window).resize(setNotificationDialogPosition);
 
+    $(".js-relative-time").timeago();
+
     $.ajax({
         url: "/Notifications/GetNotificationsCount",
         method: "POST",

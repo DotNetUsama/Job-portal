@@ -1,8 +1,14 @@
 ﻿var currentTab = 0;
 
 $(document).ready(() => {
+    init();
     showTab(currentTab);
 });
+
+function init() {
+    const tabs = $(".tab");
+    tabs.each((i, e) => i === currentTab ? $(e).show : $(e).hide());
+}
 
 function showTab(tapIndex) {
     const tabs = $(".tab");

@@ -47,21 +47,8 @@
                                asp-action="Index" class="nav-links--link">Resumes</a>
                         </li>
                         <li @(activeArea == "companies" ? "class=you-are-here" : "")>
-                            @switch (role)
-                            {
-                                case "admin":
-                                    <a id="nav-companies" href="#" class="nav-links--link">Companies</a>
-                                    break;
-                                case "recruiter":
-                                    <a id="nav-companies" href="#" class="nav-links--link">Companies</a>
-                                    break;
-                                case "jobSeeker":
-                                    <a id="nav-companies" href="#" class="nav-links--link">Companies</a>
-                                    break;
-                                default:
-                                    <a id="nav-companies" href="#" class="nav-links--link">Companies</a>
-                                    break;
-                            }
+                            <a id="nav-companies" asp-controller="Companies"
+                               asp-action="Index" class="nav-links--link">Companies</a>
                         </li>
                     </ol>
                 </li>

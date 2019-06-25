@@ -1,0 +1,8 @@
+@model IEnumerable<Job_Portal_System.ViewModels.Resumes.ResumeGeneralViewModel>
+
+<div>
+    @foreach (var resume in Model)
+    {
+        <partial name="_ResumeGeneralInfoPartial" model="resume" />
+    }
+</div>

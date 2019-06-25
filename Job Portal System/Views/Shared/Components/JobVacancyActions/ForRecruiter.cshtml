@@ -1,0 +1,27 @@
+@model Job_Portal_System.ViewModels.JobVacancies.JobVacancyActionsForRecruiterViewModel
+
+<div class="mb32">
+    <div class="grid gs16">
+        <a asp-controller="Applicants" asp-action="Index" asp-route-jobVacancyId="@Model.JobVacancyId" class="grid--cell s-btn s-btn__primary ta-center _apply d-block">
+            View applicants
+        </a>
+        @if (Model.CanClose)
+        {
+            <a asp-controller="JobVacancies" asp-action="Close" asp-route-id="@Model.JobVacancyId" class="grid--cell ta-center d-block s-btn s-btn__primary">
+                Close
+            </a>
+        }
+        @if (Model.CanFinalDecide)
+        {
+            <a asp-controller="JobVacancies" asp-action="FinalDecision" asp-route-id="@Model.JobVacancyId" class="grid--cell ta-center d-block s-btn s-btn__primary">
+                Final decide
+            </a>
+        }
+        @if (Model.CanDelete)
+        {
+            <a asp-controller="JobVacancies" asp-action="Delete" asp-route-id="@Model.JobVacancyId" class="grid--cell ta-center d-block s-btn s-btn__danger ml-auto">
+                Delete
+            </a>
+        }
+    </div>
+</div>

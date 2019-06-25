@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Job_Portal_System.ViewModels
+namespace Job_Portal_System.ViewModels.Resumes
 {
     public class ResumeGeneralViewModel
     {

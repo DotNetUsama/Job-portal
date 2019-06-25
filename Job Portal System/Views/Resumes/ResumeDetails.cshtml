@@ -1,0 +1,245 @@
+﻿@model Job_Portal_System.ViewModels.Resumes.ResumeFullViewModel
+
+@{
+    var ownerName = $"{Model.Resume.User.FirstName} {Model.Resume.User.LastName}";
+    var ownerPicture = string.IsNullOrEmpty(Model.Resume.User.Image) ? "https://i.imgur.com/5Tn6Ebq.png" : Model.Resume.User.Image;
+    var ownerLocation = $"{Model.Resume.User.City.State.Name}, {Model.Resume.User.City.Name}";
+    ViewData["Title"] = ownerName;
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<div id="main-bar-full">
+    <div class="g-row cv-story-wrapper mt24">
+    <div class="g-col g-column cv-story">
+        <header>
+            <div class="">
+                <div class="grid">
+                    <div class="grid--cell fl1">
+                        <h1 class="mb2 fc-black-800 fs-headline1">
+                            @ownerName
+                        </h1>
+                    </div>
+                    <div class="grid--cell">
+                        <img class="s-avatar s-avatar__lg" alt="@ownerName" src="@ownerPicture">
+                    </div>
+                </div>
+                <div class="grid gs12 mb32">
+                    <div class="grid--cell4">
+                        <div class="grid ai-center gs8 mb4">
+                            <div class="grid--cell fc-black-400">
+                                <svg aria-hidden="true" class="svg-icon" width="18" height="18" viewBox="0 0 18 18">
+                                    <path d="M2 6.38C2 9.91 8.1 17.7 8.1 17.7c.22.29.58.29.8 0 0 0 6.1-7.8 6.1-11.32A6.44 6.44 0 0 0 8.5 0 6.44 6.44 0 0 0 2 6.38zm9.25.12a2.75 2.75 0 1 1-5.5 0 2.75 2.75 0 0 1 5.5 0z"></path>
+                                </svg>
+                            </div>
+                            <div class="grid--cell fc-black-700 fs-body1">@ownerLocation</div>
+                        </div>
+                        <div class="grid ai-center gs8 mb4">
+                            <div class="grid--cell fc-black-400">
+                                <svg aria-hidden="true" class="svg-icon" width="18" height="18" viewBox="0 0 18 18">
+                                    <path d="M2.9 9c0-1.16.94-2.1 2.1-2.1h3V5H5a4 4 0 1 0 0 8h3v-1.9H5A2.1 2.1 0 0 1 2.9 9zM13 5h-3v1.9h3a2.1 2.1 0 1 1 0 4.2h-3V13h3a4 4 0 1 0 0-8zm-1 5H6V8h6v2z"></path>
+                                </svg>
+                            </div>
+                            <div class="grid--cell fc-black-700 fs-body1"><a href="@Model.Resume.User.Email">@Model.Resume.User.Email</a> </div>
+                        </div>
+                        <div class="grid ai-center gs8 mb4">
+                            <div class="grid--cell fc-black-400"><i class="fa fa-phone"></i></div>
+                            <div class="grid--cell fc-black-700 fs-body1">@Model.Resume.User.PhoneNumber</div>
+                        </div>
+                    </div>
+                    <div class="grid--cell8">
+                        <div class="grid gs8 mb0">
+                            <div class="grid grid--cell6 grid__fl1 gs8 mb12">
+                                <div class="grid--cell">
+                                    <div class="s-avatar s-avatar__md bar-circle bg-black-200">
+                                        <div class="s-avatar--letter" style="line-height: 34px;">@(Model.Resume.IsSeeking ? "A" : "P")</div>
+                                    </div>
+                                </div>
+                                <div class="grid--cell fl1">
+                                    <div class="fs-body1 fc-black-700">
+                                        <strong>@(Model.Resume.IsSeeking ? "Actively" : "Passively") Interested</strong>
+                                    </div>
+                                    <div class="fs-caption fc-black-500">
+                                        Is @(Model.Resume.IsSeeking ? "actively" : "passively") looking for a job.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="grid grid--cell6 gs8">
+                                <div class="grid--cell">
+                                    <div class="s-avatar s-avatar__md bar-circle bg-black-200">
+                                        <div class="s-avatar--letter lh-sm fc-white">
+                                            <svg aria-hidden="true" class="svg-icon" width="16" height="16" viewBox="0 0 18 18">
+                                                <path d="M15 5h-2V1H2a2 2 0 0 0-2 2v11h1a3 3 0 1 0 6 0h4a3 3 0 1 0 6 0h1V9l-3-4zM4 15.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm10.5-9l2 2.5H13V6.5h1.5zm-.5 9a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"></path>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="grid--cell fl1">
+                                    <div class="fs-body1 fc-black-700">
+                                        <strong>Relocation</strong>
+                                    </div>
+                                    @if (Model.Resume.MovingDistanceLimit == 0)
+                                    {
+                                        <div class="fs-caption fc-black-500">
+                                            Currently not open to relocating from his/her current location.
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="fs-caption fc-black-500">
+                                            Currently open to relocating from his/her current location in @(Model.Resume.MovingDistanceLimit)km at most.
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <section class="mt0 mb24">
+            <header class="grid mb16">
+                <h2 class="fs-category has-border">Technologies</h2>
+            </header>
+            @if (Model.Resume.SeekedJobTitles.Any())
+            {
+                <article class="grid fd-column mb24">
+                    <div class="grid--cell mb8">
+                        <div class="fc-black-800 fs-body2">Preferred jobs</div>
+                    </div>
+                    <div class="grid grid--cell mb0">
+                        @foreach (var seekedJobTitle in Model.Resume.SeekedJobTitles)
+                        {
+                            <div class="post-tag">@seekedJobTitle.JobTitle.Title</div>
+                        }
+                    </div>
+                </article>
+            }
+            @if (Model.Resume.OwnedSkills.Any())
+            {
+                <article class="grid fd-column mb24">
+                    <div class="grid--cell mb8">
+                        <div class="fc-black-800 fs-body2">Skills</div>
+                    </div>
+                    <div class="grid grid--cell mb0">
+                        @foreach (var ownedSkill in Model.Resume.OwnedSkills)
+                        {
+                            <div class="post-tag">@ownedSkill.Skill.Title</div>
+                        }
+                    </div>
+                </article>
+            }
+        </section>
+        @if (!string.IsNullOrEmpty(Model.Resume.Biography))
+        {
+            <section class="mt0 mb24">
+                <header class="grid mb16">
+                    <h2 class="fs-category has-border">Biography</h2>
+                </header>
+                <article class="grid fd-column mb24">
+                    <div class="grid--cell mb8">
+                        <div class="fc-black-800 fs-body2">@Model.Resume.Biography</div>
+                    </div>
+                </article>
+            </section>
+        }
+        @if (Model.Resume.WorkExperiences.Any())
+        {
+            <section class="mt0 mb24" id="cv-Experience">
+                <header class="grid mb16">
+                    <h2 class="fs-category has-border">
+                        Experience
+                    </h2>
+                </header>
+                <div class="">
+                    @foreach (var workExperience in Model.Resume.WorkExperiences)
+                    {
+                        <article class="grid gs16" id="Experience-3753022">
+                            <div class="grid--cell">
+                                @if (string.IsNullOrEmpty(workExperience.Company.Logo))
+                                {
+                                    <div class="g-center cv-logo-blank">
+                                        <svg aria-hidden="true" class="svg-icon" width="18" height="18" viewBox="0 0 18 18">
+                                            <path d="M10 16v-4H8v4H2V4c0-1.1.9-2 2-2h6a2 2 0 0 1 2 2v2h2a2 2 0 0 1 2 2v8h-6zM4 4v2h2V4H4zm0 4v2h2V8H4zm4-4v2h2V4H8zm0 4v2h2V8H8zm-4 4v2h2v-2H4zm8 0v2h2v-2h-2zm0-4v2h2V8h-2z"></path>
+                                        </svg>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="g-center cv-logo">
+                                        <img src="@workExperience.Company.Logo" class="cv-image" alt="@workExperience.Company.Name">
+                                    </div>
+                                }
+                            </div>
+                            <div class="grid--cell fl1 fd-column">
+                                <h3 class="grid--cell mb2 fs-subheading fc-black-800">
+                                    @workExperience.JobTitle.Title
+                                </h3>
+                                <h4 class="grid--cell mb8 fs-body2 fc-black-500">@workExperience.Company.Name</h4>
+                                <div class="grid--cell mb8">
+                                    <span class="fs-caption fc-black-700">@workExperience.StartDate.ToString("Y") → @(workExperience.EndDate.HasValue ? workExperience.EndDate.Value.ToString("Y") : "Present")</span>
+                                </div>
+                                <div class="fs-body1 fc-black-700">
+                                    @workExperience.Description
+                                </div>
+                            </div>
+                        </article>
+                    }
+                </div>
+            </section>
+        }
+        @if (Model.Resume.Educations.Any())
+        {
+            <section class="mt0 mb24" id="cv-Education">
+                <header class="grid mb16">
+                    <h2 class="fs-category has-border">
+                        Education
+                    </h2>
+                </header>
+                <div>
+                    @foreach (var education in Model.Resume.Educations)
+                    {
+                        <article class="grid gs16">
+                            <div class="grid--cell fl1 fd-column">
+                                <h3 class="grid--cell mb2 fs-subheading fc-black-800">
+                                    @education.FieldOfStudy.Title
+                                </h3>
+                                <h4 class="grid--cell mb8 fs-body2 fc-black-500">@education.School.Name</h4>
+                                <div class="grid--cell mb8">
+                                    <span class="fs-caption fc-black-700">@education.StartDate.ToString("Y") → @(education.EndDate.HasValue ? education.EndDate.Value.ToString("Y") : "Present")</span>
+                                </div>
+                            </div>
+                        </article>
+                    }
+                </div>
+            </section>
+        }
+    </div>
+        <div class="g-col g-column timeline-sidebar">
+            <div class="timeline-sidebar-module">
+                <h3>Options</h3>
+                @if (Model.IsOwner)
+                {
+                    <a href="/Resumes/MyResume" class="btn block">Update your resume</a>
+                }
+                <a asp-controller="Resumes" asp-action="ExportAsPdf" asp-route-id="@Model.Resume.Id" class="btn-secondary block">
+                    Save as PDF
+                </a>
+                @if (Model.IsOwner)
+                {
+                    <div class="text-centered fs-body3">
+                        <span class="privacy-helper has-tooltip">
+                            @if (Model.Resume.IsPublic)
+                            {
+                                <span><i class="fa fa-globe-americas icon"></i>Visibility: Public</span>
+                            }
+                            else
+                            {
+                                <span><i class="fa fa-lock icon"></i>Visibility: Private</span>
+                            }
+                        </span>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

@@ -69,7 +69,6 @@ namespace Job_Portal_System.Areas.JobVacancies.Pages
                         CanClose = JobVacancy.Status == (int)JobVacancyStatus.Open &&
                                    _context.Applicants.Count(a => a.JobVacancyId == JobVacancy.Id) != 0;
                         break;
-
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
