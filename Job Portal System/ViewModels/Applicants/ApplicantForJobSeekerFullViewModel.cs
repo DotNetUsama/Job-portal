@@ -9,6 +9,7 @@ namespace Job_Portal_System.ViewModels.Applicants
         public string Id { get; set; }
         public ApplicantStatus Status { get; set; }
         public DateTime SubmittedAt { get; set; }
+        public bool IsSalaryWeak { get; set; }
         public JobVacancyFullViewModel JobVacancy { get; set; }
     }
 }

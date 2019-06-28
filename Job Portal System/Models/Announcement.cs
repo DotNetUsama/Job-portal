@@ -28,7 +28,7 @@ namespace Job_Portal_System.Models
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
         [Display(Name = "Updated at")]
-        public DateTime UpdatedAt { get; set; } = DateTime.Now;
+        public DateTime? UpdatedAt { get; set; }
         
         public User Author { get; set; }
         public string UserId { get; set; }

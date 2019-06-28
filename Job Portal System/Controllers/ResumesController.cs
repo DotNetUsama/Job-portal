@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using DinkToPdf;
 using DinkToPdf.Contracts;
 using Job_Portal_System.Data;
+using Job_Portal_System.Dependencies;
 using Job_Portal_System.Models;
 using Job_Portal_System.Utilities.Semantic;
 using Job_Portal_System.ViewModels.Resumes;
@@ -23,18 +24,21 @@ namespace Job_Portal_System.Controllers
         private readonly UserManager<User> _userManager;
         private readonly IHostingEnvironment _env;
         private readonly IConverter _converter;
+        private readonly ITermsManager _termsManager;
 
         public ResumesController(ApplicationDbContext context,
             UserManager<User> userManager,
             IHostingEnvironment env,
-            IConverter converter)
+            IConverter converter,
+            ITermsManager termsManager)
         {
             _context = context;
             _userManager = userManager;
             _env = env;
             _converter = converter;
+            _termsManager = termsManager;
         }
-        
+
         [HttpGet]
         [Route("Index")]
         public IActionResult Index(string tab, string q)
@@ -53,9 +57,18 @@ namespace Job_Portal_System.Controllers
                     return NotFound();
             }
 
-            var resumes = resumesQueryable
-                .Where(r => 
-                    r.IsPublic && (string.IsNullOrEmpty(q) || r.SeekedJobTitles.Any(sj => sj.JobTitle.Title.Contains(q))));
+            var jobTitleSynsetId = string.IsNullOrEmpty(q) ? null : _termsManager.GetJobTitleSynset(q);
+
+            var similarities = string.IsNullOrEmpty(q) ? null : _termsManager.GetSimilarJobTitles(q);
+
+            var resumes = similarities != null && similarities.Any() ?
+                resumesQueryable.Where(r =>
+                    r.IsPublic &&
+                    r.SeekedJobTitles.Any(j => _context.JobTitles
+                        .Any(jt => 
+                            jt.JobTitleSynsetId == jobTitleSynsetId &&
+                            j.JobTitle.Title.Contains(jt.Title)))) :
+                resumesQueryable.Where(r => r.IsPublic && (string.IsNullOrEmpty(q) || r.SeekedJobTitles.Any(sj => sj.JobTitle.Title.Contains(q))));
 
             var isJobSeeker = User.IsInRole("JobSeeker");
             var ownResumeCreated = false;
@@ -73,6 +86,10 @@ namespace Job_Portal_System.Controllers
                 Count = resumes.Count(),
                 Resumes = resumes
                     .Include(r => r.User).ThenInclude(u => u.City).ThenInclude(c => c.State)
+                    .Include(r => r.WorkExperiences)
+                    .Include(r => r.Educations)
+                    .Include(r => r.OwnedSkills)
+                    .Include(r => r.SeekedJobTitles).ThenInclude(j => j.JobTitle)
                     .OrderByDescending(r => r.UpdatedAt)
                     .Take(20)
                     .Select(r => new ResumeGeneralViewModel
@@ -82,13 +99,11 @@ namespace Job_Portal_System.Controllers
                         IsModified = r.UpdatedAt != r.CreatedAt,
                         LastUpdate = r.UpdatedAt,
                         Location = $"{r.User.City.State.Name}-{r.User.City.Name}",
-                        WorksCount = _context.WorkExperiences.Count(w => w.ResumeId == r.Id),
-                        EducationsCount = _context.Educations.Count(e => e.ResumeId == r.Id),
-                        SkillsCount = _context.OwnedSkills.Count(s => s.ResumeId == r.Id),
-                        SeekedJobTitles = _context.SeekedJobTitles
-                            .Where(s => s.ResumeId == r.Id)
-                            .Select(j => j.JobTitle.Title)
-                            .ToList(),
+                        WorksCount = r.WorkExperiences.Count,
+                        EducationsCount = r.Educations.Count,
+                        SkillsCount = r.OwnedSkills.Count,
+                        SeekedJobTitles = r.SeekedJobTitles
+                            .Select(j => j.JobTitle.Title),
                     }),
             });
         }

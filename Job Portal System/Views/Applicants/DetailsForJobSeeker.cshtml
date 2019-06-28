@@ -26,7 +26,10 @@
                     </span>
                 </div>
                 <div class="mt12 fs-body1">
-                    <span class="-salary pr16" title="£@Model.JobVacancy.MinSalary - @Model.JobVacancy.MaxSalary (Syrian Pounds)">£@Model.JobVacancy.MinSalary - @Model.JobVacancy.MaxSalary</span>
+                    <span class="-salary pr16" title="£@Model.JobVacancy.MinSalary - @Model.JobVacancy.MaxSalary (Syrian Pounds)">
+                        £@Model.JobVacancy.MinSalary - @Model.JobVacancy.MaxSalary
+                        <span class="ml8 s-badge s-badge__danger">Weak</span>
+                    </span>
                     @if (Model.JobVacancy.IsRemote)
                     {
                         <span class="-remote pr16">Remote</span>
@@ -111,7 +114,7 @@
             </section>
         </div>
     </div>
-    <div class="sidebar">
+    <div class="timeline-sidebar">
         @await Component.InvokeAsync("ApplicantActions", new {applicantId = Model.Id, user = User})
     </div>
 </div>

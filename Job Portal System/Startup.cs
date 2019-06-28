@@ -16,6 +16,9 @@ using Job_Portal_System.SignalR;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System.Linq;
+using Job_Portal_System.Enums;
+using Job_Portal_System.Handlers;
 
 namespace Job_Portal_System
 {
@@ -98,6 +101,9 @@ namespace Job_Portal_System
             {
                 routes.MapHub<SignalRHub>("/signalRHub");
             });
+
+            //var jobVacancyId = "318559a5-a874-4ce0-9ab2-a1960bd5df04";
+            //AsyncHandler.Recommend(context, hubContext, jobVacancyId);
 
             //DatabaseSeeder.SeedData(env, context, userManager, roleManager);
             //DatabaseSeeder.ClearDatabase(context);

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Job_Portal_System.Data;
+using Job_Portal_System.Dependencies;
 using Job_Portal_System.Enums;
 using Job_Portal_System.Handlers;
 using Job_Portal_System.Models;
@@ -28,16 +29,19 @@ namespace Job_Portal_System.Controllers
         private readonly ApplicationDbContext _context;
         private readonly UserManager<User> _userManager;
         private readonly IHubContext<SignalRHub> _hubContext;
+        private readonly ITermsManager _termsManager;
 
         public JobVacanciesController(IHostingEnvironment env,
             ApplicationDbContext context,
             UserManager<User> userManager,
-            IHubContext<SignalRHub> hubContext)
+            IHubContext<SignalRHub> hubContext,
+            ITermsManager termsManager)
         {
             _env = env;
             _context = context;
             _userManager = userManager;
             _hubContext = hubContext;
+            _termsManager = termsManager;
         }
 
         [HttpGet]
@@ -64,8 +68,18 @@ namespace Job_Portal_System.Controllers
                     return NotFound();
             }
 
-            var jobVacancies = jobVacanciesQueryable
-                .Where(j => string.IsNullOrEmpty(q) || j.Title.Contains(q) || j.JobTitle.Title.Contains(q));
+            var jobTitleSynsetId = string.IsNullOrEmpty(q) ? null : _termsManager.GetJobTitleSynset(q);
+
+            var jobVacancies = jobTitleSynsetId != null ?
+                jobVacanciesQueryable.Where(j =>
+                    _context.JobTitles
+                        .Any(jt =>
+                            jt.JobTitleSynsetId == jobTitleSynsetId &&
+                            j.JobTitle.Title.Contains(jt.Title))) :
+                jobVacanciesQueryable.Where(j =>
+                    string.IsNullOrEmpty(q) ||
+                    j.JobTitle.Title.Contains(q) ||
+                    j.Title.Contains(q));
 
             return View("JobVacanciesIndex", new JobVacanciesIndexViewModel
             {

@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Job_Portal_System.Data;
 using Job_Portal_System.Models;
 using Job_Portal_System.Utilities.Semantic;
@@ -111,6 +112,74 @@ namespace Job_Portal_System.Dependencies
             }
 
             return skill;
+        }
+
+        public long? GetJobTitleSynset(string title)
+        {
+            var normalizedTitle = title.ToLower().Split(" - ").Last();
+            var jobTitleSynsetId = _context.JobTitles
+                .FirstOrDefault(j => j.NormalizedTitle == normalizedTitle)?.JobTitleSynsetId;
+
+            if (jobTitleSynsetId == null)
+            {
+                var similarities = SimilaritiesOperator.GetSimilarities(normalizedTitle, _env);
+                foreach (var similarity in similarities)
+                {
+                    jobTitleSynsetId = _context.JobTitles
+                        .FirstOrDefault(j => j.NormalizedTitle == similarity)?.JobTitleSynsetId;
+                    if (jobTitleSynsetId != null) break;
+                }
+            }
+            return jobTitleSynsetId;
+        }
+
+        public long? GetFieldOfStudySynset(string title)
+        {
+            var normalizedTitle = title.ToLower().Split(" - ").Last();
+            var fieldOfStudySynsetId = _context.FieldOfStudies
+                .FirstOrDefault(j => j.NormalizedTitle == normalizedTitle)?.FieldOfStudySynsetId;
+
+            if (fieldOfStudySynsetId == null)
+            {
+                var similarities = SimilaritiesOperator.GetSimilarities(normalizedTitle, _env);
+                foreach (var similarity in similarities)
+                {
+                    fieldOfStudySynsetId = _context.FieldOfStudies
+                        .FirstOrDefault(j => j.NormalizedTitle == similarity)?.FieldOfStudySynsetId;
+                    if (fieldOfStudySynsetId != null) break;
+                }
+            }
+            return fieldOfStudySynsetId;
+        }
+
+        public long? GetSkillSynset(string title)
+        {
+            var normalizedTitle = title.ToLower().Split(" - ").Last();
+            var skillSynsetId = _context.Skills
+                .FirstOrDefault(j => j.NormalizedTitle == normalizedTitle)?.SkillSynsetId;
+
+            if (skillSynsetId == null)
+            {
+                var similarities = SimilaritiesOperator.GetSimilarities(normalizedTitle, _env);
+                foreach (var similarity in similarities)
+                {
+                    skillSynsetId = _context.Skills
+                        .FirstOrDefault(j => j.NormalizedTitle == similarity)?.SkillSynsetId;
+                    if (skillSynsetId != null) break;
+                }
+            }
+            return skillSynsetId;
+        }
+
+
+        public IEnumerable<long> GetSimilarJobTitles(string title)
+        {
+            var synsetId = GetJobTitleSynset(title);
+            return synsetId == null ? null : _context.JobTitles
+                .Where(j => _context.JobTitles
+                    .Any(jt => jt.JobTitleSynsetId == synsetId && j.Title.Contains(jt.Title)))
+                .Select(j => j.Id)
+                .ToList();
         }
     }
 }

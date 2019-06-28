@@ -176,9 +176,54 @@ namespace Job_Portal_System.Handlers
                 EntityId = jobVacancy.Id,
                 Peer1 = jobVacancy.Title,
             }, jobVacancy.User);
-            
+
+            jobVacancy.Status = (int)JobVacancyStatus.Closed;
             await context.SaveChangesAsync(token);
         }
+
+        //public static void Recommend(ApplicationDbContext context,
+        //    IHubContext<SignalRHub> hubContext, string jobVacancyId)
+        //{
+        //    var jobVacancy = context.JobVacancies
+        //        .Include(j => j.WorkExperienceQualifications).ThenInclude(q => q.JobTitle)
+        //        .Include(j => j.EducationQualifications).ThenInclude(q => q.FieldOfStudy)
+        //        .Include(j => j.DesiredSkills).ThenInclude(q => q.Skill)
+        //        .Include(j => j.JobTypes)
+        //        .Include(j => j.CompanyDepartment)
+        //        .Include(j => j.User)
+        //        .FirstOrDefault(j => j.Id == jobVacancyId);
+        //    if (jobVacancy == null) return;
+
+        //    var fetchedResumes = FetchMatchingResumes(context, jobVacancy);
+        //    if (!fetchedResumes.Any()) return;
+
+        //    var recommendedResumes = Operator.GetRecommendedResumes(fetchedResumes, jobVacancy);
+        //    recommendedResumes.ForEach(async r =>
+        //    {
+        //        var applicant = context.Applicants.Add(new Applicant
+        //        {
+        //            Resume = r,
+        //            JobSeeker = r.User,
+        //            JobVacancy = jobVacancy,
+        //            Recruiter = jobVacancy.User,
+        //            Status = (int)ApplicantStatus.PendingRecommendation,
+        //        }).Entity;
+        //        await context.SendNotificationAsync(hubContext, new Notification
+        //        {
+        //            Type = (int)NotificationType.ResumeRecommendation,
+        //            EntityId = applicant.Id,
+        //            Peer1 = jobVacancy.Title,
+        //        }, r.User);
+        //    });
+        //    /*await context.SendNotificationAsync(hubContext, new Notification
+        //    {
+        //        Type = (int)NotificationType.FinishedRecommendation,
+        //        EntityId = jobVacancy.Id,
+        //        Peer1 = jobVacancy.Title,
+        //    }, jobVacancy.User);*/
+
+        //    //context.SaveChanges();
+        //}
 
         public static async Task DeleteJobVacancy(ApplicationDbContext context,
             IHubContext<SignalRHub> hubContext, JobVacancy jobVacancy)
@@ -223,75 +268,142 @@ namespace Job_Portal_System.Handlers
             await context.SaveChangesAsync();
         }
 
-        private static List<EvaluatedResume> FetchMatchingResumes(ApplicationDbContext context,
+        public static List<EvaluatedResume> FetchMatchingResumes(ApplicationDbContext context,
             JobVacancy jobVacancy)
         {
-            var requiredEducations = jobVacancy.EducationQualifications
-                .Where(q => q.Type == (int)QualificationType.Required)
-                .Select(q => q.FieldOfStudy.FieldOfStudySynsetId)
-                .ToList();
-            var requiredSkills = jobVacancy.DesiredSkills
-                .Where(q => q.Type == (int)QualificationType.Required)
-                .Select(q => q.Skill.SkillSynsetId)
-                .ToList();
-            var requiredWorks = jobVacancy.WorkExperienceQualifications
-                .Where(q => q.Type == (int)QualificationType.Required)
-                .Select(q => q.JobTitle.JobTitleSynsetId)
-                .ToList();
+            //var requiredEducations = jobVacancy.EducationQualifications
+            //    .Where(q => q.Type == (int)QualificationType.Required)
+            //    .Select(q => q.FieldOfStudy.FieldOfStudySynsetId)
+            //    .ToList();
+            //var requiredSkills = jobVacancy.DesiredSkills
+            //    .Where(q => q.Type == (int)QualificationType.Required)
+            //    .Select(q => q.Skill.SkillSynsetId)
+            //    .ToList();
+            //var requiredWorks = jobVacancy.WorkExperienceQualifications
+            //    .Where(q => q.Type == (int)QualificationType.Required)
+            //    .Select(q => q.JobTitle.JobTitleSynsetId)
+            //    .ToList();
 
-            var resumesIds = context.Resumes
+            //var resumesIds = context.Resumes
+            //    .Where(r =>
+            //        r.IsSeeking &&
+            //        r.MinSalary <= jobVacancy.MaxSalary && r.MinSalary >= jobVacancy.MinSalary)
+            //    .Select(r => r.Id)
+            //    .ToList();
+
+            //resumesIds = requiredEducations
+            //    .Aggregate(resumesIds, (current, education) => current.Intersect(context.Educations
+            //        .Where(e => e.FieldOfStudy.FieldOfStudySynsetId == education)
+            //        .Select(e => e.ResumeId)
+            //        .ToList())
+            //    .ToList());
+
+            //resumesIds = requiredSkills
+            //    .Aggregate(resumesIds, (current, skill) => current.Intersect(context.OwnedSkills
+            //        .Where(e => e.Skill.SkillSynsetId == skill)
+            //        .Select(e => e.ResumeId)
+            //        .ToList())
+            //    .ToList());
+
+            //resumesIds = requiredWorks
+            //    .Aggregate(resumesIds, (current, work) => current.Intersect(context.WorkExperiences
+            //        .Where(e => e.JobTitle.JobTitleSynsetId == work)
+            //        .Select(e => e.ResumeId)
+            //        .ToList())
+            //    .ToList());
+
+            //var jobVacancyJobTypes = jobVacancy.JobTypes.Select(t => t.JobType);
+            //var resumes = resumesIds
+            //    .Select(id => context.Resumes
+            //        .Include(r => r.WorkExperiences).ThenInclude(w => w.JobTitle)
+            //        .Include(r => r.Educations).ThenInclude(e => e.FieldOfStudy)
+            //        .Include(r => r.OwnedSkills).ThenInclude(s => s.Skill)
+            //        .Include(r => r.JobTypes)
+            //        .Include(r => r.User)
+            //        .FirstOrDefault(r => r.Id == id))
+            //    .Where(r =>
+            //        r != null &&
+            //        (
+            //            jobVacancy.DistanceLimit == 0 ||
+            //            r.MovingDistanceLimit != 0 ||
+            //            context.GeoDistances.Any(d =>
+            //                    (d.City1Id == r.User.CityId && d.City2Id == jobVacancy.CompanyDepartment.CityId ||
+            //                    d.City2Id == r.User.CityId && d.City1Id == jobVacancy.CompanyDepartment.CityId) &&
+            //                    d.Distance <= jobVacancy.DistanceLimit + r.MovingDistanceLimit)
+            //        )
+            //        &&
+            //        r.JobTypes
+            //            .Select(type => type.JobType)
+            //            .Intersect(jobVacancyJobTypes)
+            //            .Any()
+            //        )
+            //    .ToList();
+
+            var jobVacancyCityId = context.CompanyDepartments
+                .First(d => d.Id == jobVacancy.CompanyDepartmentId).CityId;
+            var requiredEducations = context.EducationQualifications
+                .Where(eq => eq.JobVacancyId == jobVacancy.Id && eq.Type == (int)QualificationType.Required)
+                .Select(eq => eq.FieldOfStudy.FieldOfStudySynsetId);
+            var requiredWorks = context.WorkExperienceQualifications
+                .Where(wq => wq.JobVacancyId == jobVacancy.Id && wq.Type == (int)QualificationType.Required)
+                .Select(wq => wq.JobTitle.JobTitleSynsetId);
+            var requiredSkills = context.DesiredSkills
+                .Where(ds => ds.JobVacancyId == jobVacancy.Id && ds.Type == (int)QualificationType.Required)
+                .Select(ds => ds.Skill.SkillSynsetId);
+            var jobTypes = context.JobVacancyJobTypes
+                .Where(jt => jt.JobVacancyId == jobVacancy.Id)
+                .Select(jt => jt.JobType);
+
+            var resumesQueryable = context.Resumes
                 .Where(r =>
                     r.IsSeeking &&
-                    r.MinSalary <= jobVacancy.MaxSalary && r.MinSalary >= jobVacancy.MinSalary)
+                    r.MinSalary <= jobVacancy.MaxSalary &&
+                    r.MinSalary >= jobVacancy.MinSalary);
+            foreach (var requiredEducation in requiredEducations)
+            {
+                resumesQueryable = resumesQueryable
+                    .Where(r =>
+                    context.Educations
+                        .Any(e =>
+                            e.ResumeId == r.Id &&
+                            e.FieldOfStudy.FieldOfStudySynsetId == requiredEducation));
+            }
+            foreach (var requiredWork in requiredWorks)
+            {
+                resumesQueryable = resumesQueryable
+                    .Where(r =>
+                    context.WorkExperiences
+                        .Any(w =>
+                            w.ResumeId == r.Id &&
+                            w.JobTitle.JobTitleSynsetId == requiredWork));
+            }
+            foreach (var requiredSkill in requiredSkills)
+            {
+                resumesQueryable = resumesQueryable
+                    .Where(r =>
+                    context.OwnedSkills
+                        .Any(os =>
+                            os.ResumeId == r.Id &&
+                            os.Skill.SkillSynsetId == requiredSkill));
+            }
+            var resumes = resumesQueryable
                 .Select(r => r.Id)
-                .ToList();
-
-            resumesIds = requiredEducations
-                .Aggregate(resumesIds, (current, education) => current.Intersect(context.Educations
-                    .Where(e => e.FieldOfStudy.FieldOfStudySynsetId == education)
-                    .Select(e => e.ResumeId)
-                    .ToList())
-                .ToList());
-
-            resumesIds = requiredSkills
-                .Aggregate(resumesIds, (current, skill) => current.Intersect(context.OwnedSkills
-                    .Where(e => e.Skill.SkillSynsetId == skill)
-                    .Select(e => e.ResumeId)
-                    .ToList())
-                .ToList());
-
-            resumesIds = requiredWorks
-                .Aggregate(resumesIds, (current, work) => current.Intersect(context.WorkExperiences
-                    .Where(e => e.JobTitle.JobTitleSynsetId == work)
-                    .Select(e => e.ResumeId)
-                    .ToList())
-                .ToList());
-
-            var jobVacancyJobTypes = jobVacancy.JobTypes.Select(t => t.JobType);
-            var resumes = resumesIds
+                .ToList()
                 .Select(id => context.Resumes
-                    .Include(r => r.WorkExperiences).ThenInclude(w => w.JobTitle)
-                    .Include(r => r.Educations).ThenInclude(e => e.FieldOfStudy)
-                    .Include(r => r.OwnedSkills).ThenInclude(s => s.Skill)
-                    .Include(r => r.JobTypes)
-                    .Include(r => r.User)
-                    .FirstOrDefault(r => r.Id == id))
-                .Where(r =>
-                    r != null &&
-                    (
-                        jobVacancy.DistanceLimit == 0 ||
-                        r.MovingDistanceLimit != 0 ||
-                        context.GeoDistances.Any(d =>
-                                (d.City1Id == r.User.CityId && d.City2Id == jobVacancy.CompanyDepartment.CityId ||
-                                d.City2Id == r.User.CityId && d.City1Id == jobVacancy.CompanyDepartment.CityId) &&
-                                d.Distance <= jobVacancy.DistanceLimit + r.MovingDistanceLimit)
-                    )
-                    &&
-                    r.JobTypes
-                        .Select(type => type.JobType)
-                        .Intersect(jobVacancyJobTypes)
-                        .Any()
-                    )
+                    .Include(rd => rd.WorkExperiences).ThenInclude(w => w.JobTitle)
+                    .Include(rd => rd.Educations).ThenInclude(e => e.FieldOfStudy)
+                    .Include(rd => rd.OwnedSkills).ThenInclude(s => s.Skill)
+                    .Include(rd => rd.JobTypes)
+                    .Include(rd => rd.User)
+                    .First(rd => rd.Id == id))
+                .Where(rd =>
+                    (jobVacancy.DistanceLimit == 0 ||
+                    rd.MovingDistanceLimit != 0 ||
+                    context.GeoDistances.Any(d =>
+                        (d.City1Id == rd.User.CityId && d.City2Id == jobVacancyCityId ||
+                        d.City2Id == rd.User.CityId && d.City1Id == jobVacancyCityId) &&
+                        d.Distance <= jobVacancy.DistanceLimit + rd.MovingDistanceLimit)) &&
+                    rd.JobTypes.Select(type => type.JobType).Any(type => jobTypes.Contains(type)))
                 .ToList();
             return resumes.Select(r => new EvaluatedResume { Resume = r }).ToList();
         }

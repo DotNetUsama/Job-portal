@@ -67,7 +67,7 @@ namespace Job_Portal_System.Enums
                 case NotificationType.MeetingRejected:
                     return $"/Applicants/Details?id={notification.EntityId}";
                 case NotificationType.FinishedRecommendation:
-                    return $"/Applicants?jobVacancyId={notification.EntityId}";
+                    return $"/Applicants/Index?jobVacancyId={notification.EntityId}";
                 case NotificationType.CancelledApplicant:
                     return $"/JobVacancies/Details?id={notification.EntityId}";
                 case NotificationType.CancelledJobVacancy:

@@ -108,6 +108,7 @@ namespace Job_Portal_System.Controllers
                     Id = applicant.Id,
                     Status = (ApplicantStatus)applicant.Status,
                     SubmittedAt = applicant.SubmittedAt,
+                    IsSalaryWeak = evaluation != null && evaluation.SalaryRank.IsWeakness,
                     JobVacancy = _context.JobVacancies
                     .Where(j => j.Id == applicant.JobVacancyId)
                     .Select(j => new JobVacancyFullViewModel
@@ -264,6 +265,7 @@ namespace Job_Portal_System.Controllers
                     recruiter = await _userManager.FindByIdAsync(applicant.RecruiterId);
                     jobVacancy = await _context.JobVacancies
                         .SingleOrDefaultAsync(j => j.Id == applicant.JobVacancyId);
+                    jobVacancy.AwaitingApplicants++;
                     jobSeeker = await _userManager.FindByIdAsync(applicant.JobSeekerId);
                     await _context.SendNotificationAsync(_hubContext, new Notification
                     {

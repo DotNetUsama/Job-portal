@@ -33,22 +33,20 @@ namespace Job_Portal_System.ViewComponents
 
             if (isOwner)
             {
-
+                var applicants = _context.Applicants.Where(a => a.JobVacancyId == jobVacancy.Id);
                 var jobVacancyActions = new JobVacancyActionsForRecruiterViewModel
                 {
                     JobVacancyId = jobVacancy.Id,
-                    CanClose = jobVacancy.Status == (int)JobVacancyStatus.Open &&
-                               await _context.Applicants
-                                   .CountAsync(a => 
-                                       a.JobVacancyId == jobVacancy.Id &&
-                                       (jobVacancy.Method != (int)JobVacancyMethod.Recommendation ||
-                                        a.Status == (int)ApplicantStatus.WaitingRecruiterDecision)) != 0,
+                    CanClose = jobVacancy.Method == (int) JobVacancyMethod.Submission && 
+                            jobVacancy.Status == (int)JobVacancyStatus.Open,
                     CanDelete = jobVacancy.Method == (int)JobVacancyMethod.Submission ||
                                 jobVacancy.Method == (int)JobVacancyMethod.Recommendation &&
                                 jobVacancy.Status != (int)JobVacancyStatus.Open,
                     CanFinalDecide = jobVacancy.Status == (int)JobVacancyStatus.Closed
                                      && jobVacancy.AwaitingApplicants == 0
-                                     && _context.Applicants.Count(a => a.JobVacancyId == jobVacancy.Id) != 0
+                                     && applicants.Count(a => 
+                                        a.Status != (int) ApplicantStatus.PendingRecommendation &&
+                                        a.Status != (int) ApplicantStatus.RejectedRecommendation) > 0,
                 };
                 return View(side ? "ForRecruiterSide" : "ForRecruiter", jobVacancyActions);
             }

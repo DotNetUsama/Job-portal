@@ -134,10 +134,11 @@ namespace Job_Portal_System.Enums
             switch (status)
             {
                 case ApplicantStatus.DummyAccepted: return ApplicantStatus.AcceptedByRecruiter;
-                case ApplicantStatus.DummyRejected: return ApplicantStatus.RejectedByRecruiter;
-
+                case ApplicantStatus.DummyRejected: 
                 case ApplicantStatus.PendingRecommendation:
+                    return ApplicantStatus.RejectedByRecruiter;
                 case ApplicantStatus.RejectedRecommendation:
+                    return status;
                 case ApplicantStatus.WaitingRecruiterDecision:
                 case ApplicantStatus.AcceptedByRecruiter:
                 case ApplicantStatus.RejectedByRecruiter:
