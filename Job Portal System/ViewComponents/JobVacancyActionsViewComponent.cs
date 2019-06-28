@@ -33,6 +33,7 @@ namespace Job_Portal_System.ViewComponents
 
             if (isOwner)
             {
+
                 var jobVacancyActions = new JobVacancyActionsForRecruiterViewModel
                 {
                     JobVacancyId = jobVacancy.Id,
@@ -47,7 +48,7 @@ namespace Job_Portal_System.ViewComponents
                                 jobVacancy.Status != (int)JobVacancyStatus.Open,
                     CanFinalDecide = jobVacancy.Status == (int)JobVacancyStatus.Closed
                                      && jobVacancy.AwaitingApplicants == 0
-                                     && jobVacancy.Applicants.Count != 0
+                                     && _context.Applicants.Count(a => a.JobVacancyId == jobVacancy.Id) != 0
                 };
                 return View(side ? "ForRecruiterSide" : "ForRecruiter", jobVacancyActions);
             }

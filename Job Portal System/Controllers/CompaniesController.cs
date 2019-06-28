@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Job_Portal_System.Data;
 using Job_Portal_System.Enums;
 using Job_Portal_System.Models;
-using Job_Portal_System.ViewModels;
 using Job_Portal_System.ViewModels.Companies;
 using Job_Portal_System.ViewModels.JobVacancies;
 using JW;

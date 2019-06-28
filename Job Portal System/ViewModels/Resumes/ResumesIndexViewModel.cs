@@ -7,6 +7,8 @@ namespace Job_Portal_System.ViewModels.Resumes
         public IEnumerable<ResumeGeneralViewModel> Resumes { get; set; }
         public bool IsJobSeeker { get; set; }
         public bool OwnResumeCreated { get; set; }
+        public string Query { get; set; }
+        public int Count { get; set; }
         public string ActiveTab { get; set; }
     }
 }

@@ -6,6 +6,8 @@ namespace Job_Portal_System.ViewModels.JobVacancies
     {
         public IEnumerable<JobVacancyGeneralViewModel> JobVacancies { get; set; }
         public bool IsRecruiter { get; set; }
+        public string Query { get; set; }
+        public int Count { get; set; }
         public string ActiveTab { get; set; }
     }
 }

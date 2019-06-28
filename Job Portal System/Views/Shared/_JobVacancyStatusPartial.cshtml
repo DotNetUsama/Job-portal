@@ -4,16 +4,14 @@
 @switch (Model)
 {
     case JobVacancyStatus.Closed:
-        @:<span class="ps-absolute pt2 r0 mr12 t15 s-badge s-badge__danger">Closed</span>
-        break;
     case JobVacancyStatus.Finished:
-        @:<span class="ps-absolute pt2 r0 mr12 t15 s-badge s-badge__danger">Finished</span>
+        @:<span class="ps-absolute pt2 r0 mr12 t15 s-badge s-badge__danger">@Model.GetDescription()</span>
         break;
     case JobVacancyStatus.InAction:
-        @:<span class="ps-absolute pt2 r0 mr12 t15 s-badge s-badge__warning">In action</span>
+        @:<span class="ps-absolute pt2 r0 mr12 t15 s-badge s-badge__warning">@Model.GetDescription()</span>
         break;
     case JobVacancyStatus.Open:
-        @:<span class="ps-absolute pt2 r0 mr12 t15 s-badge s-badge__success">Open</span>
+        @:<span class="ps-absolute pt2 r0 mr12 t15 s-badge s-badge__success">@Model.GetDescription()</span>
         break;
     default:
         break;

@@ -1,4 +1,3 @@
-using System.Linq;
 using DinkToPdf;
 using DinkToPdf.Contracts;
 using Job_Portal_System.BackgroundTasking;
@@ -100,8 +99,6 @@ namespace Job_Portal_System
                 routes.MapHub<SignalRHub>("/signalRHub");
             });
 
-            var companyId = context.Recruiters.First(r => r.User.Email == "ammar@recruiter.com").CompanyId;
-            var i = 0;
             //DatabaseSeeder.SeedData(env, context, userManager, roleManager);
             //DatabaseSeeder.ClearDatabase(context);
             //DatabaseSeeder.SeedJobSeekers(context, userManager, 1000);

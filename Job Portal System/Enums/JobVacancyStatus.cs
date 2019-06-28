@@ -1,11 +1,17 @@
 ﻿
+using System.ComponentModel;
+
 namespace Job_Portal_System.Enums
 {
     public enum JobVacancyStatus
     {
+        [Description("Open")]
         Open,
+        [Description("Closed")]
         Closed,
+        [Description("In action")]
         InAction,
+        [Description("Finished")]
         Finished,
     }
 

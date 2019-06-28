@@ -107,9 +107,9 @@ namespace Job_Portal_System.Handlers
                 {
                     Applicant = a,
                     Resume = context.Resumes
-                        .Include(r => r.Educations)
-                        .Include(r => r.WorkExperiences)
-                        .Include(r => r.OwnedSkills)
+                        .Include(r => r.Educations).ThenInclude(e => e.FieldOfStudy)
+                        .Include(r => r.WorkExperiences).ThenInclude(w => w.JobTitle)
+                        .Include(r => r.OwnedSkills).ThenInclude(s => s.Skill)
                         .Include(r => r.User)
                         .SingleOrDefault(r => r.Id == a.ResumeId),
                     Accepted = ((ApplicantStatus)a.Status).IsAccepted(),

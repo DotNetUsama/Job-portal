@@ -1,221 +1,121 @@
-﻿@model ViewModels.EvaluatedJobSeekerApplicant
+﻿@model ViewModels.Applicants.ApplicantForJobSeekerFullViewModel
 @using Enums
+
 @{
-    ViewData["Title"] = Model.Applicant.JobVacancy.Title;
+    ViewData["Title"] = Model.JobVacancy.Title;
+    Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<div class="row">
-    <div class="col-md-6 offset-md-3 col-sm-8 offset-sm-2">
-        <div class="progress" style="height: 4px;">
-            <div class="progress-bar bg-info" role="progressbar" style="width: 100%"
-                 aria-valuemin="0" aria-valuemax="100"></div>
-        </div>
-        <div class="form-container">
-            <div class="form-head2">
-                <h1 class="form-head-title">@ViewData["Title"]</h1>
-                <span class="@(((ApplicantStatus) Model.Applicant.Status).GetCssClass())">
-                    @(((ApplicantStatus)Model.Applicant.Status).GetDescription())
-                </span>
-                <p class="form-head-details">Submitted at: @Model.Applicant.SubmittedAt.ToString("d")</p>
+<div class="main-columns">
+    <div id="main-bar" class="fs-body2">
+        <div class="grid mb32 gs12 gsx ps-relative">
+            <div class="s-avatar s-avatar__lg mr8" style="flex-shrink: 0; background-color: white">
+                <a asp-controller="Companies" asp-action="Details" asp-route-id="@Model.JobVacancy.Company.Id">
+                    <img alt="@Model.JobVacancy.Company.Name" class="hmx100 wmx100" src="@Model.JobVacancy.Company.Logo">
+                </a>
             </div>
-            <div class="form-body">
-                <fieldset id="general-info-partial">
-                    <legend><i class="fa fa-question-circle"></i> General information</legend>
-                    <dl class="row mb-0">
-                        <dt class="col-sm-3">
-                            Job title:
-                        </dt>
-                        <dd class="col-sm-9">
-                            @Model.Applicant.JobVacancy.JobTitle.Title
-                        </dd>
-                        <dt class="col-sm-3">
-                            Company:
-                        </dt>
-                        <dd class="col-sm-9">
-                            @Model.Applicant.JobVacancy.CompanyDepartment.Company.Name
-                        </dd>
-                        <dt class="col-sm-3">
-                            Address:
-                        </dt>
-                        <dd class="col-sm-9">
-                            @Model.Applicant.JobVacancy.CompanyDepartment.City.Name (@Model.Applicant.JobVacancy.CompanyDepartment.DetailedAddress)
-                        </dd>
-                        <dt class="col-sm-3">
-                            Published at:
-                        </dt>
-                        <dd class="col-sm-9">
-                            @Model.Applicant.JobVacancy.PublishedAt
-                        </dd>
-                        <dt class="col-sm-3">
-                            Job types:
-                        </dt>
-                        <dd class="col-sm-9">
-                            @string.Join(" | ", Model.Applicant.JobVacancy.JobTypes
-                                .Select(jobType => ((JobType) jobType.JobType).GetDescription())
-                                .ToArray())
-                        </dd>
-                    </dl>
-                    <div class="row@(Model.IsEvaluated && Model.SalaryRank.IsWeakness ?
-                                      " color-form-light-danger"
-                                      :"")">
-                        <div class="col-sm-3 font-weight-bold">
-                            Salary:
+            <div class="grid--cell fl1">
+                <h1 class="fs-headline1 mb4">
+                    <a asp-controller="JobVacancies" asp-action="Details" asp-route-id="@Model.Id" title="@Model.JobVacancy.Title" class="fc-black-900">@Model.JobVacancy.Title</a>
+                </h1>
+                <div class="fc-black-700 fs-body1">
+                    <a class="fc-black-700" asp-controller="Companies" asp-action="Details" asp-route-id="@Model.JobVacancy.Company.Id">@Model.JobVacancy.Company.Name</a>
+                    <span class="fc-black-500">
+                        <span class="px8">|</span>
+                        @(Model.JobVacancy.IsRemote ? Model.JobVacancy.Location : "No office location")
+                    </span>
+                </div>
+                <div class="mt12 fs-body1">
+                    <span class="-salary pr16" title="£@Model.JobVacancy.MinSalary - @Model.JobVacancy.MaxSalary (Syrian Pounds)">£@Model.JobVacancy.MinSalary - @Model.JobVacancy.MaxSalary</span>
+                    @if (Model.JobVacancy.IsRemote)
+                    {
+                        <span class="-remote pr16">Remote</span>
+                    }
+                </div>
+            </div>
+            <partial name="_ApplicantStatusPartial" model="@Model.Status"/>
+        </div>
+        <div class="grid by mt16 mb24 py16 bc-black-3">
+            <nav class="grid--cell mr-auto">
+                <a href="#overview-items" class="s-btn d-inline-block" data-nav-item="Overview">Overview</a>
+                <a href="#qualifications-items" class="s-btn d-inline-block" data-nav-item="Company">Qualifications</a>
+                <a href="#company-items" class="s-btn d-inline-block" data-nav-item="Company">Company</a>
+            </nav>
+        </div>
+        <div id="overview-items" class="job-details__spaced">
+            <section class="mb32">
+                <h2 class="fs-subheading mb16">About this job</h2>
+                <div class="grid gs16 gsx">
+                    <div class="grid--cell6">
+                        <div class="mb8">
+                            <span>Role: </span>
+                            <span class="fw-bold">@Model.JobVacancy.JobTitle</span>
                         </div>
-                        <div class="col-sm-9">
-                            @Model.Applicant.JobVacancy.MinSalary to @Model.Applicant.JobVacancy.MaxSalary
+                        <div class="mb8">
+                            <span>Job types: </span>
+                            @foreach (var jobType in Model.JobVacancy.JobTypes)
+                            {
+                                <span class="fw-bold px8">@(((JobType)jobType).GetDescription())</span>
+                            }
                         </div>
                     </div>
-                    @if (!string.IsNullOrEmpty(Model.Applicant.JobVacancy.Description))
-                    {
-                        <div class="mt-3">
-                            <span class="d-block font-weight-little-bold">Description:</span>
-                            <div class="mt-2">
-                                @Html.Raw(Model.Applicant.JobVacancy.Description)
-                            </div>
+
+                    <div class="grid--cell6">
+                        <div class="mb8">
+                            <span>Company size: </span>
+                            @if (Model.JobVacancy.Company.EmployeesNum.HasValue)
+                            {
+                                <span class="fw-bold">@Model.JobVacancy.Company.EmployeesNum.Value people</span>
+                            }
+                            else
+                            {
+                                <span class="fw-bold">Unknown</span>
+                            }
                         </div>
-                    }
-                </fieldset>
-                <hr />
-                <fieldset id="educations-partial">
-                    <legend><i class="fa fa-graduation-cap"></i> Educations</legend>
-                    @if (Model.Educations.Count == 0)
-                    {
-                        <p style="font-family: 'Nanum Gothic', sans-serif;">No education qualifications added to this job vacancy</p>
-                    }
-                    else
-                    {
-                        <ul class="list-unstyled">
-                            @foreach (var education in Model.Educations)
-                            {
-                                var cssClass = Model.IsEvaluated && education.Evaluation.IsWeakness ?
-                                    "bg-form-light-danger" :
-                                    "bg-form-light-main-hover";
-                                <li class="collapse-container">
-                                    <div class="row info-item @cssClass">
-                                        <div class="col-md-10">
-                                            <span>
-                                                Minimum <span class="font-weight-bold">@education.MinimumYears</span> in <span class="font-weight-bold">@education.FieldOfStudy.Title</span>
-                                            </span>
-                                        </div>
-                                        <div class="col-md-2 d-flex">
-                                            <button type="button" class="ml-auto btn btn-icon extend">
-                                                <i class="fa fa-angle-down"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <div class="item-details collapse-content">
-                                        <div class="details-container">
-                                            <span class="font-weight-little-bold text-info @(((QualificationType)education.Type).GetCssClass())">[@((QualificationType)education.Type)]</span> Minimum <span class="font-weight-bold">@education.MinimumYears</span> in <span class="font-weight-bold">@education.FieldOfStudy.Title</span> with <span class="font-weight-little-bold">@((EducationDegree)education.Degree)</span> degree
-                                        </div>
-                                    </div>
-                                </li>
-                            }
-                        </ul>
-
-                    }
-                </fieldset>
-                <hr />
-                <fieldset id="work-experiences-partial">
-                    <legend><i class="fa fa-briefcase"></i> Work experiences</legend>
-
-                    @if (Model.WorkExperiences.Count == 0)
-                    {
-                        <p style="font-family: 'Nanum Gothic', sans-serif;">No work experience qualifications added to this job vacancy</p>
-                    }
-                    else
-                    {
-                        <ul class="list-unstyled">
-                            @foreach (var workExperience in Model.WorkExperiences)
-                            {
-                                var cssClass = Model.IsEvaluated && workExperience.Evaluation.IsWeakness ?
-                                    "bg-form-light-danger" :
-                                    "bg-form-light-main-hover";
-                                <li class="collapse-container">
-                                    <div class="row info-item @cssClass">
-                                        <div class="col-md-10">
-                                            <span>
-                                                Minimum <span class="font-weight-bold">@workExperience.MinimumYears</span> in <span class="font-weight-bold">@workExperience.JobTitle.Title</span>
-                                            </span>
-                                        </div>
-                                        <div class="col-md-2 d-flex">
-                                            <button type="button" class="ml-auto btn btn-icon extend">
-                                                <i class="fa fa-angle-down"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <div class="item-details collapse-content">
-                                        <div class="details-container">
-                                            <span class="font-weight-little-bold text-info @(((QualificationType)workExperience.Type).GetCssClass())">[@((QualificationType)workExperience.Type)]</span> Minimum <span class="font-weight-bold">@workExperience.MinimumYears</span> in <span class="font-weight-bold">@workExperience.JobTitle.Title</span>
-                                        </div>
-                                    </div>
-                                </li>
-                            }
-                        </ul>
-                    }
-                </fieldset>
-                @if (Model.DesiredSkills.Count != 0)
-                {
-                    <hr />
-                    <fieldset id="desired-skills-sub-form">
-                        <legend><i class="fa fa-star"></i> Desired Skills</legend>
-                        <ul class="list-unstyled">
-                            @foreach (var skill in Model.DesiredSkills)
-                            {
-                                var cssClass = Model.IsEvaluated && skill.Evaluation.IsWeakness ?
-                                    "bg-form-light-danger" :
-                                    "bg-form-light-main-hover";
-                                <li>
-                                    <div class="row info-item @cssClass">
-                                        <div class="col-md-10">
-                                            <span>
-                                                <span class="font-weight-little-bold text-info @(((QualificationType)skill.Type).GetCssClass())">[@((QualificationType)skill.Type)]</span> Minimum <span class="font-weight-bold">@skill.MinimumYears</span> years in <span class="font-weight-bold">@skill.Skill.Title</span>
-                                            </span>
-                                        </div>
-                                    </div>
-                                </li>
-                            }
-                        </ul>
-                    </fieldset>
-                }
-                @{
-                    var nextStates = ((ApplicantStatus)Model.Applicant.Status).NextStates(UserType.JobSeeker);
-                    var isFinalState = ((ApplicantStatus) Model.Applicant.Status).IsFinal();
-                    if (nextStates.Count > 0 || !isFinalState)
-                    {
-                        <hr />
-                        if (nextStates.Count > 0)
-                        {
-                            foreach (var state in nextStates)
-                            {
-                                <form asp-controller="Applicants"
-                                      asp-action="ChangeStatus"
-                                      asp-route-id="@Model.Applicant.Id"
-                                      asp-route-status="@((int)state)"
-                                      class="d-inline"
-                                      method="post">
-                                    <button class="btn btn-sm mr-2 @state.GetBtnCssClass()">
-                                        @state.GetActionName()
-                                    </button>
-                                </form>
-                            }
-                        }
-                        if (!isFinalState)
-                        {
-                            <form asp-controller="Applicants"
-                                  asp-action="Delete"
-                                  asp-route-id="@Model.Applicant.Id"
-                                  class="d-inline ml-auto"
-                                  method="post">
-                                <button class="btn btn-danger btn-sm">Delete</button>
-                            </form>
-                        }
-                    }
-                }
-            </div>
+                        <div class="mb8">
+                            <span>Company type: </span>
+                            <span class="fw-bold tt-capitalize">@Model.JobVacancy.Company.Type</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section class="mb32">
+                <h2 class="fs-subheading mb16">Job description</h2>
+                <div>
+                    <div class="marker">
+                        <div class="content d-none">@Model.JobVacancy.Description</div>
+                        <div class="view"></div>
+                    </div>
+                </div>
+            </section>
+            @await Component.InvokeAsync("JobVacancyActions", new { jobVacancyId = Model.Id, user = User })
         </div>
+        <div id="qualifications-items" class="job-details__spaced">
+            <section class="mb32">
+                <h2 class="fs-subheading mb16">Qualifications</h2>
+                @if (Model.JobVacancy.DesiredSkills.Any())
+                {
+                    <strong>Skills:</strong>
+                    <partial name="_QualificationsGroupPartial" model="@Model.JobVacancy.DesiredSkills" />
+                }
+                @if (Model.JobVacancy.WorkExperienceQualifications.Any())
+                {
+                    <strong>Experiences:</strong>
+                    <partial name="_QualificationsGroupPartial" model="@Model.JobVacancy.WorkExperienceQualifications" />
+                }
+                @if (Model.JobVacancy.EducationQualifications.Any())
+                {
+                    <strong>Educations:</strong>
+                    <partial name="_QualificationsGroupPartial" model="@Model.JobVacancy.EducationQualifications" />
+                }
+            </section>
+        </div>
+    </div>
+    <div class="sidebar">
+        @await Component.InvokeAsync("ApplicantActions", new {applicantId = Model.Id, user = User})
     </div>
 </div>
 
 @section Scripts {
-    <partial name="_CollapseScriptsPartial" />
+    <partial name="_MarkerScriptsPartial" />
 }

@@ -9,6 +9,8 @@ using Job_Portal_System.Utilities.RankingSystem;
 using Job_Portal_System.SignalR;
 using Job_Portal_System.ViewModels;
 using Job_Portal_System.ViewModels.Applicants;
+using Job_Portal_System.ViewModels.Companies;
+using Job_Portal_System.ViewModels.JobVacancies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -56,6 +58,7 @@ namespace Job_Portal_System.Controllers
                 JobVacancyId = jobVacancy.Id,
                 JobVacancyTitle = jobVacancy.Title,
                 ApplicantsCount = _context.Applicants.Count(a => a.JobVacancyId == jobVacancy.Id),
+                Status = (JobVacancyStatus) jobVacancy.Status,
                 JobTitle = jobVacancy.JobTitle.Title,
                 IsRemote = jobVacancy.DistanceLimit == 0,
                 Location = $"{jobVacancy.CompanyDepartment.City.State.Name}, {jobVacancy.CompanyDepartment.City.Name}, {jobVacancy.CompanyDepartment.DetailedAddress}",
@@ -69,7 +72,7 @@ namespace Job_Portal_System.Controllers
                         EducationsCount = a.Resume.Educations.Count,
                         SkillsCount = a.Resume.OwnedSkills.Count,
                         Location = $"{a.JobSeeker.City.State.Name}, {a.JobSeeker.City.Name}",
-                        Status = (ApplicantStatus) a.Status,
+                        Status = (ApplicantStatus)a.Status,
                         Skills = a.Resume.OwnedSkills.Select(s => s.Skill.Title),
                         SubmittedAt = a.SubmittedAt,
                     }),
@@ -80,103 +83,110 @@ namespace Job_Portal_System.Controllers
         [Route("Details")]
         public async Task<IActionResult> Details(string id)
         {
-            if (!User.IsInRole("Recruiter") && !User.IsInRole("JobSeeker")) return BadRequest();
-
-            Applicant applicant;
-
-            if (User.IsInRole("JobSeeker"))
-            {
-                applicant = await _context.Applicants
-                    .Include(a => a.JobSeeker)
-                    .FirstOrDefaultAsync(a => a.Id == id);
-
-                if (applicant == null) return NotFound();
-                if (applicant.JobSeeker.UserName != User.Identity.Name) return BadRequest();
-
-                applicant.JobVacancy = await _context.JobVacancies
-                    .Include(j => j.CompanyDepartment).ThenInclude(d => d.Company)
-                    .Include(j => j.CompanyDepartment).ThenInclude(d => d.City)
-                    .Include(r => r.JobTypes)
-                    .Include(r => r.JobTitle)
-                    .FirstOrDefaultAsync(j => j.Id == applicant.JobVacancyId);
-
-                EvaluatedJobSeekerApplicant viewModel;
-                try
-                {
-                    var evaluation = FilesManager.Read<Evaluation>(_env, "Evaluations", applicant.Id);
-                    viewModel = new EvaluatedJobSeekerApplicant
-                    {
-                        Applicant = applicant,
-                        IsEvaluated = true,
-                        Educations = _context.EducationQualifications
-                            .Include(e => e.FieldOfStudy)
-                            .Where(e => e.JobVacancyId == applicant.JobVacancyId)
-                            .Select(e => new EvaluatedEducationQualification(e,
-                                evaluation.EducationsRanks[e.FieldOfStudyId]))
-                            .ToList(),
-                        WorkExperiences = _context.WorkExperienceQualifications
-                            .Include(w => w.JobTitle)
-                            .Where(w => w.JobVacancyId == applicant.JobVacancyId)
-                            .Select(w => new EvaluatedWorkExperienceQualification(w,
-                                evaluation.WorkExperiencesRanks[w.JobTitleId]))
-                            .ToList(),
-                        DesiredSkills = _context.DesiredSkills
-                            .Include(s => s.Skill)
-                            .Where(s => s.JobVacancyId == applicant.JobVacancyId)
-                            .Select(s => new EvaluatedDesiredSkill(s,
-                                evaluation.SkillsRanks[s.SkillId]))
-                            .ToList(),
-                        SalaryRank = evaluation.SalaryRank,
-                    };
-                }
-                catch
-                {
-                    viewModel = new EvaluatedJobSeekerApplicant
-                    {
-                        Applicant = applicant,
-                        IsEvaluated = false,
-                        Educations = _context.EducationQualifications
-                            .Include(e => e.FieldOfStudy)
-                            .Where(e => e.JobVacancyId == applicant.JobVacancyId)
-                            .Select(e => new EvaluatedEducationQualification(e))
-                            .ToList(),
-                        WorkExperiences = _context.WorkExperienceQualifications
-                            .Include(w => w.JobTitle)
-                            .Where(w => w.JobVacancyId == applicant.JobVacancyId)
-                            .Select(w => new EvaluatedWorkExperienceQualification(w))
-                            .ToList(),
-                        DesiredSkills = _context.DesiredSkills
-                            .Include(s => s.Skill)
-                            .Where(s => s.JobVacancyId == applicant.JobVacancyId)
-                            .Select(s => new EvaluatedDesiredSkill(s))
-                            .ToList(),
-                    };
-                }
-
-                return View("DetailsForJobSeeker", viewModel);
-            }
-
-            applicant = await _context.Applicants
-                .Include(a => a.Recruiter)
+            var applicant = await _context.Applicants
                 .FirstOrDefaultAsync(a => a.Id == id);
 
             if (applicant == null) return NotFound();
-            if (applicant.Recruiter.UserName != User.Identity.Name) return BadRequest();
 
-            applicant.Resume = await _context.Resumes
-                .Include(r => r.Educations).ThenInclude(e => e.FieldOfStudy)
-                .Include(r => r.Educations).ThenInclude(e => e.School)
-                .Include(r => r.WorkExperiences).ThenInclude(w => w.JobTitle)
-                .Include(r => r.WorkExperiences).ThenInclude(w => w.Company)
-                .Include(r => r.OwnedSkills).ThenInclude(s => s.Skill)
-                .Include(r => r.User)
-                .FirstOrDefaultAsync(r => r.Id == applicant.ResumeId);
-            applicant.JobVacancy = await _context.JobVacancies
-                .FirstOrDefaultAsync(j => j.Id == applicant.JobVacancyId);
-            return View("DetailsForRecruiter", applicant);
+            if (!User.IsInRole("Recruiter") && !User.IsInRole("JobSeeker")) return BadRequest();
+
+            if (User.IsInRole("JobSeeker"))
+            {
+                if (applicant.JobSeekerId != _userManager.GetUserId(User)) return BadRequest();
+
+                Evaluation evaluation = null;
+                try
+                {
+                    evaluation = FilesManager.Read<Evaluation>(_env, "Evaluations", applicant.Id);
+                }
+                catch
+                {
+                    // ignored
+                }
+                return View("DetailsForJobSeeker", new ApplicantForJobSeekerFullViewModel
+                {
+                    Id = applicant.Id,
+                    Status = (ApplicantStatus)applicant.Status,
+                    SubmittedAt = applicant.SubmittedAt,
+                    JobVacancy = _context.JobVacancies
+                    .Where(j => j.Id == applicant.JobVacancyId)
+                    .Select(j => new JobVacancyFullViewModel
+                    {
+                        Id = j.Id,
+                        Title = j.Title,
+                        IsRemote = j.DistanceLimit == 0,
+                        MinSalary = j.MinSalary,
+                        MaxSalary = j.MaxSalary,
+                        JobTitle = j.JobTitle.Title,
+                        Location = $"{j.CompanyDepartment.City.State.Name}, {j.CompanyDepartment.City.Name}",
+                        Description = j.Description,
+                        DesiredSkills = _context.DesiredSkills
+                            .Where(s => s.JobVacancyId == j.Id)
+                            .Select(s => new QualificationViewModel
+                            {
+                                Title = s.Skill.Title,
+                                Years = s.MinimumYears,
+                                Type = (QualificationType)s.Type,
+                                IsWeakness = evaluation != null && evaluation.SkillsRanks[s.Skill.SkillSynsetId].IsWeakness,
+                            }),
+                        WorkExperienceQualifications = _context.WorkExperienceQualifications
+                            .Where(w => w.JobVacancyId == j.Id)
+                            .Select(w => new QualificationViewModel
+                            {
+                                Title = w.JobTitle.Title,
+                                Years = w.MinimumYears,
+                                Type = (QualificationType)w.Type,
+                                IsWeakness = evaluation != null && evaluation.WorkExperiencesRanks[w.JobTitle.JobTitleSynsetId].IsWeakness,
+                            }),
+                        EducationQualifications = _context.EducationQualifications
+                            .Where(e => e.JobVacancyId == j.Id)
+                            .Select(e => new QualificationViewModel
+                            {
+                                Title = e.FieldOfStudy.Title,
+                                Years = e.MinimumYears,
+                                Type = (QualificationType)e.Type,
+                                IsWeakness = evaluation != null && evaluation.EducationsRanks[e.FieldOfStudy.FieldOfStudySynsetId].IsWeakness,
+                            }),
+                        Company = _context.Companies
+                            .Where(c => c.Id == j.CompanyDepartment.CompanyId)
+                            .Select(c => new CompanyFullViewModel
+                            {
+                                Id = c.Id,
+                                Name = c.Name,
+                                Logo = c.Logo,
+                                EmployeesNum = c.EmployeesNum,
+                                FoundedYear = c.FoundedYear,
+                                Type = c.Type,
+                            })
+                            .First(),
+                        JobTypes = _context.JobVacancyJobTypes
+                            .Where(t => t.JobVacancyId == j.Id)
+                            .Select(t => t.JobType),
+                    })
+                    .First(),
+
+                });
+            }
+
+            if (applicant.RecruiterId != _userManager.GetUserId(User)) return BadRequest();
+
+            return View("DetailsForRecruiter", new ApplicantForRecruiterFullViewModel
+            {
+                Id = applicant.Id,
+                Status = (ApplicantStatus) applicant.Status,
+                SubmittedAt = applicant.SubmittedAt,
+                Resume = await _context.Resumes
+                    .Include(r => r.Educations).ThenInclude(e => e.FieldOfStudy)
+                    .Include(r => r.Educations).ThenInclude(e => e.School)
+                    .Include(r => r.WorkExperiences).ThenInclude(w => w.JobTitle)
+                    .Include(r => r.WorkExperiences).ThenInclude(w => w.Company)
+                    .Include(r => r.OwnedSkills).ThenInclude(s => s.Skill)
+                    .Include(r => r.User).ThenInclude(u => u.City).ThenInclude(c => c.State)
+                    .FirstOrDefaultAsync(r => r.Id == applicant.ResumeId),
+        });
         }
 
-        [HttpPost]
+        [HttpGet]
         [Route("ChangeStatus")]
         public async Task<IActionResult> ChangeStatus(string id, int status)
         {
@@ -197,7 +207,7 @@ namespace Job_Portal_System.Controllers
             return Redirect(Request.Headers["Referer"].ToString());
         }
 
-        [HttpPost]
+        [HttpGet]
         [Route("Delete")]
         [Authorize(Roles = "JobSeeker")]
         public async Task<IActionResult> Delete(string id)

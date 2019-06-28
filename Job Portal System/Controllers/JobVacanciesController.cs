@@ -8,6 +8,7 @@ using Job_Portal_System.Handlers;
 using Job_Portal_System.Models;
 using Job_Portal_System.SignalR;
 using Job_Portal_System.Utilities.Semantic;
+using Job_Portal_System.ViewModels;
 using Job_Portal_System.ViewModels.Companies;
 using Job_Portal_System.ViewModels.JobVacancies;
 using JW;
@@ -41,33 +42,57 @@ namespace Job_Portal_System.Controllers
 
         [HttpGet]
         [Route("Index")]
-        public IActionResult Index(string tab)
+        public IActionResult Index(string tab, string q)
         {
             var isRecruiter = User.IsInRole("Recruiter");
 
             tab = tab ?? (isRecruiter ? "my-jobs" : "interesting");
 
-            IEnumerable<JobVacancyGeneralViewModel> jobVacancies;
+            IQueryable<JobVacancy> jobVacanciesQueryable;
             switch (tab)
             {
                 case "recent":
-                    jobVacancies = RecentJobVacancies();
+                    jobVacanciesQueryable = RecentJobVacancies();
                     break;
                 case "interesting":
-                    jobVacancies = InterestingJobVacancies();
+                    jobVacanciesQueryable = InterestingJobVacancies();
                     break;
                 case "my-jobs":
-                    jobVacancies = OwnJobVacancies();
+                    jobVacanciesQueryable = OwnJobVacancies();
                     break;
                 default:
                     return NotFound();
             }
 
+            var jobVacancies = jobVacanciesQueryable
+                .Where(j => string.IsNullOrEmpty(q) || j.Title.Contains(q) || j.JobTitle.Title.Contains(q));
+
             return View("JobVacanciesIndex", new JobVacanciesIndexViewModel
             {
                 IsRecruiter = isRecruiter,
                 ActiveTab = tab,
-                JobVacancies = jobVacancies,
+                Query = q,
+                Count = jobVacancies.Count(),
+                JobVacancies = jobVacancies
+                    .Include(j => j.JobTitle)
+                    .Include(j => j.CompanyDepartment).ThenInclude(d => d.City).ThenInclude(c => c.State)
+                    .Include(j => j.CompanyDepartment).ThenInclude(d => d.Company)
+                    .Take(20)
+                    .Select(j => new JobVacancyGeneralViewModel
+                    {
+                        Id = j.Id,
+                        Title = j.Title,
+                        CreatedAt = j.PublishedAt,
+                        IsRemote = j.DistanceLimit == 0,
+                        MinSalary = j.MinSalary,
+                        MaxSalary = j.MaxSalary,
+                        JobTitle = j.JobTitle.Title,
+                        Location = $"{j.CompanyDepartment.City.State.Name}, {j.CompanyDepartment.City.Name}",
+                        Company = j.CompanyDepartment.Company.Name,
+                        DesiredSkills = _context.DesiredSkills
+                            .Where(s => s.JobVacancyId == j.Id)
+                            .Select(s => s.Skill.Title),
+                    }),
             });
         }
 
@@ -78,9 +103,6 @@ namespace Job_Portal_System.Controllers
             if (string.IsNullOrEmpty(id)) return NotFound();
 
             var jobVacancyViewModel = _context.JobVacancies
-                .Include(j => j.DesiredSkills).ThenInclude(s => s.Skill)
-                .Include(j => j.WorkExperienceQualifications).ThenInclude(w => w.JobTitle)
-                .Include(j => j.EducationQualifications).ThenInclude(e => e.FieldOfStudy)
                 .Where(j => j.Id == id)
                 .Select(j => new JobVacancyFullViewModel
                 {
@@ -92,9 +114,30 @@ namespace Job_Portal_System.Controllers
                     JobTitle = j.JobTitle.Title,
                     Location = $"{j.CompanyDepartment.City.State.Name}, {j.CompanyDepartment.City.Name}",
                     Description = j.Description,
-                    DesiredSkills = j.DesiredSkills,
-                    WorkExperienceQualifications = j.WorkExperienceQualifications,
-                    EducationQualifications = j.EducationQualifications,
+                    DesiredSkills = _context.DesiredSkills
+                        .Where(s => s.JobVacancyId == j.Id)
+                        .Select(s => new QualificationViewModel
+                        {
+                            Title = s.Skill.Title,
+                            Years = s.MinimumYears,
+                            Type = (QualificationType) s.Type,
+                        }),
+                    WorkExperienceQualifications = _context.WorkExperienceQualifications
+                        .Where(w => w.JobVacancyId == j.Id)
+                        .Select(w => new QualificationViewModel
+                        {
+                            Title = w.JobTitle.Title,
+                            Years = w.MinimumYears,
+                            Type = (QualificationType) w.Type,
+                        }),
+                    EducationQualifications = _context.EducationQualifications
+                        .Where(e => e.JobVacancyId == j.Id)
+                        .Select(e => new QualificationViewModel
+                        {
+                            Title = e.FieldOfStudy.Title,
+                            Years = e.MinimumYears,
+                            Type = (QualificationType) e.Type,
+                        }),
                     Company = _context.Companies
                         .Where(c => c.Id == j.CompanyDepartment.CompanyId)
                         .Select(c => new CompanyFullViewModel
@@ -127,7 +170,8 @@ namespace Job_Portal_System.Controllers
                         .First(),
                     RelatedJobVacancies = _context.JobVacancies
                         .Where(rj => rj.JobTitleId == j.JobTitleId)
-                        .Select(rj => new JobVacancyGeneralViewModel {
+                        .Select(rj => new JobVacancyGeneralViewModel
+                        {
                             Id = rj.Id,
                             Title = rj.Title,
                             CreatedAt = rj.PublishedAt,
@@ -256,7 +300,7 @@ namespace Job_Portal_System.Controllers
 
             await AsyncHandler.SubmitToJobVacancy(_context, _hubContext, jobVacancy, resume);
 
-            return RedirectToAction("Details", "JobVacancies", new {id});
+            return RedirectToAction("Details", "JobVacancies", new { id });
         }
 
         [HttpGet]
@@ -279,12 +323,15 @@ namespace Job_Portal_System.Controllers
             if (applicantsCount == 0) return BadRequest();
 
             jobVacancy.EducationQualifications = _context.EducationQualifications
+                .Include(e => e.FieldOfStudy)
                 .Where(e => e.JobVacancyId == jobVacancy.Id)
                 .ToList();
             jobVacancy.WorkExperienceQualifications = _context.WorkExperienceQualifications
+                .Include(w => w.JobTitle)
                 .Where(w => w.JobVacancyId == jobVacancy.Id)
                 .ToList();
             jobVacancy.DesiredSkills = _context.DesiredSkills
+                .Include(s => s.Skill)
                 .Where(s => s.JobVacancyId == jobVacancy.Id)
                 .ToList();
 
@@ -339,86 +386,26 @@ namespace Job_Portal_System.Controllers
             });
         }
 
-        private IEnumerable<JobVacancyGeneralViewModel> RecentJobVacancies()
+        private IQueryable<JobVacancy> RecentJobVacancies()
         {
             return _context.JobVacancies
-                .Include(j => j.JobTitle)
-                .Include(j => j.CompanyDepartment).ThenInclude(d => d.City).ThenInclude(c => c.State)
-                .Include(j => j.CompanyDepartment).ThenInclude(d => d.Company)
-                .OrderByDescending(j => j.PublishedAt)
-                .Take(20)
-                .Select(j => new JobVacancyGeneralViewModel
-                {
-                    Id = j.Id,
-                    Title = j.Title,
-                    CreatedAt = j.PublishedAt,
-                    IsRemote = j.DistanceLimit == 0,
-                    MinSalary = j.MinSalary,
-                    MaxSalary = j.MaxSalary,
-                    JobTitle = j.JobTitle.Title,
-                    Location = $"{j.CompanyDepartment.City.State.Name}, {j.CompanyDepartment.City.Name}",
-                    Company = j.CompanyDepartment.Company.Name,
-                    DesiredSkills = _context.DesiredSkills
-                        .Where(s => s.JobVacancyId == j.Id)
-                        .Select(s => s.Skill.Title),
-                });
+                .Where(j => j.Status == (int) JobVacancyStatus.Open)
+                .OrderByDescending(r => r.PublishedAt);
         }
 
-        private IEnumerable<JobVacancyGeneralViewModel> InterestingJobVacancies()
+        private IQueryable<JobVacancy> InterestingJobVacancies()
         {
             return _context.JobVacancies
-                .Include(j => j.JobTitle)
-                .Include(j => j.CompanyDepartment).ThenInclude(d => d.City).ThenInclude(c => c.State)
-                .Include(j => j.CompanyDepartment).ThenInclude(d => d.Company)
+                .Where(j => j.Status == (int)JobVacancyStatus.Open)
                 .OrderByDescending(r => r.PublishedAt)
                 .Take(200)
-                .OrderBy(r => Guid.NewGuid())
-                .Take(20)
-                .OrderByDescending(r => r.PublishedAt)
-                .Select(j => new JobVacancyGeneralViewModel
-                {
-                    Id = j.Id,
-                    Title = j.Title,
-                    CreatedAt = j.PublishedAt,
-                    IsRemote = j.DistanceLimit == 0,
-                    MinSalary = j.MinSalary,
-                    MaxSalary = j.MaxSalary,
-                    JobTitle = j.JobTitle.Title,
-                    Location = $"{j.CompanyDepartment.City.State.Name}, {j.CompanyDepartment.City.Name}",
-                    Company = j.CompanyDepartment.Company.Name,
-                    DesiredSkills = _context.DesiredSkills
-                        .Where(s => s.JobVacancyId == j.Id)
-                        .Select(s => s.Skill.Title),
-                });
+                .OrderBy(r => Guid.NewGuid());
         }
 
-        private IEnumerable<JobVacancyGeneralViewModel> OwnJobVacancies()
+        private IQueryable<JobVacancy> OwnJobVacancies()
         {
             return _context.JobVacancies
-                .Where(j => j.UserId == _userManager.GetUserId(User))
-                .Include(j => j.JobTitle)
-                .Include(j => j.CompanyDepartment).ThenInclude(d => d.City).ThenInclude(c => c.State)
-                .Include(j => j.CompanyDepartment).ThenInclude(d => d.Company)
-                .OrderByDescending(r => r.PublishedAt)
-                .Take(200)
-                .OrderBy(r => Guid.NewGuid())
-                .Take(20)
-                .OrderByDescending(r => r.PublishedAt)
-                .Select(j => new JobVacancyGeneralViewModel
-                {
-                    Id = j.Id,
-                    Title = j.Title,
-                    CreatedAt = j.PublishedAt,
-                    IsRemote = j.DistanceLimit == 0,
-                    MinSalary = j.MinSalary,
-                    MaxSalary = j.MaxSalary,
-                    JobTitle = j.JobTitle.Title,
-                    Location = $"{j.CompanyDepartment.City.State.Name}, {j.CompanyDepartment.City.Name}",
-                    Company = j.CompanyDepartment.Company.Name,
-                    DesiredSkills = _context.DesiredSkills
-                        .Where(s => s.JobVacancyId == j.Id)
-                        .Select(s => s.Skill.Title),
-                });
+                .Where(j => j.UserId == _userManager.GetUserId(User));
         }
     }
 }

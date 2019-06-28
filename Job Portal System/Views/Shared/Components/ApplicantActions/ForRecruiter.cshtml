@@ -1,0 +1,18 @@
+@using Job_Portal_System.Enums
+@model Job_Portal_System.Models.Applicant
+
+@{
+    var status = (ApplicantStatus) Model.Status;
+    var nextStatuses = status.NextStates(UserType.Recruiter);
+}
+
+@if (nextStatuses.Count > 0)
+{
+    <div class="timeline-sidebar-module">
+        <h3>Options</h3>
+        @foreach (var nextStatus in nextStatuses)
+        {
+            <a asp-controller="Applicants" asp-action="ChangeStatus" asp-route-id="@Model.Id" asp-route-status="@((int)nextStatus)" class="btn-secondary block">@nextStatus.GetActionName()</a>
+        }
+    </div>
+}

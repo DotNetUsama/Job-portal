@@ -154,6 +154,10 @@ a {
     flex-basis: 66.66666667%;
 }
 
+.grid--cell11 {
+    flex-basis: 91.6666666%;
+}
+
 .grid__allcells6 > .grid, .grid__allcells6 > .grid--cell {
     flex-basis: 50%;
 }
@@ -388,6 +392,11 @@ a {
     padding-bottom: 4px !important;
 }
 
+.py8 {
+    padding-top: 8px !important;
+    padding-bottom: 8px !important;
+}
+
 .py24 {
     padding-top: 24px !important;
     padding-bottom: 24px !important;
@@ -541,6 +550,11 @@ a {
     padding: .7em;
     border-radius: 4px;
     font-size: 1.00769231rem;
+}
+
+.s-btn.s-btn__merged {
+    padding: .7em 1.4em;
+    border-radius: 0;
 }
 
 .s-btn__primary:hover, .s-btn__primary:active, .s-btn__primary:focus, .s-btn__primary.is-selected {
@@ -1778,6 +1792,14 @@ select option {
     /* Set the fixed height of the footer here */
     height: 60px;
     line-height: 60px; /* Vertically center the text there */
+}
+
+.t0 {
+    top: 0px !important;
+}
+
+.t5 {
+    top: 5px !important;
 }
 
 .t15 {

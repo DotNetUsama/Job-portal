@@ -1,0 +1,15 @@
+@using Job_Portal_System.Enums
+@model IEnumerable<Job_Portal_System.ViewModels.QualificationViewModel>
+
+<ol>
+    @foreach (var qualification in Model)
+    {
+        <li>
+            @qualification.Title (@qualification.Type @qualification.Years @(qualification.Years == 1 ? "year" : "years"))
+            @if (qualification.IsWeakness)
+            {
+                <strong class="pl8 fc-danger">Weak</strong>
+            }
+        </li>
+    }
+</ol>

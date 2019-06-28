@@ -38,6 +38,7 @@
         <div class="grid by mt16 mb24 py16 bc-black-3">
             <nav class="grid--cell mr-auto">
                 <a href="#overview-items" class="s-btn d-inline-block" data-nav-item="Overview">Overview</a>
+                <a href="#qualifications-items" class="s-btn d-inline-block" data-nav-item="Company">Qualifications</a>
                 <a href="#company-items" class="s-btn d-inline-block" data-nav-item="Company">Company</a>
             </nav>
         </div>
@@ -54,7 +55,7 @@
                             <span>Job types: </span>
                             @foreach (var jobType in Model.JobTypes)
                             {
-                                <span class="fw-bold px8">@(((JobType) jobType).GetDescription())</span>
+                                <span class="fw-bold px8">@(((JobType)jobType).GetDescription())</span>
                             }
                         </div>
                     </div>
@@ -88,6 +89,26 @@
                 </div>
             </section>
             @await Component.InvokeAsync("JobVacancyActions", new { jobVacancyId = Model.Id, user = User })
+        </div>
+        <div id="qualifications-items" class="job-details__spaced">
+            <section class="mb32">
+                <h2 class="fs-subheading mb16">Qualifications</h2>
+                @if (Model.DesiredSkills.Any())
+                {
+                    <strong>Skills:</strong>
+                    <partial name="_QualificationsGroupPartial" model="@Model.DesiredSkills" />
+                }
+                @if (Model.WorkExperienceQualifications.Any())
+                {
+                    <strong>Experiences:</strong>
+                    <partial name="_QualificationsGroupPartial" model="@Model.WorkExperienceQualifications" />
+                }
+                @if (Model.EducationQualifications.Any())
+                {
+                    <strong>Educations:</strong>
+                    <partial name="_QualificationsGroupPartial" model="@Model.EducationQualifications" />
+                }
+            </section>
         </div>
         <div id="company-items" class="job-details__spaced">
             <section class="mb32">

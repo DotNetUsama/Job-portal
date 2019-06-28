@@ -19,7 +19,7 @@ namespace Job_Portal_System.Utilities.RankingSystem
                     .Where(e => e.ToNumber() == educationQualification.ToNumber())
                     .ToList();
                 evaluation.AddEducationRank(
-                    educationQualification.FieldOfStudyId,
+                    educationQualification.ToNumber(),
                     educationQualification.GetRank(matchingEducations));
             });
             jobVacancy.WorkExperienceQualifications.ForEach(workExperienceQualification =>
@@ -28,7 +28,7 @@ namespace Job_Portal_System.Utilities.RankingSystem
                     .Where(e => e.ToNumber() == workExperienceQualification.ToNumber())
                     .ToList();
                 evaluation.AddWorkExperienceRank(
-                    workExperienceQualification.JobTitleId,
+                    workExperienceQualification.ToNumber(),
                     workExperienceQualification.GetRank(matchingWorkExperiences));
             });
             jobVacancy.DesiredSkills.ForEach(skill =>
@@ -36,9 +36,9 @@ namespace Job_Portal_System.Utilities.RankingSystem
                 var matchingSkill = Resume.OwnedSkills
                     .Find(e => e.ToNumber() == skill.ToNumber());
                 if (matchingSkill != null)
-                    evaluation.AddSkillRank(skill.SkillId, skill.GetRank(matchingSkill));
+                    evaluation.AddSkillRank(skill.ToNumber(), skill.GetRank(matchingSkill));
                 else
-                    evaluation.AddSkillRank(skill.SkillId, 0);
+                    evaluation.AddSkillRank(skill.ToNumber(), 0);
             });
             evaluation.AddSalaryRank(jobVacancy.MaxSalary - Resume.MinSalary);
             Evaluation = evaluation;

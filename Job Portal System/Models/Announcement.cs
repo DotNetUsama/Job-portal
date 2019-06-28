@@ -1,7 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Data;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Job_Portal_System.Models
@@ -29,7 +28,7 @@ namespace Job_Portal_System.Models
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
         [Display(Name = "Updated at")]
-        public DateTime? UpdatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; } = DateTime.Now;
         
         public User Author { get; set; }
         public string UserId { get; set; }

@@ -5,18 +5,18 @@
 {
     case ApplicantStatus.WaitingRecruiterDecision:
     case ApplicantStatus.PendingRecommendation:
-        @:<span class="ps-absolute pt2 r0 mr12 t5 s-badge s-badge__warning">@Model.GetDescription()</span>
+        @:<span class="ps-absolute pt2 r0 mr12 t15 s-badge s-badge__warning">@Model.GetDescription()</span>
         break;
     case ApplicantStatus.DummyAccepted:
     case ApplicantStatus.AcceptMeeting:
     case ApplicantStatus.AcceptedByRecruiter:
-        @:<span class="ps-absolute pt2 r0 mr12 t5 s-badge s-badge__success">@Model.GetDescription()</span>
+        @:<span class="ps-absolute pt2 r0 mr12 t15 s-badge s-badge__success">@Model.GetDescription()</span>
         break;
     case ApplicantStatus.DummyRejected:
     case ApplicantStatus.RejectMeeting:
     case ApplicantStatus.RejectedByRecruiter:
     case ApplicantStatus.RejectedRecommendation:
-        @:<span class="ps-absolute pt2 r0 mr12 t5 s-badge s-badge__danger">@Model.GetDescription()</span>
+        @:<span class="ps-absolute pt2 r0 mr12 t15 s-badge s-badge__danger">@Model.GetDescription()</span>
         break;
     case ApplicantStatus.Other:
     default:
